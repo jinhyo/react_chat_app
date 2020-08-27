@@ -6,7 +6,6 @@ import Login from "./pages/login/Login";
 import Profile from "./pages/profile/Profile";
 import PrivateChat from "./pages/private/PrivateChat";
 import PublicChat from "./pages/public/PublicChat";
-import "semantic-ui-css/semantic.min.css";
 
 function App() {
   return (
