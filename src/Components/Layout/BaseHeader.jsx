@@ -2,7 +2,7 @@ import React from "react";
 import { Menu, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
-function BaseHeader(props) {
+function BaseHeader() {
   return (
     <Menu
       className="baseHeader"
@@ -16,10 +16,10 @@ function BaseHeader(props) {
         <Icon name="chat" color="teal" />
         <p style={{ fontSize: "1em", fontWeight: "bold" }}>Chat App</p>
       </Link>
-      <Link to="/" className="item">
+      <Link to="/public" className="item">
         <p>공개채팅</p>
       </Link>
-      <Link to="/" className="item">
+      <Link to="/private" className="item">
         <p>개인채팅</p>
       </Link>
       <Menu.Menu position="right">
