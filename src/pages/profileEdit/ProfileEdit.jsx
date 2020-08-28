@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Layout from "../../Components/Layout/Layout";
 import {
   Grid,
@@ -13,27 +13,77 @@ import {
   TextArea
 } from "semantic-ui-react";
 import firebaseApp from "../../firebase";
+import { useSelector, useDispatch } from "react-redux";
+import { userSelector, userActions } from "../../features/userSlice";
+import { useHistory } from "react-router-dom";
 
 function ProfileEdit() {
-  const [error, setError] = useState("");
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const currentUser = useSelector(userSelector.currentUser);
+
   const [initialState, setInitialState] = useState({
-    location: "",
-    selfIntro: ""
+    location: currentUser.location,
+    selfIntro: currentUser.selfIntro
   });
-  const [privateEmail, setPrivateEmail] = useState(false);
+  const [privateEmail, setPrivateEmail] = useState(currentUser.privateEmail);
   const [updateLoading, setUpdateLoading] = useState(false);
+  console.log("~~~initialState", initialState);
+
+  useEffect(() => {
+    if (currentUser.id) {
+      setInitialState({
+        location: currentUser.location,
+        selfIntro: currentUser.selfIntro
+      });
+    }
+  }, [currentUser]);
 
   const handleInputChange = useCallback(e => {
     e.persist();
-    setInitialState(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    if (e.target.name === "selfIntro") {
+      if (e.target.value.length < 50) {
+        setInitialState(prev => ({
+          ...prev,
+          [e.target.name]: e.target.value
+        }));
+      }
+    } else {
+      setInitialState(prev => ({
+        ...prev,
+        [e.target.name]: e.target.value
+      }));
+    }
   }, []);
 
   const handleEmailCheck = useCallback(() => {
     setPrivateEmail(prev => !prev);
   }, []);
+
+  const handleUpdate = useCallback(async () => {
+    try {
+      setUpdateLoading(true);
+      await firebaseApp.updateProfile(
+        currentUser.id,
+        privateEmail,
+        initialState.location,
+        initialState.selfIntro
+      );
+      dispatch(
+        userActions.setCurrentUser({
+          ...currentUser,
+          privateEmail,
+          location: initialState.location,
+          selfIntro: initialState.selfIntro
+        })
+      );
+      setUpdateLoading(false);
+      history.push("/profile");
+    } catch (error) {
+      setUpdateLoading(false);
+      console.error(error);
+    }
+  }, [initialState, privateEmail, currentUser]);
 
   return (
     <Layout>
@@ -44,9 +94,11 @@ function ProfileEdit() {
         className="app"
       >
         <Grid.Column width={10}>
-          <Form /* onSubmit={handleSubmit} */ size="large">
+          <Form onSubmit={handleUpdate} size="large">
             <Segment stacked>
-              <Header content="emailij" />
+              <Header as="h4" floated="left">
+                <Icon name="mail" /> {currentUser.email}
+              </Header>
               <Checkbox
                 checked={privateEmail}
                 onChange={handleEmailCheck}

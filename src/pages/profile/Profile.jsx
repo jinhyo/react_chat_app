@@ -30,7 +30,10 @@ function Profile(props) {
         className="app"
       >
         <Grid.Column width={10}>
-          <Segment color="#ecf0f1" stacked style={{ height: "60vh" }}>
+          <Segment
+            stacked
+            style={{ height: "550px", backgroundColor: "#fffff0" }}
+          >
             <Card centered>
               <Image
                 size="medium"
@@ -40,11 +43,6 @@ function Profile(props) {
               />
               <Card.Content>
                 <Card.Header>{currentUser.nickname}</Card.Header>
-                <Card.Meta textAlign="right">
-                  <Link to="/profile/edit">
-                    <Button size="mini" floated="right" content="수정" />
-                  </Link>
-                </Card.Meta>
                 <Card.Meta textAlign="left">
                   {currentUser.location && (
                     <Icon
@@ -62,7 +60,9 @@ function Profile(props) {
                     </a>
                   )}
                 </Card.Meta>
-                <Card.Description>{currentUser.selfIntro}</Card.Description>
+                <Card.Description textAlign="left">
+                  {currentUser.selfIntro}
+                </Card.Description>
               </Card.Content>
               <Card.Content extra>
                 <Link to="/private">

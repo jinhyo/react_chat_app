@@ -96,6 +96,16 @@ class Firebase {
         avatarURL: user.photoURL
       });
   }
+
+  async updateProfile(userId, privateEmail, location, selfIntro) {
+    console.log("updateProfile");
+
+    await this.db
+      .collection("users")
+      .doc(userId)
+      .update({ privateEmail, location, selfIntro });
+    console.log("end updateProfile");
+  }
 }
 const firebaseApp = new Firebase();
 export default firebaseApp;
