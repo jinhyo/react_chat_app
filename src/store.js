@@ -1,6 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { PUBLIC, publicChatReducers } from "./publicChatSlice";
-import { USER, userReducers } from "./userSlice";
+import { USER, userReducers } from "./features/userSlice";
+import { PUBLIC, publicChatReducers } from "./features/publicChatSlice";
 
 const rootReducer = combineReducers({
   [PUBLIC]: publicChatReducers,

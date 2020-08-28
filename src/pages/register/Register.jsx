@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Layout from "../../Components/Layout/Layout";
-import { Link } from "react-router-dom";
 import {
   Grid,
   Header,
@@ -13,18 +12,78 @@ import {
   TextArea,
   Checkbox
 } from "semantic-ui-react";
+import validateRegisterForm from "../../utils/validateRegisterForm";
+import firebase from "../../firebase";
+import { ToastContainer, toast } from "react-toastify";
+
+import useFormInput from "../../hooks/useFormInput";
+
+const INITIAL_VALUES = {
+  nickname: "",
+  email: "",
+  password: "",
+  passwordConfirm: "",
+  location: "",
+  selfIntro: ""
+};
 
 function Register(props) {
+  const [privateEmail, setPrivateEmail] = useState(false);
+  const [checkLoading, setCheckLoading] = useState(false);
+  const {
+    values,
+    handleChange,
+    isSubmitting,
+    errors,
+    handleSubmit,
+    setIsSubmitting,
+    setErrors
+  } = useFormInput(INITIAL_VALUES, validateRegisterForm, createUser);
+
+  async function createUser() {
+    const { email, password, nickname, location, selfIntro } = values;
+    setIsSubmitting(true);
+    await firebase.createNewUser(
+      email,
+      password,
+      nickname,
+      privateEmail,
+      location,
+      selfIntro
+    );
+    setIsSubmitting(false);
+    window.location.reload();
+  }
+
+  const handleEmailCheck = useCallback(() => {
+    setPrivateEmail(prev => !prev);
+  }, []);
+
+  const checkUniqueNickname = useCallback(async () => {
+    setCheckLoading(true);
+    const isAvailable = await firebase.checkUniqueNickname(values.nickname);
+
+    if (isAvailable) {
+      toast.success("사용 가능한 닉네임 입니다.");
+      setCheckLoading(false);
+    } else {
+      setErrors({ ...errors, nickname: "사용할 수 없는 닉네임 입니다." });
+      setCheckLoading(false);
+    }
+  }, [values.nickname]);
+
   return (
     <Layout>
+      <ToastContainer />
+      <ToastContainer autoClose={3000} />
       <Grid
         style={{ marginTop: 40 }}
         textAlign="center"
         verticalAlign="middle"
         className="app"
       >
-        <Grid.Column mobile={5} computer={10}>
-          <Form /* onSubmit={handleSubmit} */ size="large">
+        <Grid.Column width={10}>
+          <Form onSubmit={handleSubmit} size="large">
             <Segment stacked>
               <Form.Field>
                 <Input
@@ -34,46 +93,52 @@ function Register(props) {
                   iconPosition="left"
                   placeholder="닉네임"
                   labelPosition="right"
-                  label={<Button color="teal">중복확인</Button>}
+                  label={
+                    <Button
+                      onClick={checkUniqueNickname}
+                      color="teal"
+                      loading={checkLoading}
+                    >
+                      중복확인
+                    </Button>
+                  }
                   type="text"
-                  //       value={userName}
-                  //       onChange={e => {
-                  //   setUserName(e.target.value);
-                  // }}
+                  value={values.nickname}
+                  onChange={handleChange}
+                />
+                <Message
+                  error={!errors.nickname}
+                  color="yellow"
+                  header={errors.nickname}
+                  size="mini"
                 />
               </Form.Field>
 
               <Form.Field>
                 <Input
                   fluid
-                  name="이메일"
-                  label={<Checkbox color="teal" label="비공개" />}
+                  name="email"
+                  label={
+                    <Checkbox
+                      checked={privateEmail}
+                      onChange={handleEmailCheck}
+                      color="teal"
+                      label="비공개"
+                    />
+                  }
                   labelPosition="right"
                   icon="mail"
                   iconPosition="left"
                   placeholder="이메일"
                   type="email"
-                  /* value={email}
-          onChange={e => {
-            setEmail(e.target.value);
-          }} */
+                  value={values.email}
+                  onChange={handleChange}
                 />
-              </Form.Field>
-
-              <Form.Field>
-                <Input
-                  fluid
-                  name="location"
-                  label={<Checkbox color="teal" label="비공개" />}
-                  labelPosition="right"
-                  icon="map marker alternate"
-                  iconPosition="left"
-                  placeholder="거주 지역"
-                  type="text"
-                  /* value={passwordConfirm}
-          onChange={e => {
-            setPasswordConfirm(e.target.value);
-          }} */
+                <Message
+                  error={!errors.email}
+                  color="yellow"
+                  header={errors.email}
+                  size="mini"
                 />
               </Form.Field>
 
@@ -85,10 +150,14 @@ function Register(props) {
                   iconPosition="left"
                   placeholder="비밀번호"
                   type="password"
-                  /* value={password}
-          onChange={e => {
-            setPassword(e.target.value);
-          }} */
+                  value={values.password}
+                  onChange={handleChange}
+                />
+                <Message
+                  error={!errors.password}
+                  color="yellow"
+                  header={errors.password}
+                  size="mini"
                 />
               </Form.Field>
 
@@ -100,23 +169,38 @@ function Register(props) {
                   iconPosition="left"
                   placeholder="비밀번호 재확인"
                   type="password"
-                  /* value={passwordConfirm}
-          onChange={e => {
-            setPasswordConfirm(e.target.value);
-          }} */
+                  value={values.passwordConfirm}
+                  onChange={handleChange}
+                />
+                <Message
+                  error={!errors.passwordConfirm}
+                  color="yellow"
+                  header={errors.passwordConfirm}
+                  size="mini"
+                />
+              </Form.Field>
+
+              <Form.Field>
+                <Input
+                  fluid
+                  name="location"
+                  labelPosition="right"
+                  icon="map marker alternate"
+                  iconPosition="left"
+                  placeholder="거주 지역"
+                  type="text"
+                  value={values.location}
+                  onChange={handleChange}
                 />
               </Form.Field>
 
               <Form.Field>
                 <TextArea
-                  fluid
-                  name="selfintro"
+                  name="selfIntro"
                   placeholder="자기소개"
                   type="text"
-                  /* value={passwordConfirm}
-          onChange={e => {
-            setPasswordConfirm(e.target.value);
-          }} */
+                  value={values.selfIntro}
+                  onChange={handleChange}
                 />
               </Form.Field>
 
@@ -127,6 +211,7 @@ function Register(props) {
                 fluid
                 size="large"
                 compact
+                loading={isSubmitting}
               >
                 회원가입
               </Button>

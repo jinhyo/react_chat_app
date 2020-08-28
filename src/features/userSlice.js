@@ -8,19 +8,21 @@ const userSlice = createSlice({
       nickname: "",
       selfIntro: "",
       email: "",
-      avatarURL: ""
+      privateEmail: false,
+      avatarURL: "",
+      location: ""
     }
   },
   reducers: {
-    setUser: (state, { payload: { currentUser } }) => {
+    setCurrentUser: (state, { payload: currentUser }) => {
       state.currentUser = currentUser;
     },
     clearUser: state => {
       state.currentUser = {};
+    },
+    setUserAvatar: (state, { payload: { avatarURL } }) => {
+      state.currentUser.avatarURL = avatarURL;
     }
-  },
-  setUserAvatar: (state, { payload: { avatarURL } }) => {
-    state.currentUser.avatarURL = avatarURL;
   }
 });
 
