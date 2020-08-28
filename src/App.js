@@ -9,22 +9,20 @@ import PublicChat from "./pages/public/PublicChat";
 import { useDispatch } from "react-redux";
 import firebase from "./firebase";
 import { userActions, userSelector } from "./features/userSlice";
-import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Loader, Dimmer } from "semantic-ui-react";
+import ProfileEdit from "./pages/profileEdit/ProfileEdit";
 
 import "semantic-ui-css/semantic.min.css";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const dispatch = useDispatch();
-  const history = useHistory();
   const currentUser = useSelector(userSelector.currentUser);
   const [userLoading, setUserLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = firebase.checkAuth(user => {
-      setUserLoading(true);
       console.log("user;", user);
 
       if (user) {
@@ -32,8 +30,6 @@ function App() {
           dispatch(
             userActions.setCurrentUser({ id: user.uid, ...currentUser })
           );
-          setUserLoading(false);
-          history.push("/");
         });
       }
     });
@@ -47,6 +43,7 @@ function App() {
       <Route exact path="/" component={Layout} />
       <Route path="/register" component={Register} />
       <Route path="/login" component={Login} />
+      <Route path="/profile/edit" component={ProfileEdit} />
       <Route path="/profile" component={Profile} />
       <Route path="/public" component={PublicChat} />
       <Route path="/private" component={PrivateChat} />

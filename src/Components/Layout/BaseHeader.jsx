@@ -52,7 +52,11 @@ function BaseHeader() {
             <Menu.Item>
               <Dropdown size="large" icon="cog" className="icon">
                 <Dropdown.Menu>
-                  <Dropdown.Item>프로필</Dropdown.Item>
+                  <Dropdown.Item>
+                    <Link to="/profile">
+                      <span style={{ color: "black" }}>프로필</span>
+                    </Link>
+                  </Dropdown.Item>
                   <Dropdown.Item>배경색</Dropdown.Item>
                   <Dropdown.Item onClick={logout}>로그아웃</Dropdown.Item>
                 </Dropdown.Menu>

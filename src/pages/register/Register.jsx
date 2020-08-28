@@ -74,7 +74,6 @@ function Register(props) {
 
   return (
     <Layout>
-      <ToastContainer />
       <ToastContainer autoClose={3000} />
       <Grid
         style={{ marginTop: 40 }}

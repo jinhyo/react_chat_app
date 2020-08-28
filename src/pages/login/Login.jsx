@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import "./Login";
 import Layout from "../../Components/Layout/Layout";
+import { useHistory } from "react-router-dom";
 import {
   Grid,
   Header,
@@ -17,6 +18,7 @@ function Login() {
   const [initialState, setInitialState] = useState({ email: "", password: "" });
   const [loginLoading, setLoginLoading] = useState(false);
   const [googleLoginLoading, setGoogleLoginLoading] = useState(false);
+  const history = useHistory();
 
   const handleInputChange = useCallback(e => {
     e.persist();
@@ -37,6 +39,7 @@ function Login() {
       }
     } finally {
       setLoginLoading(false);
+      history.push("/");
     }
   }, [initialState]);
 
