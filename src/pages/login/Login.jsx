@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import "./Login";
 import Layout from "../../Components/Layout/Layout";
 import {
@@ -10,7 +10,47 @@ import {
   Button,
   Message
 } from "semantic-ui-react";
+import firebaseApp from "../../firebase";
+
 function Login() {
+  const [error, setError] = useState("");
+  const [initialState, setInitialState] = useState({ email: "", password: "" });
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [googleLoginLoading, setGoogleLoginLoading] = useState(false);
+
+  const handleInputChange = useCallback(e => {
+    e.persist();
+    setError("");
+    setInitialState(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
+    try {
+      setLoginLoading(true);
+      await firebaseApp.logIn(initialState.email, initialState.password);
+    } catch (error) {
+      if (error.code === "auth/wrong-password") {
+        setError("잘못된 비밀번호 입니다.");
+      }
+    } finally {
+      setLoginLoading(false);
+    }
+  }, [initialState]);
+
+  const handleGoogleLogin = useCallback(async () => {
+    try {
+      setGoogleLoginLoading(true);
+      await firebaseApp.logInWithGoogle();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setGoogleLoginLoading(false);
+    }
+  }, []);
+
   return (
     <Layout>
       <Grid
@@ -20,7 +60,7 @@ function Login() {
         className="app"
       >
         <Grid.Column width={10}>
-          <Form /* onSubmit={handleSubmit} */ size="large">
+          <Form onSubmit={handleSubmit} size="large">
             <Segment stacked>
               <Form.Input
                 fluid
@@ -29,10 +69,8 @@ function Login() {
                 iconPosition="left"
                 placeholder="이메일"
                 type="email"
-                /* value={email}
-          onChange={e => {
-            setEmail(e.target.value);
-          }} */
+                value={initialState.email}
+                onChange={handleInputChange}
               />
               <Form.Input
                 fluid
@@ -41,15 +79,18 @@ function Login() {
                 iconPosition="left"
                 placeholder="비밀번호"
                 type="password"
-                /* value={password}
-          onChange={e => {
-            setPassword(e.target.value);
-          }} */
+                value={initialState.password}
+                onChange={handleInputChange}
               />
               <Form.Field>
+                <Message
+                  error={!error}
+                  color="yellow"
+                  header={error}
+                  size="mini"
+                />
                 <Button
-                  /* disabled={loading}
-              loading={loading} */
+                  loading={loginLoading}
                   color="blue"
                   size="large"
                   width="40"
@@ -62,12 +103,12 @@ function Login() {
             </Segment>
           </Form>
           <Button
-            /* disabled={loading}
-              loading={loading} */
+            loading={googleLoginLoading}
             style={{ marginTop: 30 }}
             color="blue"
             size="large"
             compact
+            onClick={handleGoogleLogin}
           >
             <Icon name="google" />
             구글 로그인

@@ -68,6 +68,34 @@ class Firebase {
     const isAvailable = snapshot.empty;
     return isAvailable;
   }
-}
 
-export default new Firebase();
+  async logOut() {
+    await this.auth.signOut();
+    window.location.reload();
+  }
+
+  async logIn(email, password) {
+    await this.auth.signInWithEmailAndPassword(email, password);
+  }
+
+  async logInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope("email");
+    provider.addScope("profile");
+
+    const { user } = await this.auth.signInWithPopup(provider);
+    await this.db
+      .collection("users")
+      .doc(user.uid)
+      .set({
+        nickname: user.displayName,
+        email: user.email,
+        privateEmail: true,
+        location: "",
+        selfIntro: "",
+        avatarURL: user.photoURL
+      });
+  }
+}
+const firebaseApp = new Firebase();
+export default firebaseApp;

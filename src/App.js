@@ -25,6 +25,8 @@ function App() {
   useEffect(() => {
     const unsubscribe = firebase.checkAuth(user => {
       setUserLoading(true);
+      console.log("user;", user);
+
       if (user) {
         firebase.getUser(user.uid).then(currentUser => {
           dispatch(

@@ -1,25 +1,23 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Menu, Icon, Image, Header, Dropdown } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { userSelector } from "../../features/userSlice";
+import firebaseApp from "../../firebase";
 
 function BaseHeader() {
   const currentUser = useSelector(userSelector.currentUser);
-
   console.log("currentUser", currentUser);
 
-  const dropdownOptions = () => [
-    { key: "color", text: <span>배경색</span> },
-    { key: "profile", text: <span>프로필</span> },
-    { key: "signOut", text: <span>로그아웃</span> }
-  ];
+  const logout = useCallback(() => {
+    firebaseApp.logOut();
+  }, []);
 
   return (
     <Menu
       className="baseHeader"
       style={{
-        marginTop: "10px",
+        // marginTop: "10px",
         backgroundColor: "#dff9fb",
         fontSize: "1em"
       }}
@@ -56,7 +54,7 @@ function BaseHeader() {
                 <Dropdown.Menu>
                   <Dropdown.Item>프로필</Dropdown.Item>
                   <Dropdown.Item>배경색</Dropdown.Item>
-                  <Dropdown.Item>로그아웃</Dropdown.Item>
+                  <Dropdown.Item onClick={logout}>로그아웃</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </Menu.Item>
