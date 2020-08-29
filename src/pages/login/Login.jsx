@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "./Login";
 import Layout from "../../Components/Layout/Layout";
 import { useHistory } from "react-router-dom";
@@ -12,13 +12,23 @@ import {
   Message
 } from "semantic-ui-react";
 import firebaseApp from "../../firebase";
+import { useSelector } from "react-redux";
+import { userSelector, userActions } from "../../features/userSlice";
 
 function Login() {
+  const history = useHistory();
+  const isLogin = useSelector(userSelector.isLogin);
+
   const [error, setError] = useState("");
   const [initialState, setInitialState] = useState({ email: "", password: "" });
   const [loginLoading, setLoginLoading] = useState(false);
   const [googleLoginLoading, setGoogleLoginLoading] = useState(false);
-  const history = useHistory();
+
+  useEffect(() => {
+    if (isLogin) {
+      history.push("/");
+    }
+  }, [isLogin]);
 
   const handleInputChange = useCallback(e => {
     e.persist();
@@ -51,8 +61,11 @@ function Login() {
       console.error(error);
     } finally {
       setGoogleLoginLoading(false);
+      history.push("/");
     }
   }, []);
+
+  if (isLogin) return null;
 
   return (
     <Layout>

@@ -10,7 +10,8 @@ import {
   Message,
   Input,
   Checkbox,
-  TextArea
+  TextArea,
+  Modal
 } from "semantic-ui-react";
 import firebaseApp from "../../firebase";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,6 +22,7 @@ function ProfileEdit() {
   const dispatch = useDispatch();
   const history = useHistory();
   const currentUser = useSelector(userSelector.currentUser);
+  const isLogin = useSelector(userSelector.isLogin);
 
   const [initialState, setInitialState] = useState({
     location: currentUser.location,
@@ -28,7 +30,12 @@ function ProfileEdit() {
   });
   const [privateEmail, setPrivateEmail] = useState(currentUser.privateEmail);
   const [updateLoading, setUpdateLoading] = useState(false);
-  console.log("~~~initialState", initialState);
+
+  useEffect(() => {
+    if (!isLogin) {
+      history.push("/login");
+    }
+  }, [isLogin]);
 
   useEffect(() => {
     if (currentUser.id) {
@@ -84,6 +91,8 @@ function ProfileEdit() {
       console.error(error);
     }
   }, [initialState, privateEmail, currentUser]);
+
+  if (!isLogin) return null;
 
   return (
     <Layout>

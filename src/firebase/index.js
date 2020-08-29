@@ -106,6 +106,32 @@ class Firebase {
       .update({ privateEmail, location, selfIntro });
     console.log("end updateProfile");
   }
+
+  async updateAvatar(userId, imageFile) {
+    const avatarURL = await this.uploadAvatarImageFile(userId, imageFile);
+    console.log("avatarURL", avatarURL);
+
+    await this.db
+      .collection("users")
+      .doc(userId)
+      .update({ avatarURL });
+    return avatarURL;
+  }
+
+  uploadAvatarImageFile(userId, imageFile) {
+    return new Promise((resolve, reject) => {
+      this.storage
+        .ref(`avatars/${userId}`)
+        .put(imageFile)
+        .then(snap => {
+          snap.ref.getDownloadURL().then(url => {
+            resolve(url);
+          });
+        })
+        .catch(reject);
+    });
+  }
 }
+
 const firebaseApp = new Firebase();
 export default firebaseApp;

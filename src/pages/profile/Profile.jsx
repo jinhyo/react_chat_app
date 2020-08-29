@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   Grid,
   Image,
@@ -12,15 +12,30 @@ import { useSelector } from "react-redux";
 import Layout from "../../Components/Layout/Layout";
 import { userSelector } from "../../features/userSlice";
 import { useHistory, Link } from "react-router-dom";
+import AvatarModal from "./AvatarModal";
 
 function Profile(props) {
   const history = useHistory();
   const currentUser = useSelector(userSelector.currentUser);
-  // if(!currentUser.id){
-  //   return (
+  const [modal, setModal] = useState(false);
+  const isLogin = useSelector(userSelector.isLogin);
 
-  //   )
-  // }
+  useEffect(() => {
+    if (!isLogin) {
+      history.push("/login");
+    }
+  }, [isLogin]);
+
+  const closeModal = useCallback(() => {
+    setModal(false);
+  }, []);
+
+  const openModal = useCallback(() => {
+    setModal(true);
+  }, []);
+
+  if (!isLogin) return null;
+
   return (
     <Layout>
       <Grid
@@ -75,11 +90,17 @@ function Profile(props) {
                 </Link>
               </Card.Content>
             </Card>
-            <Button size="small" content="아바타 변경" primary />
+            <Button
+              size="small"
+              content="아바타 변경"
+              primary
+              onClick={openModal}
+            />
             <Link to="/profile/edit">
               <Button size="small" content="프로필 수정" primary />
             </Link>
           </Segment>
+          <AvatarModal modal={modal} closeModal={closeModal} />
         </Grid.Column>
       </Grid>
     </Layout>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Switch, Route } from "react-router-dom";
 import Layout from "./Components/Layout/Layout";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
@@ -10,21 +10,19 @@ import { useDispatch } from "react-redux";
 import firebase from "./firebase";
 import { userActions, userSelector } from "./features/userSlice";
 import { useSelector } from "react-redux";
-import { Loader, Dimmer } from "semantic-ui-react";
 import ProfileEdit from "./pages/profileEdit/ProfileEdit";
 
 import "semantic-ui-css/semantic.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import { Loader } from "semantic-ui-react";
 
 function App() {
   const dispatch = useDispatch();
-  const currentUser = useSelector(userSelector.currentUser);
-  const [userLoading, setUserLoading] = useState(false);
+  const isLogin = useSelector(userSelector.isLogin);
+  // const [userLoading, setUserLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = firebase.checkAuth(user => {
-      console.log("user;", user);
-
       if (user) {
         firebase.getUser(user.uid).then(currentUser => {
           dispatch(
@@ -37,7 +35,8 @@ function App() {
     return unsubscribe;
   }, []);
 
-  // if (userLoading) return <Loader active inverted size="huge" />;
+  if (!isLogin) return <Loader active inverted size="huge" />;
+
   return (
     <Switch>
       <Route exact path="/" component={Layout} />

@@ -1,16 +1,18 @@
 import React, { useCallback } from "react";
 import { Menu, Icon, Image, Header, Dropdown } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { userSelector } from "../../features/userSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { userSelector, userActions } from "../../features/userSlice";
 import firebaseApp from "../../firebase";
 
 function BaseHeader() {
+  const dispatch = useDispatch();
   const currentUser = useSelector(userSelector.currentUser);
   console.log("currentUser", currentUser);
 
   const logout = useCallback(() => {
     firebaseApp.logOut();
+    dispatch(userActions.clearUser());
   }, []);
 
   return (

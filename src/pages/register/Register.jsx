@@ -15,7 +15,9 @@ import {
 import validateRegisterForm from "../../utils/validateRegisterForm";
 import firebase from "../../firebase";
 import { ToastContainer, toast } from "react-toastify";
-
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { userSelector } from "../../features/userSlice";
 import useFormInput from "../../hooks/useFormInput";
 
 const INITIAL_VALUES = {
@@ -28,6 +30,9 @@ const INITIAL_VALUES = {
 };
 
 function Register(props) {
+  const history = useHistory();
+  const isLogin = useSelector(userSelector.isLogin);
+
   const [privateEmail, setPrivateEmail] = useState(false);
   const [checkLoading, setCheckLoading] = useState(false);
   const {
@@ -39,6 +44,12 @@ function Register(props) {
     setIsSubmitting,
     setErrors
   } = useFormInput(INITIAL_VALUES, validateRegisterForm, createUser);
+
+  useEffect(() => {
+    if (isLogin) {
+      history.push("/");
+    }
+  }, [isLogin]);
 
   async function createUser() {
     const { email, password, nickname, location, selfIntro } = values;
@@ -72,6 +83,7 @@ function Register(props) {
     }
   }, [values.nickname]);
 
+  if (isLogin) return null;
   return (
     <Layout>
       <ToastContainer autoClose={3000} />
