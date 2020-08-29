@@ -1,0 +1,8 @@
+.messages {
+  height: 75vh;
+  overflow-y: scroll;
+}
+.messages__search {
+  height: 68vh;
+  overflow-y: scroll;
+}

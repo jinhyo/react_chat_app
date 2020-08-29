@@ -6,7 +6,7 @@ function JoinedRooms(props) {
     <Menu.Menu>
       <Header as="h3" textAlign="center" style={{ marginTop: 30 }}>
         <Icon name="comments" size="small" />
-        참가중
+        참가 목록
       </Header>
       <Menu.Item
         name="inbox"
