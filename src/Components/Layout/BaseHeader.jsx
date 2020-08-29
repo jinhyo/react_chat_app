@@ -43,13 +43,15 @@ function BaseHeader() {
               inverted
               style={{ paddingTop: 0, paddingBottom: 0 }}
             >
-              <Image
-                src={currentUser.avatarURL}
-                spaced="right"
-                avatar
-                size="mini"
-              />
-              {currentUser.nickname}
+              <Link to="/profile">
+                <Image
+                  src={currentUser.avatarURL}
+                  spaced="right"
+                  avatar
+                  size="mini"
+                />
+                {currentUser.nickname}
+              </Link>
             </Header>
             <Menu.Item>
               <Dropdown size="large" icon="cog" className="icon">

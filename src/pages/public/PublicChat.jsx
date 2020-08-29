@@ -1,18 +1,29 @@
 import React from "react";
-import MessageScreen from "../../Components/PublicChat/MessageScreen";
-import MessageForm from "../../Components/PublicChat/MessageForm";
-import MessageHeader from "../../Components/PublicChat/MessageHeader";
-
+import { Grid } from "semantic-ui-react";
+import Layout from "../../Components/Layout/Layout";
+import Messages from "../../Components/PublicChat/Messages/Messages";
+import LeftSidePanel from "../../Components/PublicChat/LeftSidePanel/LeftSidePanel";
+import RightSide from "../../Components/PublicChat/RightSide/RightSide";
 import "./PublicChat.css";
+import RoomInfo from "../../Components/PublicChat/RoomInfo.jsx/RoomInfo";
 
-function OpenChat(props) {
+function PublicChat(props) {
   return (
-    <div>
-      <MessageHeader />
-      <MessageScreen />
-      <MessageForm />
-    </div>
+    <Layout>
+      <Grid stackable columns="equal">
+        <Grid.Column tablet={5} computer={4} style={{ heigth: 100 }}>
+          <LeftSidePanel />
+        </Grid.Column>
+        <Grid.Column tablet={7} computer={8}>
+          <Messages />
+          {/* <RoomInfo /> */}
+        </Grid.Column>
+        <Grid.Column tablet={4} computer={4}>
+          <RightSide />
+        </Grid.Column>
+      </Grid>
+    </Layout>
   );
 }
 
-export default OpenChat;
+export default PublicChat;
