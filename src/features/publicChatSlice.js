@@ -14,14 +14,16 @@ const publicChatSlice = createSlice({
   initialState: {
     currentRoom: null,
     messages: [],
-    allRooms: []
+    totalRooms: [],
+    currentRoomID: ""
   },
   reducers: {
-    setCurrentChannel: (state, { payload: currentRoom }) => {
-      state.currentRoom = currentRoom;
+    setCurrentRoom: (state, { payload: currentRoomID }) => {},
+    setTotalRooms: (state, { payload: totalRooms }) => {
+      state.totalRooms.unshift(...totalRooms);
     },
-    setRooms: (state, { payload: allRooms }) => {
-      state.allRooms.unshift(...allRooms);
+    setCurrentRoomID: (state, { payload: id }) => {
+      state.currentRoomID = id;
     }
   }
 });
@@ -32,10 +34,24 @@ const selectCurrentRoom = createSelector(
   currentRoom => currentRoom
 );
 
+const selectCurrentRoomID = createSelector(
+  state => state.currentRoomID,
+
+  currentRoomID => currentRoomID
+);
+
+const selectTotalRooms = createSelector(
+  state => state.totalRooms,
+
+  totalRooms => totalRooms
+);
+
 export const PUBLIC = publicChatSlice.name;
 export const publicChatActions = publicChatSlice.actions;
 export const publicChatReducers = publicChatSlice.reducer;
 
 export const publicChatSelector = {
-  currentRoom: state => state[PUBLIC]
+  currentRoom: state => selectCurrentRoom(state[PUBLIC]),
+  currentRoomID: state => selectCurrentRoomID(state[PUBLIC]),
+  totalRooms: state => selectTotalRooms(state[PUBLIC])
 };
