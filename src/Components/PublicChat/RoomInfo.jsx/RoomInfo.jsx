@@ -1,9 +1,9 @@
 import React from "react";
-import { Segment, Header, Comment, Icon, Label } from "semantic-ui-react";
+import { Segment, Header, Comment, Icon } from "semantic-ui-react";
 import OwnerCard from "../OwnerCard";
 import Participants from "../Participants";
 
-function RoomInfo(props) {
+function RoomInfo() {
   return (
     <Segment style={{ backgroundColor: "#fffff0", height: "90vh" }}>
       {/* 세부정보 */}

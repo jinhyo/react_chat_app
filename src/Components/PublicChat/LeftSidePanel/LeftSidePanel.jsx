@@ -1,7 +1,8 @@
-import React from "react";
-import { Menu, Header, Icon, Label } from "semantic-ui-react";
+import React, { useEffect } from "react";
+import { Menu } from "semantic-ui-react";
 import JoinedRooms from "./JoinedRooms";
 import TotalRooms from "./TotalRooms";
+import firebaseApp from "../../../firebase";
 
 function LeftSidePanel() {
   return (

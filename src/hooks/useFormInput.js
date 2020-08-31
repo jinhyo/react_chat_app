@@ -8,7 +8,7 @@ function useFormInput(initialState, validateFunc, cbFunc) {
   useEffect(() => {
     const errors = validateFunc(values);
     setErrors(errors);
-  }, [values]);
+  }, [values, validateFunc]);
 
   const handleSubmit = useCallback(
     async e => {

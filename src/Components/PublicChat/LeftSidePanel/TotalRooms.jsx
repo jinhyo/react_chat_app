@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react";
-import { Menu, Header, Icon, Label, Button } from "semantic-ui-react";
+import { Menu, Header, Icon, Button } from "semantic-ui-react";
 import AddRoomModal from "./AddRoomModal";
 
-function TotalRooms(props) {
+function TotalRooms() {
   const [modal, setModal] = useState(false);
   const closeModal = useCallback(() => {
     setModal(false);

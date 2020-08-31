@@ -110,7 +110,9 @@ class Firebase {
   async updateAvatar(userId, imageFile) {
     const avatarURL = await this.uploadAvatarImageFile(userId, imageFile);
     console.log("avatarURL", avatarURL);
-
+    this.auth.currentUser.updateProfile({
+      photoURL: avatarURL
+    });
     await this.db
       .collection("users")
       .doc(userId)
@@ -130,6 +132,39 @@ class Firebase {
         })
         .catch(reject);
     });
+  }
+
+  async temp() {
+    this.db
+      .collection("rooms")
+      .doc("7gxTLqGGIK0PPvpvzXRZ")
+      .get()
+      .then(snap => {
+        const data = snap.data();
+        data.user.get().then(snap1 => {
+          console.log("snap1", snap1.data());
+          console.log("snap1", snap1);
+        });
+      });
+  }
+
+  async createRoom(userId, nickname, roomName, details) {
+    await this.db.collection("rooms").add({
+      name: roomName,
+      details,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdBy: { id: userId, nickname },
+      participants: {
+        userId: { nickname, avatarURL: this.auth.currentUser.photoURL }
+      }
+    });
+  }
+
+  subscribeToAllRooms(cb) {
+    this.db
+      .collection("rooms")
+      .orderBy("createdAt", "desc")
+      .onSnapshot(cb);
   }
 }
 

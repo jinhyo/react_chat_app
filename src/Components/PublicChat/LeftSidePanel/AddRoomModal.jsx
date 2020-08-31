@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-// import AvatarEditor from "react-avatar-editor";
+import { useSelector } from "react-redux";
 import {
   Modal,
   Button,
@@ -7,8 +7,11 @@ import {
   Form,
   Input,
   Segment,
-  TextArea
+  TextArea,
+  Message
 } from "semantic-ui-react";
+import { userSelector } from "../../../features/userSlice";
+import firebaseApp from "../../../firebase";
 
 const INITIAL_STATE = {
   roomName: "",
@@ -16,8 +19,11 @@ const INITIAL_STATE = {
 };
 
 function AddRoomModal({ modal, closeModal }) {
+  const currentUser = useSelector(userSelector.currentUser);
+
   const [createLoading, setCreateLoading] = useState(false);
   const [initialState, setInitialState] = useState(INITIAL_STATE);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!modal) {
@@ -27,13 +33,38 @@ function AddRoomModal({ modal, closeModal }) {
 
   const handleInputChange = useCallback(e => {
     e.persist();
+    setError("");
     setInitialState(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }));
   }, []);
 
-  const handleCreateRoom = useCallback(() => {}, []);
+  // async createRoom(userId, nickname, roomName, details) {
+
+  const handleCreateRoom = useCallback(async () => {
+    const { roomName, roomDescription } = initialState;
+    if (roomName.length === 0) {
+      return setError("채팅방의 이름을 입력해 주세요.");
+    } else if (roomDescription.length === 0) {
+      return setError("채팅방의 세부사항을 입력해 주세요.");
+    }
+    try {
+      setCreateLoading(true);
+      await firebaseApp.createRoom(
+        currentUser.id,
+        currentUser.nickname,
+        roomName,
+        roomDescription
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setCreateLoading(false);
+      setError("");
+      closeModal();
+    }
+  }, [initialState]);
 
   return (
     <Modal open={modal} onClose={closeModal} size="tiny">
@@ -41,7 +72,7 @@ function AddRoomModal({ modal, closeModal }) {
         채팅방 추가
       </Modal.Header>
       <Modal.Content style={{ backgroundColor: "#fffff0" }}>
-        <Form size="large">
+        <Form size="large" error={!!error}>
           <Segment stacked>
             <Form.Field>
               <Input
@@ -63,11 +94,17 @@ function AddRoomModal({ modal, closeModal }) {
                 onChange={handleInputChange}
               />
             </Form.Field>
+            <Message error content={error} />
           </Segment>
         </Form>
       </Modal.Content>
       <Modal.Actions style={{ backgroundColor: "#f1f2f6" }}>
-        <Button inverted primary>
+        <Button
+          inverted
+          primary
+          loading={createLoading}
+          onClick={handleCreateRoom}
+        >
           추가
         </Button>
         <Button inverted onClick={closeModal} color="red">

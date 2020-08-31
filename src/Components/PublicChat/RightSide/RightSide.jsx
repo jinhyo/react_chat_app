@@ -63,6 +63,7 @@ function RightSide(props) {
           참가인원
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 2}>
+          <p>3명</p>
           <Participants />
         </Accordion.Content>
 
@@ -78,6 +79,7 @@ function RightSide(props) {
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 3}>
           <p>전체 글: 120개</p>
+          <h4>Top 3</h4>
           <Participants />
         </Accordion.Content>
       </Accordion>

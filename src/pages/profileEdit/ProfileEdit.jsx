@@ -7,11 +7,9 @@ import {
   Form,
   Segment,
   Button,
-  Message,
   Input,
   Checkbox,
-  TextArea,
-  Modal
+  TextArea
 } from "semantic-ui-react";
 import firebaseApp from "../../firebase";
 import { useSelector, useDispatch } from "react-redux";

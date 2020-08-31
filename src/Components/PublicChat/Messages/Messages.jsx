@@ -16,7 +16,7 @@ function Messages(props) {
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
-  });
+  }, []);
 
   return (
     <Segment style={{ height: "90vh" }}>

@@ -24,12 +24,16 @@ function App() {
   useEffect(() => {
     const unsubscribe = firebase.checkAuth(user => {
       if (user) {
+        console.log("user", user);
+
         firebase.getUser(user.uid).then(currentUser => {
           dispatch(
             userActions.setCurrentUser({ id: user.uid, ...currentUser })
           );
         });
       }
+
+      return unsubscribe;
     });
 
     return unsubscribe;
