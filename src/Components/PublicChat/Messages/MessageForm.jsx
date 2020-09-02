@@ -5,7 +5,7 @@ import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { userSelector } from "../../../features/userSlice";
 
-function MessageForm(props) {
+function MessageForm({ scrollToBottom }) {
   const currentUser = useSelector(userSelector.currentUser);
   const currentRoom = useSelector(publicChatSelector.currentRoom);
 
@@ -15,16 +15,18 @@ function MessageForm(props) {
     setText(e.target.value);
   }, []);
 
-  const handleSendMessage = useCallback(() => {
+  const handleSendMessage = useCallback(async () => {
     const createdBy = {
       id: currentUser.id,
       nickname: currentUser.nickname
     };
     try {
-      firebaseApp.sendMessage(text, createdBy, currentRoom.id);
+      await firebaseApp.sendMessage(text, createdBy, currentRoom.id);
+      scrollToBottom();
     } catch (error) {
       console.error(error);
     }
+    setText("");
   }, [text, currentRoom, currentUser]);
 
   return (

@@ -170,11 +170,6 @@ class Firebase {
         })
       });
 
-    this.db
-      .collection("publicChats")
-      .doc(newRoomRef.id)
-      .set({ messages: [] });
-
     return newRoomRef.id;
   }
 
@@ -237,24 +232,23 @@ class Firebase {
   }
 
   async sendMessage(content, createdBy, roomID) {
-    console.log("content, createdBy, roomID", content, createdBy, roomID);
-
     await this.db
-      .collection("publicChats")
+      .collection("rooms")
       .doc(roomID)
-      .update({
-        messages: this.fieldValue.arrayUnion({
-          content,
-          createdAt: new Date(),
-          createdBy
-        })
+      .collection("messages")
+      .add({
+        content,
+        createdAt: new Date(),
+        createdBy
       });
   }
 
   subscribeToRoomMessages(roomID, cb) {
     return this.db
-      .collection("publicChats")
+      .collection("rooms")
       .doc(roomID)
+      .collection("messages")
+      .orderBy("createdAt", "asc")
       .onSnapshot(cb);
   }
 }

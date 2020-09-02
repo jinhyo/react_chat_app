@@ -6,3 +6,7 @@
   height: 65vh;
   overflow-y: scroll;
 }
+
+.message__self {
+  margin-left: 10px;
+}
