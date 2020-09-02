@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Modal,
   Button,
@@ -10,7 +10,7 @@ import {
   TextArea,
   Message
 } from "semantic-ui-react";
-import { userSelector } from "../../../features/userSlice";
+import { userSelector, userActions } from "../../../features/userSlice";
 import firebaseApp from "../../../firebase";
 
 const INITIAL_STATE = {
@@ -20,6 +20,7 @@ const INITIAL_STATE = {
 
 function AddRoomModal({ modal, closeModal }) {
   const currentUser = useSelector(userSelector.currentUser);
+  const dispatch = useDispatch();
 
   const [createLoading, setCreateLoading] = useState(false);
   const [initialState, setInitialState] = useState(INITIAL_STATE);
@@ -51,12 +52,14 @@ function AddRoomModal({ modal, closeModal }) {
     }
     try {
       setCreateLoading(true);
-      await firebaseApp.createRoom(
+      const newRoomID = await firebaseApp.createRoom(
         currentUser.id,
         currentUser.nickname,
         roomName,
         roomDescription
       );
+      dispatch(userActions.addRoomsICreated({ id: newRoomID, name: roomName }));
+      dispatch(userActions.addRoomsIJoined({ id: newRoomID, name: roomName }));
     } catch (error) {
       console.error(error);
     } finally {

@@ -15,25 +15,69 @@ import ProfileEdit from "./pages/profileEdit/ProfileEdit";
 import "semantic-ui-css/semantic.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Loader } from "semantic-ui-react";
+import firebaseApp from "./firebase";
+import { publicChatActions } from "./features/publicChatSlice";
 
 function App() {
   const dispatch = useDispatch();
   const isLogin = useSelector(userSelector.isLogin);
-  // const [userLoading, setUserLoading] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = firebase.checkAuth(user => {
+    const unsubscribe = firebaseApp.checkAuth(user => {
       if (user) {
-        console.log("user", user);
-
-        firebase.getUser(user.uid).then(currentUser => {
+        firebaseApp.getUser(user.uid).then(currentUser => {
           dispatch(
             userActions.setCurrentUser({ id: user.uid, ...currentUser })
           );
         });
       }
+    });
 
-      return unsubscribe;
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = firebaseApp.subscribeToAllRooms(async snap => {
+      const totalRooms = snap.docChanges().map(async change => {
+        if (change.type === "added") {
+          console.log("room added");
+
+          const createdBySnap = await change.doc.data().createdBy.get();
+
+          const createdBy = {
+            id: createdBySnap.id,
+            ...createdBySnap.data()
+          };
+
+          delete createdBy.roomsICreated;
+          delete createdBy.roomsIJoined;
+          console.log("createdBy", createdBy);
+
+          const participants = await firebaseApp.getParticipants(change.doc.id);
+          console.log("participants", participants);
+
+          const createdAt = JSON.stringify(
+            change.doc.data().createdAt.toDate()
+          );
+
+          return {
+            id: change.doc.id,
+            ...change.doc.data(),
+            createdAt,
+            createdBy,
+            participants
+          };
+        } else if (change.type === "removed") {
+          console.log("room removed", change.doc.data());
+          dispatch(publicChatActions.deleteRoomFromTotalRooms(change.doc.id));
+        } else if (change.type === "modified") {
+          console.log("room modified");
+        }
+      });
+      const newTotalRooms = await Promise.all(totalRooms);
+      console.log("newTotalRooms", newTotalRooms);
+
+      dispatch(publicChatActions.setTotalRooms(newTotalRooms));
     });
 
     return unsubscribe;

@@ -1,12 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import {
-  Menu,
-  Header,
-  Icon,
-  Button,
-  Label,
-  LabelDetail
-} from "semantic-ui-react";
+import { Menu, Header, Icon, Button, Label } from "semantic-ui-react";
 import AddRoomModal from "./AddRoomModal";
 import {
   publicChatActions,
@@ -17,34 +10,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 function TotalRooms() {
   const dispatch = useDispatch();
-  const currentRoomID = useSelector(publicChatSelector.currentRoomID);
   const totalRooms = useSelector(publicChatSelector.totalRooms);
 
-  useEffect(() => {
-    const unsubscribe = firebaseApp.subscribeToAllRooms(snap => {
-      let totalRooms = [];
-      snap.docChanges().forEach(change => {
-        if (change.type === "added") {
-          console.log("room added");
-          const createdAt = JSON.stringify(change.doc.data().createdAt);
-          totalRooms.push({
-            id: change.doc.id,
-            ...change.doc.data(),
-            createdAt
-          });
-        } else if (change.type === "removed") {
-          console.log("room removed");
-        } else if (change.type === "modified") {
-          console.log("room modified");
-        }
-      });
-      dispatch(publicChatActions.setTotalRooms(totalRooms));
-    });
-
-    return unsubscribe;
-  }, []);
-
   const [modal, setModal] = useState(false);
+  const [currentRoomID, setCurrentRoomID] = useState("");
+
   const closeModal = useCallback(() => {
     setModal(false);
   }, []);
@@ -53,9 +23,14 @@ function TotalRooms() {
     setModal(true);
   }, []);
 
-  const handleChangeChannel = useCallback((e, { name }) => {
-    dispatch(publicChatActions.setCurrentRoomID(name));
-  }, []);
+  const handleChangeChannel = useCallback(
+    (e, { name }) => {
+      setCurrentRoomID(name);
+      const currentRoom = totalRooms.find(room => room.id === name);
+      dispatch(publicChatActions.setCurrentRoom(currentRoom));
+    },
+    [totalRooms]
+  );
 
   const displayTotalRooms = useCallback(() => {
     if (totalRooms.length > 0) {
@@ -68,7 +43,7 @@ function TotalRooms() {
         >
           <span>{room.name}</span>
           <Label color="brown" style={{ opacity: 0.8 }} size="mini">
-            <Icon name="user outline" /> {Object.keys(room.participants).length}
+            <Icon name="user outline" /> {room.participants.length}
           </Label>
         </Menu.Item>
       ));

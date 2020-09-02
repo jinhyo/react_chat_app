@@ -7,7 +7,9 @@ const InitialUser = {
   email: "",
   privateEmail: false,
   avatarURL: "",
-  location: ""
+  location: "",
+  roomsIJoined: [],
+  roomsICreated: []
 };
 
 const userSlice = createSlice({
@@ -27,6 +29,12 @@ const userSlice = createSlice({
     },
     setUserAvatar: (state, { payload: { avatarURL } }) => {
       state.currentUser.avatarURL = avatarURL;
+    },
+    addRoomsICreated: (state, { payload: newCreatedRoom }) => {
+      state.currentUser.roomsICreated.push(newCreatedRoom);
+    },
+    addRoomsIJoined: (state, { payload: newRoom }) => {
+      state.currentUser.roomsIJoined.push(newRoom);
     }
   }
 });

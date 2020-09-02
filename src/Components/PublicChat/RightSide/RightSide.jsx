@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Segment, Accordion, Header, Icon, Image } from "semantic-ui-react";
-import OwnerCard from "../OwnerCard";
-import Participants from "../Participants";
+import Participants from "../../Share/Participants";
+import OwnerCard from "../../Share/OwnerCard";
 
 function RightSide(props) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -47,9 +47,7 @@ function RightSide(props) {
           만든사람
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
-          <Header as="h4">
-            <OwnerCard />
-          </Header>
+          <Header as="h4">{/* <OwnerCard /> */}</Header>
         </Accordion.Content>
 
         {/* 참가자 */}
@@ -64,7 +62,7 @@ function RightSide(props) {
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 2}>
           <p>3명</p>
-          <Participants />
+          {/* <Participants /> */}
         </Accordion.Content>
 
         {/* 글 개수 */}
@@ -80,7 +78,7 @@ function RightSide(props) {
         <Accordion.Content active={activeIndex === 3}>
           <p>전체 글: 120개</p>
           <h4>Top 3</h4>
-          <Participants />
+          {/* <Participants /> */}
         </Accordion.Content>
       </Accordion>
     </Segment>

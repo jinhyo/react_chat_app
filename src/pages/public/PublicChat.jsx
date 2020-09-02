@@ -5,9 +5,16 @@ import LeftSidePanel from "../../Components/PublicChat/LeftSidePanel/LeftSidePan
 import RightSide from "../../Components/PublicChat/RightSide/RightSide";
 import "./PublicChat.css";
 import RoomInfo from "../../Components/PublicChat/RoomInfo.jsx/RoomInfo";
-import firebaseApp from "../../firebase";
+import { useSelector } from "react-redux";
+import {
+  publicChatActions,
+  publicChatSelector
+} from "../../features/publicChatSlice";
 
 function PublicChat(props) {
+  const currentRoom = useSelector(publicChatSelector.currentRoom);
+  console.log("currentRoom", currentRoom);
+
   return (
     <Layout>
       <Grid stackable columns="equal">
@@ -16,7 +23,7 @@ function PublicChat(props) {
         </Grid.Column>
         <Grid.Column tablet={7} computer={8}>
           {/* <Messages /> */}
-          <RoomInfo />
+          {currentRoom && <RoomInfo currentRoom={currentRoom} />}
         </Grid.Column>
         <Grid.Column tablet={4} computer={4}>
           <RightSide />

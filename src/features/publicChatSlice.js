@@ -6,7 +6,7 @@ const INITIAL_CURRENT_ROOM = {
   details: "",
   createdAt: "",
   createdBy: { id: "", nickname: "" },
-  participants: { userId: "" }
+  participants: { userId: { nickname: "", avatarURL: "" } }
 };
 
 const publicChatSlice = createSlice({
@@ -18,12 +18,16 @@ const publicChatSlice = createSlice({
     currentRoomID: ""
   },
   reducers: {
-    setCurrentRoom: (state, { payload: currentRoomID }) => {},
+    setCurrentRoom: (state, { payload: currentRoom }) => {
+      state.currentRoom = currentRoom;
+    },
     setTotalRooms: (state, { payload: totalRooms }) => {
       state.totalRooms.unshift(...totalRooms);
     },
-    setCurrentRoomID: (state, { payload: id }) => {
-      state.currentRoomID = id;
+    deleteRoomFromTotalRooms: (state, { payload: targetRoomID }) => {
+      state.totalRooms = state.totalRooms.filter(
+        room => room.id !== targetRoomID
+      );
     }
   }
 });

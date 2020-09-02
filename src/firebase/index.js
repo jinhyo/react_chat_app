@@ -11,6 +11,7 @@ class Firebase {
     this.auth = firebase.auth();
     this.db = firebase.firestore();
     this.storage = firebase.storage();
+    this.fieldValue = firebase.firestore.FieldValue;
   }
 
   async createNewUser(
@@ -42,7 +43,9 @@ class Firebase {
         privateEmail,
         location,
         selfIntro,
-        avatarURL: photoURL
+        avatarURL: photoURL,
+        roomsICreated: [],
+        roomsIJoined: []
       });
   }
 
@@ -134,30 +137,47 @@ class Firebase {
     });
   }
 
-  async temp() {
-    this.db
-      .collection("rooms")
-      .doc("7gxTLqGGIK0PPvpvzXRZ")
-      .get()
-      .then(snap => {
-        const data = snap.data();
-        data.user.get().then(snap1 => {
-          console.log("snap1", snap1.data());
-          console.log("snap1", snap1);
-        });
-      });
-  }
-
-  async createRoom(userId, nickname, roomName, details) {
-    await this.db.collection("rooms").add({
+  async createRoom(userID, nickname, roomName, details) {
+    const newRoomRef = this.db.collection("rooms").doc();
+    const userRef = this.db.collection("users").doc(userID);
+    await newRoomRef.set({
       name: roomName,
       details,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      createdBy: { id: userId, nickname },
-      participants: {
-        userId: { nickname, avatarURL: this.auth.currentUser.photoURL }
-      }
+      createdAt: new Date(),
+      messageCounts: 0,
+      createdBy: userRef
     });
+
+    await newRoomRef.collection("participants").add({
+      id: userID,
+      nickname,
+      avatarURL: this.auth.currentUser.photoURL
+    });
+
+    await this.db
+      .collection("users")
+      .doc(userID)
+      .update({
+        roomsICreated: this.fieldValue.arrayUnion({
+          roomName,
+          id: newRoomRef.id
+        }),
+        roomsIJoined: this.fieldValue.arrayUnion({
+          roomName,
+          id: newRoomRef.id
+        })
+      });
+
+    return newRoomRef.id;
+  }
+
+  async getParticipants(roomID) {
+    const snap = await this.db
+      .collection("rooms")
+      .doc(roomID)
+      .collection("participants")
+      .get();
+    return snap.docs.map(doc => doc.data());
   }
 
   subscribeToAllRooms(cb) {
@@ -165,6 +185,37 @@ class Firebase {
       .collection("rooms")
       .orderBy("createdAt", "desc")
       .onSnapshot(cb);
+  }
+
+  async leaveRoom(userID, roomCreatorID, roomId, roomName) {
+    const targetRoom = { id: roomId, roomName };
+    console.log("targetRoom", targetRoom);
+
+    if (userID === roomCreatorID) {
+      await this.db
+        .collection("users")
+        .doc(userID)
+        .update({
+          roomsICreated: this.fieldValue.arrayRemove(targetRoom),
+          roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
+        });
+    } else {
+      await this.db
+        .collection("users")
+        .doc(userID)
+        .update({
+          roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
+        });
+    }
+
+    // await this.db
+    //   .collection("rooms")
+    //   .doc(roomId)
+    //   .update({
+    //     participants: {
+    //       [userID]: this.fieldValue.delete()
+    //     }
+    //   });
   }
 }
 
