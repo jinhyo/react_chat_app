@@ -24,6 +24,7 @@ function App() {
   const currentUser = useSelector(userSelector.currentUser);
 
   useEffect(() => {
+    // 로그인 유저 확인
     const unsubscribe = firebaseApp.checkAuth(user => {
       if (user) {
         firebaseApp.getUser(user.uid).then(currentUser => {
@@ -38,11 +39,10 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // 공개 채팅방 정보 다운
     const unsubscribe = firebaseApp.subscribeToAllRooms(async snap => {
       const totalRooms = snap.docChanges().map(async change => {
         if (change.type === "added") {
-          console.log("room added");
-
           const createdBySnap = await change.doc.data().createdBy.get();
 
           const createdBy = {
@@ -53,18 +53,23 @@ function App() {
           delete createdBy.roomsICreated;
           delete createdBy.roomsIJoined;
 
-          const participants = await firebaseApp.getParticipants(change.doc.id);
+          const roomID = change.doc.id;
+          const participants = await firebaseApp.getParticipants(roomID);
 
+          const messageCounts = await firebaseApp.getMessageCountFromPublicRoom(
+            roomID
+          );
           const createdAt = JSON.stringify(
             change.doc.data().createdAt.toDate()
           );
 
           return {
-            id: change.doc.id,
+            id: roomID,
             ...change.doc.data(),
             createdAt,
             createdBy,
-            participants
+            participants,
+            messageCounts
           };
         } else if (change.type === "removed") {
           console.log("room removed", change.doc.data());

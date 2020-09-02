@@ -1,10 +1,12 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { USER, userReducers } from "./features/userSlice";
 import { PUBLIC, publicChatReducers } from "./features/publicChatSlice";
+import { MESSAGES, messagesReducers } from "./features/messageSlice";
 
 const rootReducer = combineReducers({
   [PUBLIC]: publicChatReducers,
-  [USER]: userReducers
+  [USER]: userReducers,
+  [MESSAGES]: messagesReducers
 });
 
 const store = configureStore({ reducer: rootReducer });

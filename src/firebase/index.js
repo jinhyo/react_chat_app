@@ -251,6 +251,16 @@ class Firebase {
       .orderBy("createdAt", "asc")
       .onSnapshot(cb);
   }
+
+  async getMessageCountFromPublicRoom(roomID) {
+    const snap = await this.db
+      .collection("rooms")
+      .doc(roomID)
+      .collection("messages")
+      .get();
+
+    return snap.size;
+  }
 }
 
 const firebaseApp = new Firebase();

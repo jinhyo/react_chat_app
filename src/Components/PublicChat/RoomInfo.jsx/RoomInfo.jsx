@@ -124,7 +124,7 @@ function RoomInfo() {
             </span>
             <span style={{ marginLeft: 40 }}>
               <Icon name="pencil alternate" />
-              1111111111111
+              {currentRoom.messageCounts}
             </span>
           </Header.Subheader>
         </Header>

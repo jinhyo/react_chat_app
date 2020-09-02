@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Comment,
   Header,
@@ -13,21 +13,25 @@ import MessageForm from "./MessageForm";
 import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import MessageComment from "./MessageComment";
+import {
+  messagesActions,
+  messagesSelector
+} from "../../../features/messageSlice";
 
 function Messages() {
   const toBottomRef = useRef();
+  const dispatch = useDispatch();
   const currentRoom = useSelector(publicChatSelector.currentRoom);
+  const messages = useSelector(messagesSelector.publicMessages);
   console.log("currentRoom", currentRoom);
-
-  const [searchMode, setSearchMode] = useState(false);
-  const [messages, setMessages] = useState([]);
-
   console.log("messages", messages);
 
+  const [searchMode, setSearchMode] = useState(false);
+
   useEffect(() => {
-    setMessages([]);
+    dispatch(messagesActions.clearMessages());
+
     const participants = currentRoom.participants;
-    console.log("participants", participants);
     const avatarURLs = participants.reduce((ac, participant) => {
       ac[participant.id] = participant.avatarURL;
       return ac;
@@ -39,11 +43,18 @@ function Messages() {
         const messages = snap.docChanges().map(async change => {
           if (change.type === "added") {
             const senderID = change.doc.data().createdBy.id;
-            return { ...change.doc.data(), avatarURL: avatarURLs[senderID] };
+            const createdAt = JSON.stringify(
+              change.doc.data().createdAt.toDate()
+            );
+            return {
+              ...change.doc.data(),
+              createdAt,
+              avatarURL: avatarURLs[senderID]
+            };
           }
         });
         const totalMessages = await Promise.all(messages);
-        setMessages(prev => [...prev, ...totalMessages]);
+        dispatch(messagesActions.setMessages(totalMessages));
         scrollToBottom();
       }
     );
@@ -64,6 +75,7 @@ function Messages() {
   return (
     <Segment style={{ height: "90vh" }}>
       <Comment.Group>
+        {/* 헤더 */}
         <Header as="h2" dividing textAlign="center">
           <span>방 이름</span>
           <span style={{ marginLeft: 100, cursor: "pointer" }}>
@@ -82,12 +94,14 @@ function Messages() {
           </>
         ) : null}
 
+        {/* 메시지 출력 */}
         <Segment className={searchMode ? "messages__search" : "messages"}>
           <MessageComment messages={messages} />
           <div ref={toBottomRef}></div>
         </Segment>
       </Comment.Group>
 
+      {/* 메시지 입력 */}
       <MessageForm scrollToBottom={scrollToBottom} />
     </Segment>
   );

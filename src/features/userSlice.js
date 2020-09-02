@@ -8,8 +8,12 @@ const InitialUser = {
   privateEmail: false,
   avatarURL: "",
   location: "",
-  roomsIJoined: [{ id: "", name: "" }],
-  roomsICreated: [{ id: "", name: "" }]
+  roomsIJoined: [
+    /* { id: "", name: "" } */
+  ],
+  roomsICreated: [
+    /* { id: "", name: "" } */
+  ]
 };
 
 const userSlice = createSlice({

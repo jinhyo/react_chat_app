@@ -14,6 +14,11 @@ function MessageComment({ messages }) {
     [currentUser]
   );
 
+  const displayTime = useCallback(message => {
+    const data = JSON.parse(message.createdAt);
+    return moment(data).fromNow();
+  }, []);
+
   return (
     <>
       {messages.map((message, index) => (
@@ -25,7 +30,7 @@ function MessageComment({ messages }) {
                 {message.createdBy.nickname}
               </Comment.Author>
               <Comment.Metadata>
-                <div>{moment(message.createdAt.toDate()).fromNow()}</div>
+                <div>{displayTime(message)}</div>
               </Comment.Metadata>
               <Comment.Text>{message.content}</Comment.Text>
             </Comment.Content>

@@ -1,9 +1,15 @@
 import React, { useState, useCallback } from "react";
+import { useSelector } from "react-redux";
 import { Segment, Accordion, Header, Icon, Image } from "semantic-ui-react";
-import Participants from "../../Share/Participants";
+import { publicChatSelector } from "../../../features/publicChatSlice";
 import OwnerCard from "../../Share/OwnerCard";
+import Participants from "../../Share/Participants";
+import { messagesSelector } from "../../../features/messageSlice";
 
-function RightSide(props) {
+function RightSide() {
+  const currentRoom = useSelector(publicChatSelector.currentRoom);
+  const messages = useSelector(messagesSelector.publicMessages);
+
   const [activeIndex, setActiveIndex] = useState(0);
 
   const controlActiveIndex = useCallback(
@@ -21,7 +27,7 @@ function RightSide(props) {
         attached="top"
         style={{ marginTop: 3, borderRadius: 10, backgroundColor: "#fffff0" }}
       >
-        채널명
+        {currentRoom.name}
       </Header>
       {/* 세부사항 */}
       <Accordion styled attached="true" style={{ backgroundColor: "#fffff0" }}>
@@ -34,7 +40,9 @@ function RightSide(props) {
           <Icon name="info" />
           세부사항
         </Accordion.Title>
-        <Accordion.Content active={activeIndex === 0}>설명</Accordion.Content>
+        <Accordion.Content active={activeIndex === 0}>
+          {currentRoom.details}
+        </Accordion.Content>
 
         {/* 만든사람 */}
         <Accordion.Title
@@ -44,10 +52,12 @@ function RightSide(props) {
         >
           <Icon name="dropdown" />
           <Icon name="user circle" />
-          만든사람
+          {currentRoom.createdBy.nickname}
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
-          <Header as="h4">{/* <OwnerCard /> */}</Header>
+          <Header as="h4">
+            <OwnerCard currentRoom={currentRoom} rightSide={true} />
+          </Header>
         </Accordion.Content>
 
         {/* 참가자 */}
@@ -61,8 +71,8 @@ function RightSide(props) {
           참가인원
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 2}>
-          <p>3명</p>
-          {/* <Participants /> */}
+          <p>{currentRoom.participants.length}명</p>
+          <Participants participants={currentRoom.participants} />
         </Accordion.Content>
 
         {/* 글 개수 */}
@@ -76,7 +86,7 @@ function RightSide(props) {
           채팅 현황
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 3}>
-          <p>전체 글: 120개</p>
+          <p>전체 글: {messages.length}</p>
           <h4>Top 3</h4>
           {/* <Participants /> */}
         </Accordion.Content>

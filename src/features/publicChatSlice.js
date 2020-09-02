@@ -14,7 +14,6 @@ const publicChatSlice = createSlice({
   name: "publicChatSlice",
   initialState: {
     currentRoom: null,
-    messages: [],
     totalRooms: [],
     type: ""
   },
