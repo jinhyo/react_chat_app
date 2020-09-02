@@ -56,7 +56,8 @@ function AddRoomModal({ modal, closeModal }) {
         currentUser.id,
         currentUser.nickname,
         roomName,
-        roomDescription
+        roomDescription,
+        currentUser.avatarURL
       );
       dispatch(userActions.addRoomsICreated({ id: newRoomID, name: roomName }));
       dispatch(userActions.addRoomsIJoined({ id: newRoomID, name: roomName }));

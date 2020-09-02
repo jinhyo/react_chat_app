@@ -8,8 +8,8 @@ const InitialUser = {
   privateEmail: false,
   avatarURL: "",
   location: "",
-  roomsIJoined: [],
-  roomsICreated: []
+  roomsIJoined: [{ id: "", roomName: "" }],
+  roomsICreated: [{ id: "", roomName: "" }]
 };
 
 const userSlice = createSlice({
@@ -35,6 +35,11 @@ const userSlice = createSlice({
     },
     addRoomsIJoined: (state, { payload: newRoom }) => {
       state.currentUser.roomsIJoined.push(newRoom);
+    },
+    deleteRoomsIJoined: (state, { payload: targetRoomID }) => {
+      state.currentUser.roomsIJoined = state.currentUser.roomsIJoined.filter(
+        room => room.id !== targetRoomID
+      );
     }
   }
 });

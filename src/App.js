@@ -21,6 +21,7 @@ import { publicChatActions } from "./features/publicChatSlice";
 function App() {
   const dispatch = useDispatch();
   const isLogin = useSelector(userSelector.isLogin);
+  const currentUser = useSelector(userSelector.currentUser);
 
   useEffect(() => {
     const unsubscribe = firebaseApp.checkAuth(user => {
@@ -39,6 +40,8 @@ function App() {
   useEffect(() => {
     const unsubscribe = firebaseApp.subscribeToAllRooms(async snap => {
       const totalRooms = snap.docChanges().map(async change => {
+        console.log("change.type", change.type);
+
         if (change.type === "added") {
           console.log("room added");
 
@@ -83,7 +86,9 @@ function App() {
     return unsubscribe;
   }, []);
 
-  if (!isLogin) return <Loader active inverted size="huge" />;
+  // if (!isLogin && currentUser.id) {
+  //   return <Loader active inverted size="huge" />;
+  // }
 
   return (
     <Switch>

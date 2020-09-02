@@ -137,7 +137,7 @@ class Firebase {
     });
   }
 
-  async createRoom(userID, nickname, roomName, details) {
+  async createRoom(userID, nickname, roomName, details, avatarURL) {
     const newRoomRef = this.db.collection("rooms").doc();
     const userRef = this.db.collection("users").doc(userID);
     await newRoomRef.set({
@@ -148,11 +148,14 @@ class Firebase {
       createdBy: userRef
     });
 
-    await newRoomRef.collection("participants").add({
-      id: userID,
-      nickname,
-      avatarURL: this.auth.currentUser.photoURL
-    });
+    await newRoomRef
+      .collection("participants")
+      .doc(userID)
+      .set({
+        id: userID,
+        nickname,
+        avatarURL
+      });
 
     await this.db
       .collection("users")
@@ -187,35 +190,46 @@ class Firebase {
       .onSnapshot(cb);
   }
 
-  async leaveRoom(userID, roomCreatorID, roomId, roomName) {
-    const targetRoom = { id: roomId, roomName };
+  async leaveRoom(userID, roomID, roomName) {
+    const targetRoom = { id: roomID, roomName };
     console.log("targetRoom", targetRoom);
 
-    if (userID === roomCreatorID) {
-      await this.db
-        .collection("users")
-        .doc(userID)
-        .update({
-          roomsICreated: this.fieldValue.arrayRemove(targetRoom),
-          roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
-        });
-    } else {
-      await this.db
-        .collection("users")
-        .doc(userID)
-        .update({
-          roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
-        });
-    }
+    await this.db
+      .collection("users")
+      .doc(userID)
+      .update({
+        roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
+      });
 
-    // await this.db
-    //   .collection("rooms")
-    //   .doc(roomId)
-    //   .update({
-    //     participants: {
-    //       [userID]: this.fieldValue.delete()
-    //     }
-    //   });
+    await this.db
+      .collection("rooms")
+      .doc(roomID)
+      .collection("participants")
+      .doc(userID)
+      .delete();
+  }
+
+  async joinRoom(userID, userNickname, avatarURL, roomName, roomID) {
+    await this.db
+      .collection("users")
+      .doc(userID)
+      .update({
+        roomsIJoined: this.fieldValue.arrayUnion({
+          id: roomID,
+          roomName: roomName
+        })
+      });
+
+    await this.db
+      .collection("rooms")
+      .doc(roomID)
+      .collection("participants")
+      .doc(userID)
+      .set({
+        id: userID,
+        avatarURL,
+        nickname: userNickname
+      });
   }
 }
 

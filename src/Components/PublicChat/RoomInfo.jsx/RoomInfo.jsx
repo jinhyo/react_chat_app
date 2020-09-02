@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Segment,
   Header,
@@ -11,10 +11,17 @@ import {
 import Participants from "../../Share/Participants";
 import OwnerCard from "../../Share/OwnerCard";
 import moment from "moment";
-import { userSelector } from "../../../features/userSlice";
+import { userSelector, userActions } from "../../../features/userSlice";
 import firebaseApp from "../../../firebase";
+import {
+  publicChatSelector,
+  publicChatActions
+} from "../../../features/publicChatSlice";
 
-function RoomInfo({ currentRoom }) {
+function RoomInfo() {
+  const dispatch = useDispatch();
+
+  const currentRoom = useSelector(publicChatSelector.currentRoom);
   const currentUser = useSelector(userSelector.currentUser);
 
   const displayDate = useCallback(() => {
@@ -23,24 +30,45 @@ function RoomInfo({ currentRoom }) {
   }, [currentRoom]);
 
   const amIJoined = useCallback(() => {
-    return Object.keys(currentRoom.participants).find(
-      id => id === currentUser.id
+    return currentRoom.participants.find(
+      participant => participant.id === currentUser.id
     );
   }, [currentRoom, currentUser]);
 
   const handleLeaveRoom = useCallback(async () => {
+    const { id } = currentUser;
+    const { id: roomID } = currentRoom;
     try {
       await firebaseApp.leaveRoom(
         currentUser.id,
-        currentRoom.createdBy.id,
         currentRoom.id,
         currentRoom.name
       );
-      console.log("done~~");
+      dispatch(userActions.deleteRoomsIJoined(currentRoom.id));
+      dispatch(
+        publicChatActions.deleteParticipant({ roomID, participantID: id })
+      );
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  }, [currentRoom, currentUser]);
+
+  const handleJoinRoom = useCallback(() => {
+    const { id, nickname, avatarURL } = currentUser;
+    const { id: roomID, name: roomName } = currentRoom;
+    try {
+      firebaseApp.joinRoom(id, nickname, avatarURL, roomName, roomID);
+      dispatch(userActions.addRoomsIJoined({ id: roomID, roomName: roomName }));
+      dispatch(
+        publicChatActions.addParticipant({
+          roomID,
+          participant: { id, nickname, avatarURL }
+        })
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }, [currentUser, currentRoom]);
 
   return (
     <Segment style={{ backgroundColor: "#fffff0", height: "90vh" }}>
@@ -49,7 +77,7 @@ function RoomInfo({ currentRoom }) {
         <Header.Content style={{ marginBottom: 10 }}>
           {currentRoom.name}
         </Header.Content>
-        {amIJoined ? (
+        {amIJoined() ? (
           <Label
             size="large"
             color="red"
@@ -67,6 +95,7 @@ function RoomInfo({ currentRoom }) {
             attached="top right"
             style={{ marginTop: 3, borderRadius: 10 }}
             content="참가"
+            onClick={handleJoinRoom}
           ></Label>
         )}
 

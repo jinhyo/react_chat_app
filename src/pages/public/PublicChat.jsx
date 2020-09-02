@@ -23,7 +23,7 @@ function PublicChat(props) {
         </Grid.Column>
         <Grid.Column tablet={7} computer={8}>
           {/* <Messages /> */}
-          {currentRoom && <RoomInfo currentRoom={currentRoom} />}
+          {currentRoom && <RoomInfo />}
         </Grid.Column>
         <Grid.Column tablet={4} computer={4}>
           <RightSide />

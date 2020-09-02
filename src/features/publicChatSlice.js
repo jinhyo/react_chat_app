@@ -28,6 +28,20 @@ const publicChatSlice = createSlice({
       state.totalRooms = state.totalRooms.filter(
         room => room.id !== targetRoomID
       );
+    },
+    addParticipant: (state, { payload: { roomID, participant } }) => {
+      const currentRoom = state.totalRooms.find(room => room.id === roomID);
+      currentRoom.participants.push(participant);
+      state.currentRoom.participants.push(participant);
+    },
+    deleteParticipant: (state, { payload: { roomID, participantID } }) => {
+      const currentRoom = state.totalRooms.find(room => room.id === roomID);
+      currentRoom.participants = currentRoom.participants.filter(
+        participant => participant.id !== participantID
+      );
+      state.currentRoom.participants = state.currentRoom.participants.filter(
+        participant => participant.id !== participantID
+      );
     }
   }
 });
