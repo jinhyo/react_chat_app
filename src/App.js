@@ -40,8 +40,6 @@ function App() {
   useEffect(() => {
     const unsubscribe = firebaseApp.subscribeToAllRooms(async snap => {
       const totalRooms = snap.docChanges().map(async change => {
-        console.log("change.type", change.type);
-
         if (change.type === "added") {
           console.log("room added");
 
@@ -54,10 +52,8 @@ function App() {
 
           delete createdBy.roomsICreated;
           delete createdBy.roomsIJoined;
-          console.log("createdBy", createdBy);
 
           const participants = await firebaseApp.getParticipants(change.doc.id);
-          console.log("participants", participants);
 
           const createdAt = JSON.stringify(
             change.doc.data().createdAt.toDate()

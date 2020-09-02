@@ -144,7 +144,6 @@ class Firebase {
       name: roomName,
       details,
       createdAt: new Date(),
-      messageCounts: 0,
       createdBy: userRef
     });
 
@@ -171,6 +170,11 @@ class Firebase {
         })
       });
 
+    this.db
+      .collection("publicChats")
+      .doc(newRoomRef.id)
+      .set({ messages: [] });
+
     return newRoomRef.id;
   }
 
@@ -184,7 +188,7 @@ class Firebase {
   }
 
   subscribeToAllRooms(cb) {
-    this.db
+    return this.db
       .collection("rooms")
       .orderBy("createdAt", "desc")
       .onSnapshot(cb);
@@ -230,6 +234,28 @@ class Firebase {
         avatarURL,
         nickname: userNickname
       });
+  }
+
+  async sendMessage(content, createdBy, roomID) {
+    console.log("content, createdBy, roomID", content, createdBy, roomID);
+
+    await this.db
+      .collection("publicChats")
+      .doc(roomID)
+      .update({
+        messages: this.fieldValue.arrayUnion({
+          content,
+          createdAt: new Date(),
+          createdBy
+        })
+      });
+  }
+
+  subscribeToRoomMessages(roomID, cb) {
+    return this.db
+      .collection("publicChats")
+      .doc(roomID)
+      .onSnapshot(cb);
   }
 }
 

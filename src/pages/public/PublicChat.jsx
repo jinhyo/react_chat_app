@@ -36,7 +36,7 @@ function PublicChat(props) {
           {displayMain()}
         </Grid.Column>
         <Grid.Column tablet={4} computer={4}>
-          <RightSide />
+          {currentType === "chat" && <RightSide />}
         </Grid.Column>
       </Grid>
     </Layout>

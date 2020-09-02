@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
   Comment,
   Header,
@@ -10,9 +11,30 @@ import {
   Divider
 } from "semantic-ui-react";
 import "./Messages.css";
+import MessageForm from "./MessageForm";
+import firebaseApp from "../../../firebase";
+import { publicChatSelector } from "../../../features/publicChatSlice";
 
 function Messages(props) {
+  const currentRoom = useSelector(publicChatSelector.currentRoom);
+  console.log("~~currentRoom", currentRoom);
+
   const [searchMode, setSearchMode] = useState(false);
+
+  useEffect(() => {
+    let unsubscribe = () => {};
+
+    if (currentRoom) {
+      unsubscribe = firebaseApp.subscribeToRoomMessages(
+        currentRoom.id,
+        async snap => {
+          console.log("~~snap.data()", snap.data());
+        }
+      );
+    }
+
+    return unsubscribe;
+  }, [currentRoom]);
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
@@ -103,33 +125,7 @@ function Messages(props) {
         </Segment>
       </Comment.Group>
 
-      <Form>
-        <Input
-          fluid
-          name="message"
-          label={
-            <>
-              <Button
-                icon="add"
-                color="orange"
-                // content={emoji ? "Close" : null}
-                // onClick={handleEmojiToggle}
-              />
-              <Button
-                icon="cloud upload"
-                color="olive"
-                // content={emoji ? "Close" : null}
-                // onClick={handleEmojiToggle}
-              />
-            </>
-          }
-          labelPosition="left"
-          // value={message}
-          // onChange={e => setMessage(e.target.value)}
-          // onKeyUp={handleTyping}
-          // className={errorMessage.indexOf("message") ? "error" : ""}
-        />
-      </Form>
+      <MessageForm />
     </Segment>
   );
 }

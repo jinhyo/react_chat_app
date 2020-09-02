@@ -41,8 +41,6 @@ function AddRoomModal({ modal, closeModal }) {
     }));
   }, []);
 
-  // async createRoom(userId, nickname, roomName, details) {
-
   const handleCreateRoom = useCallback(async () => {
     const { roomName, roomDescription } = initialState;
     if (roomName.length === 0) {
