@@ -8,8 +8,8 @@ const InitialUser = {
   privateEmail: false,
   avatarURL: "",
   location: "",
-  roomsIJoined: [{ id: "", roomName: "" }],
-  roomsICreated: [{ id: "", roomName: "" }]
+  roomsIJoined: [{ id: "", name: "" }],
+  roomsICreated: [{ id: "", name: "" }]
 };
 
 const userSlice = createSlice({
@@ -22,6 +22,7 @@ const userSlice = createSlice({
     setCurrentUser: (state, { payload: currentUser }) => {
       state.isLogin = true;
       state.currentUser = currentUser;
+      console.log("state.currentUser", state.currentUser);
     },
     clearUser: state => {
       state.isLogin = false;
@@ -56,11 +57,18 @@ const selectIsLogin = createSelector(
   isLogin => isLogin
 );
 
+const selectRoomsIJoined = createSelector(
+  state => state.currentUser.roomsIJoined,
+
+  roomsIJoined => roomsIJoined
+);
+
 export const USER = userSlice.name;
 export const userActions = userSlice.actions;
 export const userReducers = userSlice.reducer;
 
 export const userSelector = {
   currentUser: state => selectCurrentUser(state[USER]),
-  isLogin: state => selectIsLogin(state[USER])
+  isLogin: state => selectIsLogin(state[USER]),
+  roomsIJoined: state => selectRoomsIJoined(state[USER])
 };

@@ -58,7 +58,7 @@ function RoomInfo() {
     const { id: roomID, name: roomName } = currentRoom;
     try {
       firebaseApp.joinRoom(id, nickname, avatarURL, roomName, roomID);
-      dispatch(userActions.addRoomsIJoined({ id: roomID, roomName: roomName }));
+      dispatch(userActions.addRoomsIJoined({ id: roomID, name: roomName }));
       dispatch(
         publicChatActions.addParticipant({
           roomID,

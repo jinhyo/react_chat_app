@@ -1,4 +1,5 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
+import { original } from "immer";
 
 const INITIAL_CURRENT_ROOM = {
   id: "",
@@ -14,12 +15,13 @@ const publicChatSlice = createSlice({
   initialState: {
     currentRoom: null,
     messages: [],
-    totalRooms: [],
-    currentRoomID: ""
+    totalRooms: []
   },
   reducers: {
-    setCurrentRoom: (state, { payload: currentRoom }) => {
-      state.currentRoom = currentRoom;
+    setCurrentRoom: (state, { payload: currentRoomID }) => {
+      state.currentRoom = original(
+        state.totalRooms.find(room => room.id === currentRoomID)
+      );
     },
     setTotalRooms: (state, { payload: totalRooms }) => {
       state.totalRooms.unshift(...totalRooms);
@@ -52,12 +54,6 @@ const selectCurrentRoom = createSelector(
   currentRoom => currentRoom
 );
 
-const selectCurrentRoomID = createSelector(
-  state => state.currentRoomID,
-
-  currentRoomID => currentRoomID
-);
-
 const selectTotalRooms = createSelector(
   state => state.totalRooms,
 
@@ -70,6 +66,5 @@ export const publicChatReducers = publicChatSlice.reducer;
 
 export const publicChatSelector = {
   currentRoom: state => selectCurrentRoom(state[PUBLIC]),
-  currentRoomID: state => selectCurrentRoomID(state[PUBLIC]),
   totalRooms: state => selectTotalRooms(state[PUBLIC])
 };

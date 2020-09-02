@@ -162,11 +162,11 @@ class Firebase {
       .doc(userID)
       .update({
         roomsICreated: this.fieldValue.arrayUnion({
-          roomName,
+          name: roomName,
           id: newRoomRef.id
         }),
         roomsIJoined: this.fieldValue.arrayUnion({
-          roomName,
+          name: roomName,
           id: newRoomRef.id
         })
       });
@@ -191,7 +191,7 @@ class Firebase {
   }
 
   async leaveRoom(userID, roomID, roomName) {
-    const targetRoom = { id: roomID, roomName };
+    const targetRoom = { id: roomID, name: roomName };
     console.log("targetRoom", targetRoom);
 
     await this.db
@@ -216,7 +216,7 @@ class Firebase {
       .update({
         roomsIJoined: this.fieldValue.arrayUnion({
           id: roomID,
-          roomName: roomName
+          name: roomName
         })
       });
 
