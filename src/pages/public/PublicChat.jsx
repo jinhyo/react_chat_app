@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { Grid } from "semantic-ui-react";
 import Layout from "../../Components/Layout/Layout";
 import LeftSidePanel from "../../Components/PublicChat/LeftSidePanel/LeftSidePanel";
@@ -10,10 +10,21 @@ import {
   publicChatActions,
   publicChatSelector
 } from "../../features/publicChatSlice";
+import Messages from "../../Components/PublicChat/Messages/Messages";
 
 function PublicChat(props) {
   const currentRoom = useSelector(publicChatSelector.currentRoom);
+  const currentType = useSelector(publicChatSelector.type);
+
   console.log("currentRoom", currentRoom);
+
+  const displayMain = useCallback(() => {
+    if (currentRoom && currentType === "info") {
+      return <RoomInfo />;
+    } else if (currentRoom && currentType === "chat") {
+      return <Messages />;
+    }
+  }, [currentRoom, currentType]);
 
   return (
     <Layout>
@@ -22,8 +33,7 @@ function PublicChat(props) {
           <LeftSidePanel />
         </Grid.Column>
         <Grid.Column tablet={7} computer={8}>
-          {/* <Messages /> */}
-          {currentRoom && <RoomInfo />}
+          {displayMain()}
         </Grid.Column>
         <Grid.Column tablet={4} computer={4}>
           <RightSide />

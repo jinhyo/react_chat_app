@@ -7,6 +7,7 @@ import ShowRooms from "./ShowRooms";
 
 function TotalRooms() {
   const totalRooms = useSelector(publicChatSelector.totalRooms);
+  const currentType = useSelector(publicChatSelector.type);
 
   const [modal, setModal] = useState(false);
 
@@ -30,7 +31,7 @@ function TotalRooms() {
         </Button>
       </Header>
 
-      <ShowRooms rooms={totalRooms} />
+      <ShowRooms rooms={totalRooms} type="info" currentType={currentType} />
 
       {/*Modal */}
       <AddRoomModal modal={modal} closeModal={closeModal} />

@@ -1,17 +1,24 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { publicChatActions } from "../../../features/publicChatSlice";
 import { Icon, Label, Menu } from "semantic-ui-react";
 
-function ShowRooms({ rooms, type }) {
+function ShowRooms({ rooms, type, currentType }) {
   const dispatch = useDispatch();
 
   const [currentRoomID, setCurrentRoomID] = useState("");
+
+  useEffect(() => {
+    if (currentType !== type) {
+      setCurrentRoomID("");
+    }
+  }, [currentType, type]);
 
   const handleChangeChannel = useCallback(
     (e, { name }) => {
       setCurrentRoomID(name);
       const currentRoom = rooms.find(room => room.id === name);
+      dispatch(publicChatActions.setType(type));
       dispatch(publicChatActions.setCurrentRoom(currentRoom.id));
     },
     [rooms]
@@ -33,7 +40,7 @@ function ShowRooms({ rooms, type }) {
                 <Icon name="user outline" /> {room.participants.length}
               </Label>
             ) : (
-              <Label>1</Label>
+              <Label color="teal">1</Label>
             )}
           </Menu.Item>
         ))}

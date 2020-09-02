@@ -15,7 +15,8 @@ const publicChatSlice = createSlice({
   initialState: {
     currentRoom: null,
     messages: [],
-    totalRooms: []
+    totalRooms: [],
+    type: ""
   },
   reducers: {
     setCurrentRoom: (state, { payload: currentRoomID }) => {
@@ -44,6 +45,9 @@ const publicChatSlice = createSlice({
       state.currentRoom.participants = state.currentRoom.participants.filter(
         participant => participant.id !== participantID
       );
+    },
+    setType: (state, { payload: type }) => {
+      state.type = type;
     }
   }
 });
@@ -60,11 +64,18 @@ const selectTotalRooms = createSelector(
   totalRooms => totalRooms
 );
 
+const selectType = createSelector(
+  state => state.type,
+
+  type => type
+);
+
 export const PUBLIC = publicChatSlice.name;
 export const publicChatActions = publicChatSlice.actions;
 export const publicChatReducers = publicChatSlice.reducer;
 
 export const publicChatSelector = {
   currentRoom: state => selectCurrentRoom(state[PUBLIC]),
-  totalRooms: state => selectTotalRooms(state[PUBLIC])
+  totalRooms: state => selectTotalRooms(state[PUBLIC]),
+  type: state => selectType(state[PUBLIC])
 };
