@@ -8,7 +8,6 @@ import {
   Input,
   Divider
 } from "semantic-ui-react";
-import "./Messages.css";
 import MessageForm from "./MessageForm";
 import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
@@ -17,12 +16,16 @@ import {
   messagesActions,
   messagesSelector
 } from "../../../features/messageSlice";
+import { Picker } from "emoji-mart";
+
+import "./Messages.css";
 
 function Messages() {
   const toBottomRef = useRef();
   const dispatch = useDispatch();
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const messages = useSelector(messagesSelector.publicMessages);
+
   console.log("currentRoom", currentRoom);
   console.log("messages", messages);
 
@@ -99,6 +102,7 @@ function Messages() {
         {/* 메시지 출력 */}
         <Segment className={searchMode ? "messages__search" : "messages"}>
           <MessageComment messages={messages} />
+
           <div ref={toBottomRef}></div>
         </Segment>
       </Comment.Group>

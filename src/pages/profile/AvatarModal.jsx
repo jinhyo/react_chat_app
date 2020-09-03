@@ -5,7 +5,6 @@ import AvatarEdit from "react-avatar-editor";
 import firebaseApp from "../../firebase";
 import { userActions, userSelector } from "../../features/userSlice";
 import { publicChatActions } from "../../features/publicChatSlice";
-// import AvatarEditor from "react-avatar-editor";
 
 // in Profile
 function AvatarModal({ modal, closeModal }) {
@@ -74,7 +73,7 @@ function AvatarModal({ modal, closeModal }) {
         })
       );
       closeModal();
-      dispatch(publicChatActions.callReload());
+      // dispatch(publicChatActions.callReload());
     } catch (error) {
       console.error(error);
     } finally {

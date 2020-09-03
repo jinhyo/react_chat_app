@@ -11,15 +11,16 @@ import firebase from "./firebase";
 import { userActions, userSelector } from "./features/userSlice";
 import { useSelector } from "react-redux";
 import ProfileEdit from "./pages/profileEdit/ProfileEdit";
-
-import "semantic-ui-css/semantic.min.css";
-import "react-toastify/dist/ReactToastify.css";
 import { Loader } from "semantic-ui-react";
 import firebaseApp from "./firebase";
 import {
   publicChatActions,
   publicChatSelector
 } from "./features/publicChatSlice";
+
+import "emoji-mart/css/emoji-mart.css";
+import "semantic-ui-css/semantic.min.css";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const dispatch = useDispatch();

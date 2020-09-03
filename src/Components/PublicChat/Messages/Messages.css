@@ -10,3 +10,8 @@
 .message__self {
   margin-left: 10px;
 }
+
+.message__form {
+  position: fixed;
+  z-index: 100;
+}
