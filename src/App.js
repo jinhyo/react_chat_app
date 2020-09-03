@@ -16,12 +16,16 @@ import "semantic-ui-css/semantic.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Loader } from "semantic-ui-react";
 import firebaseApp from "./firebase";
-import { publicChatActions } from "./features/publicChatSlice";
+import {
+  publicChatActions,
+  publicChatSelector
+} from "./features/publicChatSlice";
 
 function App() {
   const dispatch = useDispatch();
   const isLogin = useSelector(userSelector.isLogin);
   const currentUser = useSelector(userSelector.currentUser);
+  const reload = useSelector(publicChatSelector.reload);
 
   useEffect(() => {
     // 로그인 유저 확인
@@ -85,7 +89,7 @@ function App() {
     });
 
     return unsubscribe;
-  }, []);
+  }, [reload]);
 
   // if (!isLogin && currentUser.id) {
   //   return <Loader active inverted size="huge" />;

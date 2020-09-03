@@ -15,7 +15,8 @@ const publicChatSlice = createSlice({
   initialState: {
     currentRoom: null,
     totalRooms: [],
-    type: ""
+    type: "",
+    reload: 0
   },
   reducers: {
     setCurrentRoom: (state, { payload: currentRoomID }) => {
@@ -50,6 +51,12 @@ const publicChatSlice = createSlice({
     },
     setType: (state, { payload: type }) => {
       state.type = type;
+    },
+    callReload: state => {
+      state.totalRooms = [];
+      state.currentRoom = null;
+      state.reload += 1;
+      // 아바타 변경 후 App의 firebaseApp.subscribeToAllRooms()재 발동의 트리거
     }
   }
 });
@@ -72,6 +79,12 @@ const selectType = createSelector(
   type => type
 );
 
+const selectReload = createSelector(
+  state => state.reload,
+
+  reload => reload
+);
+
 export const PUBLIC = publicChatSlice.name;
 export const publicChatActions = publicChatSlice.actions;
 export const publicChatReducers = publicChatSlice.reducer;
@@ -79,5 +92,6 @@ export const publicChatReducers = publicChatSlice.reducer;
 export const publicChatSelector = {
   currentRoom: state => selectCurrentRoom(state[PUBLIC]),
   totalRooms: state => selectTotalRooms(state[PUBLIC]),
-  type: state => selectType(state[PUBLIC])
+  type: state => selectType(state[PUBLIC]),
+  reload: state => selectReload(state[PUBLIC])
 };

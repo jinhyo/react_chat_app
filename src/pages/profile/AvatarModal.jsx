@@ -1,11 +1,13 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-// import AvatarEditor from "react-avatar-editor";
+import { useSelector, useDispatch } from "react-redux";
 import { Modal, Button, Image, Grid, Icon } from "semantic-ui-react";
 import AvatarEdit from "react-avatar-editor";
 import firebaseApp from "../../firebase";
-import { useSelector, useDispatch } from "react-redux";
 import { userActions, userSelector } from "../../features/userSlice";
+import { publicChatActions } from "../../features/publicChatSlice";
+// import AvatarEditor from "react-avatar-editor";
 
+// in Profile
 function AvatarModal({ modal, closeModal }) {
   const fileRef = useRef();
   const avatarRef = useRef();
@@ -72,6 +74,7 @@ function AvatarModal({ modal, closeModal }) {
         })
       );
       closeModal();
+      dispatch(publicChatActions.callReload());
     } catch (error) {
       console.error(error);
     } finally {

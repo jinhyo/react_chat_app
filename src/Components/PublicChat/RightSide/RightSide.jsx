@@ -19,7 +19,6 @@ function RightSide() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [userMessagesCounts, setUserMessagesCounts] = useState([]);
-  console.log("userMessagesCounts", userMessagesCounts);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -37,12 +36,9 @@ function RightSide() {
   );
 
   const displayTopPostsersLists = useCallback(userMessagesCounts => {
-    console.log("!!~~,userMessagesCounts", userMessagesCounts);
-
     const topPosters = Object.entries(userMessagesCounts).sort(
       (a, b) => b[1].count - a[1].count
     );
-    console.log("!!~~~~~~topPosters", topPosters);
 
     return topPosters
       .map(([name, info], index) => (

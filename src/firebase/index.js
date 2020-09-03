@@ -120,6 +120,24 @@ class Firebase {
       .collection("users")
       .doc(userId)
       .update({ avatarURL });
+
+    const userSnap = await this.db
+      .collection("users")
+      .doc(userId)
+      .get();
+    const roomsIJoined = userSnap.data().roomsIJoined;
+    console.log("roomsIJoined", roomsIJoined);
+    roomsIJoined.forEach(room => {
+      this.db
+        .collection("rooms")
+        .doc(room.id)
+        .collection("participants")
+        .doc(userId)
+        .update({
+          avatarURL
+        });
+    });
+
     return avatarURL;
   }
 
@@ -133,7 +151,9 @@ class Firebase {
             resolve(url);
           });
         })
-        .catch(reject);
+        .catch(err => {
+          reject(err);
+        });
     });
   }
 
