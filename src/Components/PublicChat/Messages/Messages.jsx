@@ -87,6 +87,8 @@ function Messages() {
             />
           </span>
         </Header>
+
+        {/* 검색창 */}
         {searchMode ? (
           <>
             <Input fluid size="mini" icon="search" name="searchTerm" />

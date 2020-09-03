@@ -19,8 +19,11 @@ const publicChatSlice = createSlice({
   },
   reducers: {
     setCurrentRoom: (state, { payload: currentRoomID }) => {
-      state.currentRoom = original(
-        state.totalRooms.find(room => room.id === currentRoomID)
+      // state.currentRoom = original(
+      //   state.totalRooms.find(room => room.id === currentRoomID)
+      // );
+      state.currentRoom = state.totalRooms.find(
+        room => room.id === currentRoomID
       );
     },
     setTotalRooms: (state, { payload: totalRooms }) => {

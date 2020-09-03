@@ -4,7 +4,7 @@ import { Label } from "semantic-ui-react";
 function Participants({ participants }) {
   return (
     <>
-      {participants.map((participant, index) => {
+      {participants?.map((participant, index) => {
         return (
           <Label key={index} as="a" image>
             <img src={participant.avatarURL} />

@@ -81,7 +81,7 @@ function RightSide() {
         attached="top"
         style={{ marginTop: 3, borderRadius: 10, backgroundColor: "#fffff0" }}
       >
-        {currentRoom.name}
+        {currentRoom?.name}
       </Header>
       {/* 세부사항 */}
       <Accordion styled attached="true" style={{ backgroundColor: "#fffff0" }}>
@@ -95,7 +95,7 @@ function RightSide() {
           세부사항
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 0}>
-          {currentRoom.details}
+          {currentRoom?.details}
         </Accordion.Content>
 
         {/* 만든사람 */}
@@ -106,7 +106,7 @@ function RightSide() {
         >
           <Icon name="dropdown" />
           <Icon name="user circle" />
-          {currentRoom.createdBy.nickname}
+          {currentRoom?.createdBy.nickname}
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
           <Header as="h4">
@@ -125,8 +125,8 @@ function RightSide() {
           참가인원
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 2}>
-          <p>{currentRoom.participants.length}명</p>
-          <Participants participants={currentRoom.participants} />
+          <p>{currentRoom?.participants.length}명</p>
+          <Participants participants={currentRoom?.participants} />
         </Accordion.Content>
 
         {/* 글 개수 */}
