@@ -1,6 +1,13 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Segment, Accordion, Header, Icon, Image } from "semantic-ui-react";
+import {
+  Segment,
+  Accordion,
+  Header,
+  Icon,
+  Image,
+  List
+} from "semantic-ui-react";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import OwnerCard from "../../Share/OwnerCard";
 import Participants from "../../Share/Participants";
@@ -11,14 +18,61 @@ function RightSide() {
   const messages = useSelector(messagesSelector.publicMessages);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [userMessagesCounts, setUserMessagesCounts] = useState([]);
+  console.log("userMessagesCounts", userMessagesCounts);
 
-  const controlActiveIndex = useCallback(
+  useEffect(() => {
+    if (messages.length > 0) {
+      const userMessagesCounts = countUsersMessages(messages);
+      setUserMessagesCounts(userMessagesCounts);
+    }
+  }, [messages]);
+
+  const handleActiveIndex = useCallback(
     (e, { index }) => {
       const newIndex = activeIndex === index ? -1 : index;
       setActiveIndex(newIndex);
     },
     [activeIndex]
   );
+
+  const displayTopPostsersLists = useCallback(userMessagesCounts => {
+    console.log("!!~~,userMessagesCounts", userMessagesCounts);
+
+    const topPosters = Object.entries(userMessagesCounts).sort(
+      (a, b) => b[1].count - a[1].count
+    );
+    console.log("!!~~~~~~topPosters", topPosters);
+
+    return topPosters
+      .map(([name, info], index) => (
+        <List.Item key={index}>
+          <Image avatar src={info.avatarURL} />
+          <List.Content>
+            <List.Header as="a">{name}</List.Header>
+            <List.Description>{info.count}개 작성</List.Description>
+          </List.Content>
+        </List.Item>
+      ))
+      .slice(0, 3);
+  }, []);
+
+  function countUsersMessages(messages) {
+    const userMessageCounts = messages.reduce((ac, message) => {
+      if (message.createdBy.nickname in ac) {
+        ac[message.createdBy.nickname].count += 1;
+      } else {
+        ac[message.createdBy.nickname] = {
+          avatarURL: message.avatarURL,
+          count: 1,
+          id: message.createdBy.id
+        };
+      }
+      return ac;
+    }, {});
+    return userMessageCounts;
+  }
+
   return (
     <Segment /* loading={!currentChannel} */>
       <Header
@@ -34,7 +88,7 @@ function RightSide() {
         <Accordion.Title
           active={activeIndex === 0}
           index={0}
-          onClick={controlActiveIndex}
+          onClick={handleActiveIndex}
         >
           <Icon name="dropdown" />
           <Icon name="info" />
@@ -48,7 +102,7 @@ function RightSide() {
         <Accordion.Title
           active={activeIndex === 1}
           index={1}
-          onClick={controlActiveIndex}
+          onClick={handleActiveIndex}
         >
           <Icon name="dropdown" />
           <Icon name="user circle" />
@@ -64,7 +118,7 @@ function RightSide() {
         <Accordion.Title
           active={activeIndex === 2}
           index={2}
-          onClick={controlActiveIndex}
+          onClick={handleActiveIndex}
         >
           <Icon name="dropdown" />
           <Icon name="users" />
@@ -79,16 +133,16 @@ function RightSide() {
         <Accordion.Title
           active={activeIndex === 3}
           index={3}
-          onClick={controlActiveIndex}
+          onClick={handleActiveIndex}
         >
           <Icon name="dropdown" />
           <Icon name="pencil alternate" />
           채팅 현황
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 3}>
-          <p>전체 글: {messages.length}</p>
-          <h4>Top 3</h4>
-          {/* <Participants /> */}
+          <p>전체 글: {messages.length}개</p>
+          <h5>Top 3</h5>
+          <List>{displayTopPostsersLists(userMessagesCounts)}</List>
         </Accordion.Content>
       </Accordion>
     </Segment>
