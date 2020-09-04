@@ -67,7 +67,7 @@ function Messages() {
 
   const scrollToBottom = useCallback(() => {
     if (toBottomRef.current) {
-      toBottomRef.current.scrollIntoView({ behavior: "smooth" });
+      toBottomRef.current.scrollIntoView(/* { behavior: "smooth" } */);
     }
   }, [toBottomRef]);
 

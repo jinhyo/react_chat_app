@@ -129,7 +129,7 @@ function AvatarModal({ modal, closeModal }) {
         {croppedImageURL && (
           <Button
             inverted
-            primary
+            color="olive"
             onClick={handleAvatarUpdate}
             loading={updateLoading}
           >

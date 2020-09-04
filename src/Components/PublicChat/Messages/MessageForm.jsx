@@ -5,12 +5,14 @@ import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { userSelector } from "../../../features/userSlice";
 import { Picker } from "emoji-mart";
+import PictureModal from "./PictureModal";
 
 function MessageForm({ scrollToBottom }) {
   const inputRef = useRef();
 
   const currentUser = useSelector(userSelector.currentUser);
   const currentRoom = useSelector(publicChatSelector.currentRoom);
+  const [modal, setModal] = useState(false);
 
   const [text, setText] = useState("");
   const [emoji, setEmoji] = useState(false);
@@ -44,6 +46,14 @@ function MessageForm({ scrollToBottom }) {
     }
   }, []);
 
+  const openModal = useCallback(() => {
+    setModal(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setModal(false);
+  }, []);
+
   return (
     <>
       <Form style={{ marginBottom: 5 }} onSubmit={handleSendMessage}>
@@ -74,11 +84,12 @@ function MessageForm({ scrollToBottom }) {
         onClick={handleEmojiToggle}
       />
       <Button
-        icon="cloud upload"
+        icon="picture"
         color="olive"
         // content={emoji ? "Close" : null}
-        // onClick={handleEmojiToggle}
+        onClick={openModal}
       />
+      <PictureModal modal={modal} closeModal={closeModal} />
     </>
   );
 }
