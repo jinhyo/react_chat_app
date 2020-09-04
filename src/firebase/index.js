@@ -157,6 +157,23 @@ class Firebase {
     });
   }
 
+  sendImageFile(imageFile, metaData, roomID) {
+    return new Promise((resolve, reject) => {
+      this.storage
+        .ref(`publicChats/${roomID}`)
+        .child(imageFile.name + "_" + imageFile.lastModified)
+        .put(imageFile, metaData)
+        .then(snap => {
+          snap.ref.getDownloadURL().then(url => {
+            resolve(url);
+          });
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
   async createRoom(userID, nickname, roomName, details, avatarURL) {
     const newRoomRef = this.db.collection("rooms").doc();
     const userRef = this.db.collection("users").doc(userID);
@@ -258,6 +275,20 @@ class Firebase {
       .collection("messages")
       .add({
         content,
+        type: "message",
+        createdAt: new Date(),
+        createdBy
+      });
+  }
+
+  async sendImageMessage(imageURLs, createdBy, roomID) {
+    await this.db
+      .collection("rooms")
+      .doc(roomID)
+      .collection("messages")
+      .add({
+        content: imageURLs,
+        type: "image",
         createdAt: new Date(),
         createdBy
       });

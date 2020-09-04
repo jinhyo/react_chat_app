@@ -3,17 +3,20 @@ import { useSelector, useDispatch } from "react-redux";
 import { Modal, Button, Image, Grid, Icon } from "semantic-ui-react";
 import { userSelector } from "../../../features/userSlice";
 import PreviewImages from "./PreviewImages";
+import { publicChatSelector } from "../../../features/publicChatSlice";
+import mime from "mime-types";
+import firebaseApp from "../../../firebase";
 
 // in MessageForm
-function PictureModal({ modal, closeModal }) {
+function PictureModal({ modal, closeModal, scrollToBottom }) {
   const fileRef = useRef();
-  const dispatch = useDispatch();
 
   const currentUser = useSelector(userSelector.currentUser);
+  const currentRoom = useSelector(publicChatSelector.currentRoom);
 
   const [previewImages, setPreviewImages] = useState(null);
-  const [updateLoading, setUpdateLoading] = useState(false);
-  console.log("previewImages", previewImages);
+  const [imageTypes] = useState(["image/jpeg", "image/png", "image/gif"]);
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   useEffect(() => {
     if (!modal) {
@@ -27,8 +30,19 @@ function PictureModal({ modal, closeModal }) {
     }
   }, [fileRef]);
 
+  function isAuthorized(file) {
+    return imageTypes.includes(mime.lookup(file.name));
+  }
+
   const handleFileInput = useCallback(e => {
-    const files = [].map.call(e.target.files, file => file);
+    let files = [];
+
+    [].forEach.call(e.target.files, file => {
+      if (isAuthorized(file, imageTypes)) {
+        files.push(file);
+      }
+    });
+
     setPreviewImages(files);
   }, []);
 
@@ -38,15 +52,50 @@ function PictureModal({ modal, closeModal }) {
     );
   }, []);
 
-  const handleSendImages = useCallback(() => {
+  const handleSendImages = useCallback(async () => {
     if (previewImages) {
+      setUploadLoading(true);
+      const imageURLs = previewImages.map(async image => {
+        const metaData = { contentType: mime.lookup(image.name) };
+        try {
+          return await firebaseApp.sendImageFile(
+            image,
+            metaData,
+            currentRoom.id,
+            currentRoom
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
+      const createdBy = {
+        id: currentUser.id,
+        nickname: currentUser.nickname
+      };
+
+      try {
+        const totalImageURLs = await Promise.all(imageURLs);
+        console.log("totalImageURLs", totalImageURLs);
+
+        await firebaseApp.sendImageMessage(
+          totalImageURLs,
+          createdBy,
+          currentRoom.id
+        );
+        setUploadLoading(false);
+        // scrollToBottom({bahavior:'smooth'});
+        closeModal();
+      } catch (error) {
+        console.error(error);
+      }
     }
-  }, [previewImages]);
+  }, [previewImages, currentRoom, currentUser]);
 
   return (
     <Modal open={modal} onClose={closeModal}>
       <Modal.Header style={{ backgroundColor: "#fffff0" }}>
-        사진 전송
+        사진 전송 - <span style={{ fontSize: 16 }}>jpeg, png, gif</span>
       </Modal.Header>
       <Modal.Content style={{ backgroundColor: "#fffff0" }}>
         <input
@@ -70,8 +119,9 @@ function PictureModal({ modal, closeModal }) {
           <Button
             inverted
             onClick={handleFile}
-            color="olive"
+            primary
             onClick={handleSendImages}
+            loading={uploadLoading}
           >
             사진 전송
           </Button>

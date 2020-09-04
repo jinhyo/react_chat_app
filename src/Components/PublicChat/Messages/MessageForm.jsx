@@ -32,7 +32,7 @@ function MessageForm({ scrollToBottom }) {
     };
     try {
       await firebaseApp.sendMessage(text, createdBy, currentRoom.id);
-      scrollToBottom();
+      // scrollToBottom({bahavior:'smooth'});
     } catch (error) {
       console.error(error);
     }
@@ -89,7 +89,11 @@ function MessageForm({ scrollToBottom }) {
         // content={emoji ? "Close" : null}
         onClick={openModal}
       />
-      <PictureModal modal={modal} closeModal={closeModal} />
+      <PictureModal
+        modal={modal}
+        closeModal={closeModal}
+        scrollToBottom={scrollToBottom}
+      />
     </>
   );
 }
