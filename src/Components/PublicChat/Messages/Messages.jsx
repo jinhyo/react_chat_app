@@ -12,21 +12,57 @@ import {
 
 import "./Messages.css";
 import MessageHeader from "./MessageHeader";
+import { userSelector } from "../../../features/userSlice";
+import Typing from "./Typing";
 
 function Messages() {
   const toBottomRef = useRef();
   const dispatch = useDispatch();
   const currentRoom = useSelector(publicChatSelector.currentRoom);
+  const currentUser = useSelector(userSelector.currentUser);
   const messages = useSelector(messagesSelector.publicMessages);
   console.log("messages", messages);
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  console.log("searchResults", searchResults);
+  const [typingUsers, setTypingUsers] = useState([]);
+  console.log("typingUsers", typingUsers);
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
   }, []);
+
+  useEffect(() => {
+    if (currentRoom) {
+      function addedCallback(snap) {
+        console.log("snap", snap.val());
+        console.log("snap.key", snap.key);
+        console.log("snap.key", snap.key);
+
+        if (snap.key !== currentUser.id) {
+          setTypingUsers(prev => [
+            ...prev,
+            { id: snap.key, nickname: snap.val() }
+          ]);
+        }
+      }
+
+      function removedCallback(snap) {
+        setTypingUsers(prev => prev.filter(user => user.id !== snap.key));
+      }
+
+      const { typingRef, connectedRef } = firebaseApp.listenToTypings(
+        currentRoom.id,
+        addedCallback,
+        removedCallback
+      );
+
+      return () => {
+        typingRef.off();
+        connectedRef.off();
+      };
+    }
+  }, [currentRoom, currentUser]);
 
   useEffect(() => {
     if (messages) {
@@ -91,6 +127,8 @@ function Messages() {
           ) : (
             <MessageComment messages={messages} />
           )}
+
+          {typingUsers && <Typing typingUsers={typingUsers} />}
 
           <div ref={toBottomRef}></div>
         </Segment>

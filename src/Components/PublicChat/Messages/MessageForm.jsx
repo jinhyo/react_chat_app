@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Form, Input, Button, Segment } from "semantic-ui-react";
 import firebaseApp from "../../../firebase";
@@ -16,6 +16,14 @@ function MessageForm({ scrollToBottom }) {
 
   const [text, setText] = useState("");
   const [emoji, setEmoji] = useState(false);
+
+  useEffect(() => {
+    if (text) {
+      firebaseApp.addTypingStatus(currentRoom.id);
+    } else {
+      firebaseApp.deleteTypingStatus(currentRoom.id);
+    }
+  }, [text]);
 
   const handleEmojiToggle = useCallback(() => {
     setEmoji(prev => !prev);

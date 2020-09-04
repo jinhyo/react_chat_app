@@ -80,13 +80,15 @@ function App() {
           console.log("room removed", change.doc.data());
           dispatch(publicChatActions.deleteRoomFromTotalRooms(change.doc.id));
         } else if (change.type === "modified") {
-          console.log("room modified");
+          console.log("room modified", change.doc.data());
         }
       });
-      const newTotalRooms = await Promise.all(totalRooms);
-      console.log("newTotalRooms", newTotalRooms);
 
-      dispatch(publicChatActions.setTotalRooms(newTotalRooms));
+      const newTotalRooms = await Promise.all(totalRooms);
+      if (newTotalRooms[0] !== undefined) {
+        // removed & modified의 경우 newTotalRooms[0]에 undefined가 들어있음
+        dispatch(publicChatActions.setTotalRooms(newTotalRooms));
+      }
     });
 
     return unsubscribe;

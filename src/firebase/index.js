@@ -2,6 +2,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/storage";
+import "firebase/database";
 import md5 from "md5";
 import firebaseConfig from "./config";
 
@@ -11,6 +12,7 @@ class Firebase {
     this.auth = firebase.auth();
     this.db = firebase.firestore();
     this.storage = firebase.storage();
+    this.realtimeDB = firebase.database();
     this.fieldValue = firebase.firestore.FieldValue;
   }
 
@@ -306,6 +308,43 @@ class Firebase {
       .get();
 
     return snap.size;
+  }
+
+  addTypingStatus(roomID) {
+    const typingRef = this.realtimeDB.ref("typings").child(roomID);
+    typingRef
+      .child(this.auth.currentUser.uid)
+      .set(this.auth.currentUser.displayName);
+  }
+
+  deleteTypingStatus(roomID) {
+    const typingRef = this.realtimeDB.ref("typings").child(roomID);
+    typingRef.child(this.auth.currentUser.uid).remove();
+  }
+
+  listenToTypings(roomID, addedCb, removedCb) {
+    const connectedRef = this.realtimeDB.ref(".info/connected");
+    const typingRef = this.realtimeDB.ref("typings").child(roomID);
+
+    typingRef.on("child_added", addedCb);
+    typingRef.on("child_removed", removedCb);
+
+    connectedRef.on("value", snap => {
+      if (snap.val() === true) {
+        typingRef
+          .child(this.auth.currentUser.uid)
+          .onDisconnect()
+          .remove()
+          .then(err => {
+            console.error(err);
+          });
+      }
+    });
+
+    // const cancelConnectedListener = connectedRef.off;
+    // const cancelTypingListener = typingRef.off;
+
+    return { typingRef, connectedRef };
   }
 }
 

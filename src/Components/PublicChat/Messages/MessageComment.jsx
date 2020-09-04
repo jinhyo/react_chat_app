@@ -4,7 +4,7 @@ import moment from "moment";
 import { Comment, Image } from "semantic-ui-react";
 import { userSelector } from "../../../features/userSlice";
 
-function MessageComment({ messages, searchResults }) {
+function MessageComment({ messages }) {
   const currentUser = useSelector(userSelector.currentUser);
   console.log("~~messages", messages);
 
@@ -27,9 +27,12 @@ function MessageComment({ messages, searchResults }) {
   return (
     <>
       {messages.map((message, index) => (
-        <div key={index} className={isMyMessage(message) && "message__self"}>
+        <div
+          key={index}
+          className={isMyMessage(message) ? "message__self" : ""}
+        >
           <Comment>
-            <div className={isMyMessage(message) && "comment__dot"}> </div>
+            <div className={isMyMessage(message) ? "comment__dot" : ""}> </div>
             <Comment.Avatar src={message.avatarURL} />
             <Comment.Content>
               <Comment.Author as="a">
