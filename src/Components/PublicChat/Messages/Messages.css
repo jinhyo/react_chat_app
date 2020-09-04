@@ -11,7 +11,15 @@
   margin-left: 10px;
 }
 
-.message__form {
+.search__icon {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  cursor: pointer;
+  font-size: 20px !important;
+}
+
+/* .message__form {
   position: fixed;
   z-index: 100;
-}
+} */

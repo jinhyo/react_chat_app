@@ -1,13 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  Comment,
-  Header,
-  Segment,
-  Icon,
-  Input,
-  Divider
-} from "semantic-ui-react";
+import { Comment, Segment, Input, Divider } from "semantic-ui-react";
 import MessageForm from "./MessageForm";
 import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
@@ -16,20 +9,30 @@ import {
   messagesActions,
   messagesSelector
 } from "../../../features/messageSlice";
-import { Picker } from "emoji-mart";
 
 import "./Messages.css";
+import MessageHeader from "./MessageHeader";
 
 function Messages() {
   const toBottomRef = useRef();
   const dispatch = useDispatch();
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const messages = useSelector(messagesSelector.publicMessages);
-
-  console.log("currentRoom", currentRoom);
   console.log("messages", messages);
 
   const [searchMode, setSearchMode] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  console.log("searchResults", searchResults);
+
+  const handleSearchMode = useCallback(() => {
+    setSearchMode(prev => !prev);
+  }, []);
+
+  useEffect(() => {
+    if (messages) {
+      scrollToBottom();
+    }
+  }, [messages]);
 
   useEffect(() => {
     dispatch(messagesActions.clearMessages());
@@ -58,7 +61,6 @@ function Messages() {
         });
         const totalMessages = await Promise.all(messages);
         dispatch(messagesActions.setMessages(totalMessages));
-        scrollToBottom();
       }
     );
 
@@ -71,37 +73,24 @@ function Messages() {
     }
   }, [toBottomRef]);
 
-  const handleSearchMode = useCallback(() => {
-    setSearchMode(prev => !prev);
-  }, []);
-
   return (
     <Segment style={{ height: "90vh" }}>
       <Comment.Group>
         {/* 헤더 */}
-        <Header as="h2" dividing textAlign="center">
-          <span>방 이름</span>
-          <span style={{ marginLeft: 100, cursor: "pointer" }}>
-            <Icon
-              name="search"
-              size="small"
-              color="blue"
-              onClick={handleSearchMode}
-            />
-          </span>
-        </Header>
-
-        {/* 검색창 */}
-        {searchMode ? (
-          <>
-            <Input fluid size="mini" icon="search" name="searchTerm" />
-            <Divider />
-          </>
-        ) : null}
+        <MessageHeader
+          searchMode={searchMode}
+          handleSearchMode={handleSearchMode}
+          searchResults={searchResults}
+          setSearchResults={setSearchResults}
+        />
 
         {/* 메시지 출력 */}
         <Segment className={searchMode ? "messages__search" : "messages"}>
-          <MessageComment messages={messages} />
+          {searchResults.length > 0 ? (
+            <MessageComment messages={searchResults} />
+          ) : (
+            <MessageComment messages={messages} />
+          )}
 
           <div ref={toBottomRef}></div>
         </Segment>

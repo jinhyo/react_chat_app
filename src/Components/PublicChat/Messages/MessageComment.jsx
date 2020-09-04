@@ -4,7 +4,7 @@ import moment from "moment";
 import { Comment, Image } from "semantic-ui-react";
 import { userSelector } from "../../../features/userSlice";
 
-function MessageComment({ messages }) {
+function MessageComment({ messages, searchResults }) {
   const currentUser = useSelector(userSelector.currentUser);
   console.log("~~messages", messages);
 
@@ -18,6 +18,11 @@ function MessageComment({ messages }) {
     const data = JSON.parse(message.createdAt);
     return moment(data).fromNow();
   }, []);
+
+  const isMessageOrImage = useCallback(
+    message => message.type === "message",
+    []
+  );
 
   return (
     <>
@@ -33,9 +38,10 @@ function MessageComment({ messages }) {
                 <div>{displayTime(message)}</div>
               </Comment.Metadata>
               <Comment.Text>
-                {message.type === "message"
-                  ? message.content
+                {isMessageOrImage(message)
+                  ? message.content // 메시지
                   : message.content.map(imageURL => (
+                      // 이미지
                       <Image
                         style={{ marginTop: 5 }}
                         key={imageURL}
