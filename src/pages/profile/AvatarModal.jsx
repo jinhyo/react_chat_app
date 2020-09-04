@@ -64,7 +64,6 @@ function AvatarModal({ modal, closeModal }) {
     try {
       setUpdateLoading(true);
       const avatarURL = await firebaseApp.updateAvatar(currentUser.id, blob);
-      console.log("``avatarURL``", avatarURL);
 
       dispatch(
         userActions.setCurrentUser({
@@ -73,7 +72,7 @@ function AvatarModal({ modal, closeModal }) {
         })
       );
       closeModal();
-      // dispatch(publicChatActions.callReload());
+      dispatch(publicChatActions.callReload());
     } catch (error) {
       console.error(error);
     } finally {

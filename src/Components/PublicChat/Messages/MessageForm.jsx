@@ -26,6 +26,9 @@ function MessageForm({ scrollToBottom }) {
   }, []);
 
   const handleSendMessage = useCallback(async () => {
+    if (!text) {
+      return;
+    }
     const createdBy = {
       id: currentUser.id,
       nickname: currentUser.nickname

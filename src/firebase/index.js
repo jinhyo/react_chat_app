@@ -101,18 +101,14 @@ class Firebase {
   }
 
   async updateProfile(userId, privateEmail, location, selfIntro) {
-    console.log("updateProfile");
-
     await this.db
       .collection("users")
       .doc(userId)
       .update({ privateEmail, location, selfIntro });
-    console.log("end updateProfile");
   }
 
   async updateAvatar(userId, imageFile) {
     const avatarURL = await this.uploadAvatarImageFile(userId, imageFile);
-    console.log("avatarURL", avatarURL);
     this.auth.currentUser.updateProfile({
       photoURL: avatarURL
     });
@@ -126,7 +122,6 @@ class Firebase {
       .doc(userId)
       .get();
     const roomsIJoined = userSnap.data().roomsIJoined;
-    console.log("roomsIJoined", roomsIJoined);
     roomsIJoined.forEach(room => {
       this.db
         .collection("rooms")
