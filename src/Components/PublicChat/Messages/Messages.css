@@ -19,6 +19,19 @@
   font-size: 20px !important;
 }
 
+.comment__dot {
+  float: left;
+  width: 8px;
+  height: 8px;
+  margin: 0 4px;
+  background: #00b4db;
+  border-radius: 50%;
+  position: absolute;
+  top: 17px;
+  left: -19px;
+  animation: loadingFade 1s infinite;
+}
+
 /* .message__form {
   position: fixed;
   z-index: 100;

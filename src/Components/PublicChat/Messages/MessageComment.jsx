@@ -9,7 +9,7 @@ function MessageComment({ messages, searchResults }) {
   console.log("~~messages", messages);
 
   const isMyMessage = useCallback(
-    message => (currentUser.id === message.createdBy.id ? "message__self" : ""),
+    message => currentUser.id === message.createdBy.id,
 
     [currentUser]
   );
@@ -27,8 +27,9 @@ function MessageComment({ messages, searchResults }) {
   return (
     <>
       {messages.map((message, index) => (
-        <div key={index} className={isMyMessage(message)}>
+        <div key={index} className={isMyMessage(message) && "message__self"}>
           <Comment>
+            <div className={isMyMessage(message) && "comment__dot"}> </div>
             <Comment.Avatar src={message.avatarURL} />
             <Comment.Content>
               <Comment.Author as="a">
