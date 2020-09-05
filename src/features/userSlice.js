@@ -8,9 +8,6 @@ const InitialUser = {
   privateEmail: false,
   avatarURL: "",
   location: "",
-  roomsIJoined: [
-    /* { id: "", name: "" } */
-  ],
   roomsICreated: [
     /* { id: "", name: "" } */
   ]
@@ -20,11 +17,14 @@ const userSlice = createSlice({
   name: "userSlice",
   initialState: {
     currentUser: InitialUser,
-    isLogin: false
+    isLogin: false,
+    roomsIJoined: []
   },
   reducers: {
     setCurrentUser: (state, { payload: currentUser }) => {
       state.isLogin = true;
+      state.roomsIJoined = currentUser.roomsIJoined;
+      delete currentUser.roomsIJoined;
       state.currentUser = currentUser;
       console.log("state.currentUser", state.currentUser);
     },
@@ -39,12 +39,16 @@ const userSlice = createSlice({
       state.currentUser.roomsICreated.push(newCreatedRoom);
     },
     addRoomsIJoined: (state, { payload: newRoom }) => {
-      state.currentUser.roomsIJoined.push(newRoom);
+      state.roomsIJoined.push(newRoom);
     },
     deleteRoomsIJoined: (state, { payload: targetRoomID }) => {
-      state.currentUser.roomsIJoined = state.currentUser.roomsIJoined.filter(
+      state.roomsIJoined = state.roomsIJoined.filter(
         room => room.id !== targetRoomID
       );
+    },
+    setCountRoomIJoined: (state, { payload: { roomID, roomInfo } }) => {
+      let targetRoom = state.roomsIJoined.find(room => room.id === roomID);
+      targetRoom.count = roomInfo.count;
     }
   }
 });
@@ -62,7 +66,7 @@ const selectIsLogin = createSelector(
 );
 
 const selectRoomsIJoined = createSelector(
-  state => state.currentUser.roomsIJoined,
+  state => state.roomsIJoined,
 
   roomsIJoined => roomsIJoined
 );

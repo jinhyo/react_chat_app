@@ -24,12 +24,11 @@
   width: 8px;
   height: 8px;
   margin: 0 4px;
-  background: #00b4db;
+  background: #93edc7;
   border-radius: 50%;
   position: absolute;
   top: 17px;
   left: -19px;
-  animation: loadingFade 1s infinite;
 }
 
 /* .message__form {

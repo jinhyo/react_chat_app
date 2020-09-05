@@ -341,10 +341,15 @@ class Firebase {
       }
     });
 
-    // const cancelConnectedListener = connectedRef.off;
-    // const cancelTypingListener = typingRef.off;
-
     return { typingRef, connectedRef };
+  }
+
+  listenToMessageCounts(roomID, cb) {
+    return this.db
+      .collection("rooms")
+      .doc(roomID)
+      .collection("messages")
+      .onSnapshot(cb);
   }
 }
 

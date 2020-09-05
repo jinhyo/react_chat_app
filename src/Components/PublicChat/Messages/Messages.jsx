@@ -26,7 +26,6 @@ function Messages() {
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
-  console.log("typingUsers", typingUsers);
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
@@ -35,10 +34,6 @@ function Messages() {
   useEffect(() => {
     if (currentRoom) {
       function addedCallback(snap) {
-        console.log("snap", snap.val());
-        console.log("snap.key", snap.key);
-        console.log("snap.key", snap.key);
-
         if (snap.key !== currentUser.id) {
           setTypingUsers(prev => [
             ...prev,
