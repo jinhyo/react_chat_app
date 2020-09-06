@@ -112,7 +112,9 @@ function RoomInfo() {
         <Icon name="user circle" />
         만든사람
       </Header>
-      <OwnerCard user={currentRoom.createdBy} />
+      <Comment.Group>
+        <OwnerCard user={currentRoom.createdBy} />
+      </Comment.Group>
 
       {/* 참가자 */}
       <Comment.Group>

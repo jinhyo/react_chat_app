@@ -22,7 +22,8 @@ class Firebase {
     nickname,
     privateEmail,
     location,
-    selfIntro
+    selfIntro,
+    createdAt
   ) {
     const photoURL = await fetch(
       `http://gravatar.com/avatar/${md5(email)}?d=identicon`
@@ -32,9 +33,6 @@ class Firebase {
       email,
       password
     );
-    await newUser.user.updateProfile({
-      displayName: nickname
-    });
 
     await this.db
       .collection("users")
@@ -48,8 +46,12 @@ class Firebase {
         avatarURL: photoURL,
         roomsICreated: [],
         roomsIJoined: [],
-        createdAt: new Date()
+        createdAt
       });
+
+    await newUser.user.updateProfile({
+      displayName: nickname
+    });
   }
 
   checkAuth(cb) {
@@ -61,7 +63,8 @@ class Firebase {
       .collection("users")
       .doc(userId)
       .get();
-    const currentUser = await snapshot.data();
+    let currentUser = await snapshot.data();
+    delete currentUser.createdAt;
     return currentUser;
   }
 

@@ -54,16 +54,18 @@ function Register(props) {
   async function createUser() {
     const { email, password, nickname, location, selfIntro } = values;
     setIsSubmitting(true);
+    const createdAt = new Date();
     await firebase.createNewUser(
       email,
       password,
       nickname,
       privateEmail,
       location,
-      selfIntro
+      selfIntro,
+      createdAt
     );
-    setIsSubmitting(false);
     window.location.reload();
+    // setIsSubmitting(false);
   }
 
   const handleEmailCheck = useCallback(() => {

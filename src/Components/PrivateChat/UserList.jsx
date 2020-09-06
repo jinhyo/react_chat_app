@@ -33,8 +33,12 @@ function UserList() {
         />
 
         <Segment className={searchMode ? "userList__search" : "userList"}>
-          {totalUsers &&
-            totalUsers.map(user => <OwnerCard key={user.id} user={user} />)}
+          <Comment.Group>
+            {totalUsers.length > 0 &&
+              totalUsers.map(user => (
+                <OwnerCard key={user.id} user={user} rightSide={false} />
+              ))}
+          </Comment.Group>
         </Segment>
       </Comment.Group>
     </Segment>

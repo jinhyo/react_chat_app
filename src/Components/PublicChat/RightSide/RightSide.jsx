@@ -6,7 +6,8 @@ import {
   Header,
   Icon,
   Image,
-  List
+  List,
+  Comment
 } from "semantic-ui-react";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import OwnerCard from "../../Share/OwnerCard";
@@ -106,7 +107,9 @@ function RightSide() {
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
           <Header as="h4">
-            <OwnerCard user={currentRoom.createdBy} rightSide={true} />
+            <Comment.Group>
+              <OwnerCard user={currentRoom.createdBy} rightSide={true} />
+            </Comment.Group>
           </Header>
         </Accordion.Content>
 

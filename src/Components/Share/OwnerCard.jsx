@@ -19,24 +19,22 @@ function OwnerCard({ user, rightSide }) {
   }, [user]);
 
   return (
-    <Comment.Group>
-      <Comment>
-        <Comment.Avatar src={avatarURL} />
-        <Comment.Content>
-          <Comment.Author as="a">{author}</Comment.Author>
-          {!rightSide && (
-            <Comment.Metadata>
-              <Icon name="map marker alternate" style={{ marginRight: 5 }} />{" "}
-              {location}
-              <Icon name="mail" style={{ marginRight: 5, marginLeft: 10 }} />
-              {email}
-            </Comment.Metadata>
-          )}
+    <Comment>
+      <Comment.Avatar src={avatarURL} />
+      <Comment.Content>
+        <Comment.Author as="a">{author}</Comment.Author>
+        {!rightSide && (
+          <Comment.Metadata>
+            <Icon name="map marker alternate" style={{ marginRight: 5 }} />{" "}
+            {location}
+            <Icon name="mail" style={{ marginRight: 5, marginLeft: 10 }} />
+            {email}
+          </Comment.Metadata>
+        )}
 
-          <Comment.Text>{selfIntro}</Comment.Text>
-        </Comment.Content>
-      </Comment>
-    </Comment.Group>
+        <Comment.Text>{selfIntro}</Comment.Text>
+      </Comment.Content>
+    </Comment>
   );
 }
 
