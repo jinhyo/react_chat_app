@@ -29,10 +29,37 @@ function App() {
   const reload = useSelector(publicChatSelector.reload);
 
   useEffect(() => {
+    // 전체 유저 정보 다운
+    if (currentUser.id) {
+      firebaseApp.listenToUsers(snap => {
+        const totalUsers = snap.docChanges().map(change => {
+          if (change.type === "added") {
+            const user = change.doc.data();
+            delete user.createdAt;
+
+            if (user.privateEmail) {
+              user.email = "비공개";
+            }
+
+            return { id: change.doc.id, ...user };
+          }
+        });
+        dispatch(
+          userActions.setTotalUsers(
+            totalUsers.filter(user => user.id !== currentUser.id)
+          )
+        );
+      });
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
     // 로그인 유저 확인
     const unsubscribe = firebaseApp.checkAuth(user => {
       if (user) {
         firebaseApp.getUser(user.uid).then(currentUser => {
+          delete currentUser.createdAt;
+
           dispatch(
             userActions.setCurrentUser({ id: user.uid, ...currentUser })
           );
@@ -54,9 +81,13 @@ function App() {
             id: createdBySnap.id,
             ...createdBySnap.data()
           };
+          if (createdBy.privateEmail) {
+            createdBy.email = "비공개";
+          }
 
           delete createdBy.roomsICreated;
           delete createdBy.roomsIJoined;
+          delete createdBy.createdAt;
 
           const roomID = change.doc.id;
           const participants = await firebaseApp.getParticipants(roomID);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Comment, Icon } from "semantic-ui-react";
 
-function OwnerCard({ currentRoom, rightSide }) {
+function OwnerCard({ user, rightSide }) {
   const [author, setAuthor] = useState("");
   const [location, setLocation] = useState("");
   const [email, setEmail] = useState("");
@@ -9,15 +9,14 @@ function OwnerCard({ currentRoom, rightSide }) {
   const [avatarURL, setavatarURL] = useState("");
 
   useEffect(() => {
-    if (currentRoom) {
-      const { createdBy } = currentRoom;
-      setAuthor(createdBy.nickname);
-      setLocation(createdBy.location);
-      setEmail(createdBy.email);
-      setSelfIntro(createdBy.selfIntro);
-      setavatarURL(createdBy.avatarURL);
+    if (user) {
+      setAuthor(user.nickname);
+      setLocation(user.location);
+      setEmail(user.email);
+      setSelfIntro(user.selfIntro);
+      setavatarURL(user.avatarURL);
     }
-  }, [currentRoom]);
+  }, [user]);
 
   return (
     <Comment.Group>

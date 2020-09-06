@@ -106,7 +106,7 @@ function RightSide() {
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
           <Header as="h4">
-            <OwnerCard currentRoom={currentRoom} rightSide={true} />
+            <OwnerCard user={currentRoom.createdBy} rightSide={true} />
           </Header>
         </Accordion.Content>
 

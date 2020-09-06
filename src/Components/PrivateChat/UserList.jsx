@@ -3,9 +3,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { Comment, Segment, Input, Divider } from "semantic-ui-react";
 
 import UserListHeader from "./UserListHeader";
+import firebaseApp from "../../firebase";
+import { userActions, userSelector } from "../../features/userSlice";
+import OwnerCard from "../Share/OwnerCard";
 
 function UserList() {
   const dispatch = useDispatch();
+
+  const currentUser = useSelector(userSelector.currentUser);
+  const totalUsers = useSelector(userSelector.totalUsers);
+  console.log("totalUsers", totalUsers);
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -24,8 +31,10 @@ function UserList() {
           searchResults={searchResults}
           setSearchResults={setSearchResults}
         />
-        <Segment className={searchMode ? "messages__search" : "messages"}>
-          {/* <OwnerCard /> */}
+
+        <Segment className={searchMode ? "userList__search" : "userList"}>
+          {totalUsers &&
+            totalUsers.map(user => <OwnerCard key={user.id} user={user} />)}
         </Segment>
       </Comment.Group>
     </Segment>

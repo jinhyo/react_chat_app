@@ -47,7 +47,7 @@ function Profile(props) {
         <Grid.Column width={10}>
           <Segment
             stacked
-            style={{ height: "550px", backgroundColor: "#fffff0" }}
+            style={{ height: "600px", backgroundColor: "#fffff0" }}
           >
             <Card centered>
               <Image
@@ -66,15 +66,22 @@ function Profile(props) {
                     />
                   )}
                   {currentUser?.location}
-                </Card.Meta>
-                <Card.Meta textAlign="left">
-                  {!currentUser.privateEmail && (
-                    <a href={`mailto:${currentUser.email}`}>
+                  {currentUser.privateEmail ? (
+                    <span style={{ marginLeft: 10 }}>
+                      <Icon name="mail" style={{ marginRight: 5 }} />
+                      비공개
+                    </span>
+                  ) : (
+                    <a
+                      style={{ marginLeft: 10 }}
+                      href={`mailto:${currentUser.email}`}
+                    >
                       <Icon name="mail" style={{ marginRight: 5 }} />
                       {currentUser.email}
                     </a>
                   )}
                 </Card.Meta>
+
                 <Card.Description textAlign="left">
                   {currentUser.selfIntro}
                 </Card.Description>

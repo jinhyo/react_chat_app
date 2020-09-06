@@ -7,6 +7,16 @@
   overflow-y: scroll;
 }
 
+.userList {
+  height: 80vh;
+  overflow-y: scroll;
+}
+
+.userList__search {
+  height: 73vh;
+  overflow-y: scroll;
+}
+
 .message__self {
   margin-left: 10px;
 }

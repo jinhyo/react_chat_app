@@ -20,12 +20,16 @@ const userSlice = createSlice({
   name: "userSlice",
   initialState: {
     currentUser: InitialUser,
-    isLogin: false
+    isLogin: false,
+    totalUsers: []
   },
   reducers: {
     setCurrentUser: (state, { payload: currentUser }) => {
       state.isLogin = true;
       state.currentUser = currentUser;
+    },
+    updateProfile: (state, { payload: updatedInfo }) => {
+      state.currentUser = { ...state.currentUser, ...updatedInfo };
     },
     clearUser: state => {
       state.isLogin = false;
@@ -50,6 +54,9 @@ const userSlice = createSlice({
         room => room.id === roomID
       );
       targetRoom.count = roomInfo.count;
+    },
+    setTotalUsers: (state, { payload: users }) => {
+      state.totalUsers.unshift(...users);
     }
   }
 });
@@ -72,6 +79,12 @@ const selectRoomsIJoined = createSelector(
   roomsIJoined => roomsIJoined
 );
 
+const selectTotalUsers = createSelector(
+  state => state.totalUsers,
+
+  totalUsers => totalUsers
+);
+
 export const USER = userSlice.name;
 export const userActions = userSlice.actions;
 export const userReducers = userSlice.reducer;
@@ -79,5 +92,6 @@ export const userReducers = userSlice.reducer;
 export const userSelector = {
   currentUser: state => selectCurrentUser(state[USER]),
   isLogin: state => selectIsLogin(state[USER]),
-  roomsIJoined: state => selectRoomsIJoined(state[USER])
+  roomsIJoined: state => selectRoomsIJoined(state[USER]),
+  totalUsers: state => selectTotalUsers(state[USER])
 };

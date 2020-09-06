@@ -47,7 +47,8 @@ class Firebase {
         selfIntro,
         avatarURL: photoURL,
         roomsICreated: [],
-        roomsIJoined: []
+        roomsIJoined: [],
+        createdAt: new Date()
       });
   }
 
@@ -349,6 +350,13 @@ class Firebase {
       .collection("rooms")
       .doc(roomID)
       .collection("messages")
+      .onSnapshot(cb);
+  }
+
+  listenToUsers(cb) {
+    this.db
+      .collection("users")
+      .orderBy("createdAt", "desc")
       .onSnapshot(cb);
   }
 }

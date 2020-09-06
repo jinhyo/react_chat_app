@@ -74,9 +74,9 @@ function ProfileEdit() {
         initialState.location,
         initialState.selfIntro
       );
+
       dispatch(
-        userActions.setCurrentUser({
-          ...currentUser,
+        userActions.updateProfile({
           privateEmail,
           location: initialState.location,
           selfIntro: initialState.selfIntro
