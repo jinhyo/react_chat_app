@@ -1,0 +1,20 @@
+.messages {
+  height: 72vh;
+  overflow-y: scroll;
+}
+.messages__search {
+  height: 65vh;
+  overflow-y: scroll;
+}
+
+.message__self {
+  margin-left: 10px;
+}
+
+.search__icon {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  cursor: pointer;
+  font-size: 20px !important;
+}

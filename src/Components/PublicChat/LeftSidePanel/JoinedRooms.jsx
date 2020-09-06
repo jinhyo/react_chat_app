@@ -8,23 +8,32 @@ import firebaseApp from "../../../firebase";
 
 function JoinedRooms() {
   const dispatch = useDispatch();
+
   const roomsIJoined = useSelector(userSelector.roomsIJoined);
   const currentType = useSelector(publicChatSelector.type);
   const currentRoom = useSelector(publicChatSelector.currentRoom);
-  const [notifications, setNotifications] = useState([]);
-  console.log("notifications", notifications);
 
-  useEffect(() => {
-    if (roomsIJoined.length > 0) {
-      roomsIJoined.forEach(room => {
-        listenToMessageCounts(room.id);
-      });
-    }
-  }, [roomsIJoined]);
+  // const [notifications, setNotifications] = useState([]);
+  // console.log("notifications", notifications);
+
+  // useEffect(() => {
+  //   if (roomsIJoined.length > 0) {
+  //     roomsIJoined.forEach(room => {
+  //       listenToMessageCounts(room.id);
+  //     });
+  //   }
+  // }, [roomsIJoined]);
+
+  // function listenToMessageCounts(roomID) {
+  //   firebaseApp.listenToMessageCounts(roomID, snap => {
+  //     console.log("!!notifications", notifications);
+  //     setCounts(roomID, snap.size);
+  //   });
+  // }
 
   // const listenToMessageCounts = useCallback(
   //   roomID => {
-  //     return firebaseApp.listenToMessageCounts(roomID, snap => {
+  //     firebaseApp.listenToMessageCounts(roomID, snap => {
   //       console.log("!!notifications", notifications);
   //       setCounts(roomID, snap.size);
   //     });
@@ -32,75 +41,35 @@ function JoinedRooms() {
   //   [notifications]
   // );
 
-  function listenToMessageCounts(roomID) {
-    firebaseApp.listenToMessageCounts(roomID, snap => {
-      console.log("!!notifications", notifications);
-      setCounts(roomID, snap.size, notifications);
-    });
-  }
+  // function setCounts(roomID, totalSize) {
+  //   console.log("~~notifications", notifications);
+  //   let index = notifications.findIndex(noti => {
+  //     console.log("noti.id", noti.id);
+  //     console.log("roomID", roomID);
+  //     return noti.id === roomID;
+  //   });
+  //   console.log("index", index);
 
-  function setCounts(roomID, totalSize) {
-    console.log("~~notifications", notifications);
-    let index = notifications.findIndex(noti => {
-      console.log("noti.id", noti.id);
-      console.log("roomID", roomID);
-      return noti.id === roomID;
-    });
-    console.log("index", index);
-
-    let newNotifications = Array.from(notifications);
-    if (index !== -1) {
-      const totalLastChecked = newNotifications[index].totalLastChecked;
-      if (roomID !== currentRoom.id && totalSize - totalLastChecked > 0) {
-        newNotifications[index].count = totalSize - totalLastChecked;
-      }
-      newNotifications[index].knownTotal = totalSize;
-      setNotifications(newNotifications);
-    } else {
-      setNotifications(prev => [
-        ...prev,
-        {
-          id: roomID,
-          count: 0,
-          totalLastChecked: totalSize,
-          knownTotal: totalSize
-        }
-      ]);
-    }
-  }
-
-  // const setCounts = useCallback(
-  //   (roomID, totalSize) => {
-  //     console.log("~~notifications", notifications);
-  //     let index = notifications.findIndex(noti => {
-  //       console.log("noti.id", noti.id);
-  //       console.log("roomID", roomID);
-  //       return noti.id === roomID;
-  //     });
-  //     console.log("index", index);
-
-  //     let newNotifications = Array.from(notifications);
-  //     if (index !== -1) {
-  //       const totalLastChecked = newNotifications[index].totalLastChecked;
-  //       if (roomID !== currentRoom.id && totalSize - totalLastChecked > 0) {
-  //         newNotifications[index].count = totalSize - totalLastChecked;
-  //       }
-  //       newNotifications[index].knownTotal = totalSize;
-  //       setNotifications(newNotifications);
-  //     } else {
-  //       setNotifications(prev => [
-  //         ...prev,
-  //         {
-  //           id: roomID,
-  //           count: 0,
-  //           totalLastChecked: totalSize,
-  //           knownTotal: totalSize
-  //         }
-  //       ]);
+  //   let newNotifications = Array.from(notifications);
+  //   if (index !== -1) {
+  //     const totalLastChecked = newNotifications[index].totalLastChecked;
+  //     if (roomID !== currentRoom.id && totalSize - totalLastChecked > 0) {
+  //       newNotifications[index].count = totalSize - totalLastChecked;
   //     }
-  //   },
-  //   [notifications, currentRoom]
-  // );
+  //     newNotifications[index].knownTotal = totalSize;
+  //     setNotifications(newNotifications);
+  //   } else {
+  //     setNotifications(prev => [
+  //       ...prev,
+  //       {
+  //         id: roomID,
+  //         count: 0,
+  //         totalLastChecked: totalSize,
+  //         knownTotal: totalSize
+  //       }
+  //     ]);
+  //   }
+  // }
 
   return (
     <Menu.Menu>

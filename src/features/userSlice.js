@@ -8,6 +8,9 @@ const InitialUser = {
   privateEmail: false,
   avatarURL: "",
   location: "",
+  roomsIJoined: [
+    /* { id: "", name: "" } */
+  ],
   roomsICreated: [
     /* { id: "", name: "" } */
   ]
@@ -17,16 +20,12 @@ const userSlice = createSlice({
   name: "userSlice",
   initialState: {
     currentUser: InitialUser,
-    isLogin: false,
-    roomsIJoined: []
+    isLogin: false
   },
   reducers: {
     setCurrentUser: (state, { payload: currentUser }) => {
       state.isLogin = true;
-      state.roomsIJoined = currentUser.roomsIJoined;
-      delete currentUser.roomsIJoined;
       state.currentUser = currentUser;
-      console.log("state.currentUser", state.currentUser);
     },
     clearUser: state => {
       state.isLogin = false;
@@ -39,15 +38,17 @@ const userSlice = createSlice({
       state.currentUser.roomsICreated.push(newCreatedRoom);
     },
     addRoomsIJoined: (state, { payload: newRoom }) => {
-      state.roomsIJoined.push(newRoom);
+      state.currentUser.roomsIJoined.push(newRoom);
     },
     deleteRoomsIJoined: (state, { payload: targetRoomID }) => {
-      state.roomsIJoined = state.roomsIJoined.filter(
+      state.currentUser.roomsIJoined = state.currentUser.roomsIJoined.filter(
         room => room.id !== targetRoomID
       );
     },
     setCountRoomIJoined: (state, { payload: { roomID, roomInfo } }) => {
-      let targetRoom = state.roomsIJoined.find(room => room.id === roomID);
+      let targetRoom = state.currentUser.roomsIJoined.find(
+        room => room.id === roomID
+      );
       targetRoom.count = roomInfo.count;
     }
   }
@@ -66,7 +67,7 @@ const selectIsLogin = createSelector(
 );
 
 const selectRoomsIJoined = createSelector(
-  state => state.roomsIJoined,
+  state => state.currentUser.roomsIJoined,
 
   roomsIJoined => roomsIJoined
 );
