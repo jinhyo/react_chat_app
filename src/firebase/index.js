@@ -63,7 +63,7 @@ class Firebase {
       .collection("users")
       .doc(userId)
       .get();
-    let currentUser = await snapshot.data();
+    let currentUser = snapshot.data();
     delete currentUser.createdAt;
     return currentUser;
   }

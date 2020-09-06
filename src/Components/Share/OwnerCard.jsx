@@ -22,7 +22,7 @@ function OwnerCard({ user, rightSide }) {
     <Comment>
       <Comment.Avatar src={avatarURL} />
       <Comment.Content>
-        <Comment.Author as="a">{author}</Comment.Author>
+        <Comment.Author>{author}</Comment.Author>
         {!rightSide && (
           <Comment.Metadata>
             <Icon name="map marker alternate" style={{ marginRight: 5 }} />{" "}

@@ -4,6 +4,7 @@ import Layout from "./Components/Layout/Layout";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 import Profile from "./pages/profile/Profile";
+import OtherProfile from "./pages/profile/OtherProfile";
 import PrivateChat from "./pages/private/PrivateChat";
 import PublicChat from "./pages/public/PublicChat";
 import { useDispatch } from "react-redux";
@@ -52,8 +53,6 @@ function App() {
         const totalUsers = snap.docChanges().map(async change => {
           if (change.type === "added") {
             const user = await change.doc.data();
-            console.log("~~~user", user);
-
             delete user.createdAt;
 
             if (user.privateEmail) {
@@ -63,17 +62,21 @@ function App() {
             return { id: change.doc.id, ...user };
           }
         });
+
         console.log("~~~totalUsers", totalUsers);
 
         const newTotalUsers = await Promise.all(totalUsers);
-        dispatch(
-          userActions.setTotalUsers(
-            newTotalUsers.filter(user => user?.id !== currentUser.id)
-          )
-        );
+        if (newTotalUsers[0] !== undefined) {
+          // change.type이 removed or modified일 경우 undefined가 들어옴
+          dispatch(
+            userActions.setTotalUsers(
+              newTotalUsers.filter(user => user?.id !== currentUser.id)
+            )
+          );
+        }
       });
     }
-  }, [currentUser]);
+  }, [currentUser.id]);
 
   useEffect(() => {
     // 공개 채팅방 정보 다운
@@ -140,7 +143,8 @@ function App() {
       <Route path="/register" component={Register} />
       <Route path="/login" component={Login} />
       <Route path="/profile/edit" component={ProfileEdit} />
-      <Route path="/profile" component={Profile} />
+      <Route exact path="/profile" component={Profile} />
+      <Route exact path="/profile/:userID" component={OtherProfile} />
       <Route path="/public" component={PublicChat} />
       <Route path="/private" component={PrivateChat} />
     </Switch>

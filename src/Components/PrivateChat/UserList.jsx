@@ -6,6 +6,7 @@ import UserListHeader from "./UserListHeader";
 import firebaseApp from "../../firebase";
 import { userActions, userSelector } from "../../features/userSlice";
 import OwnerCard from "../Share/OwnerCard";
+import UserPopUp from "../Share/UserPopUp";
 
 function UserList() {
   const dispatch = useDispatch();
@@ -36,7 +37,9 @@ function UserList() {
           <Comment.Group>
             {totalUsers.length > 0 &&
               totalUsers.map(user => (
-                <OwnerCard key={user.id} user={user} rightSide={false} />
+                <UserPopUp key={user.id} userID={user.id}>
+                  <OwnerCard user={user} rightSide={false} />
+                </UserPopUp>
               ))}
           </Comment.Group>
         </Segment>

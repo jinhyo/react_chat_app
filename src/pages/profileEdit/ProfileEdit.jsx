@@ -74,6 +74,7 @@ function ProfileEdit() {
         initialState.location,
         initialState.selfIntro
       );
+      console.log("handleUpdate");
 
       dispatch(
         userActions.updateProfile({
