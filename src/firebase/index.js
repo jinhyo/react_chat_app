@@ -362,6 +362,21 @@ class Firebase {
       .orderBy("createdAt", "desc")
       .onSnapshot(cb);
   }
+
+  async addFriend(friendID) {
+    const userRef = this.db.collection("users").doc(friendID);
+
+    try {
+      await this.db
+        .collection("users")
+        .doc(this.auth.currentUser.uid)
+        .collection("friends")
+        .doc(friendID)
+        .set({ userRef });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
 const firebaseApp = new Firebase();

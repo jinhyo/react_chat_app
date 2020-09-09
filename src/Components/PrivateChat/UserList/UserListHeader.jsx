@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Header, Icon, Divider, Input } from "semantic-ui-react";
 import { useSelector } from "react-redux";
-import { publicChatSelector } from "../../features/publicChatSlice";
-import { messagesSelector } from "../../features/messageSlice";
+import { publicChatSelector } from "../../../features/publicChatSlice";
+import { messagesSelector } from "../../../features/messageSlice";
 
 function UserListHeader({ searchMode, handleSearchMode, setSearchResults }) {
   const currentRoom = useSelector(publicChatSelector.currentRoom);

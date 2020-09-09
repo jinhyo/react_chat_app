@@ -31,16 +31,6 @@ function JoinedRooms() {
   //   });
   // }
 
-  // const listenToMessageCounts = useCallback(
-  //   roomID => {
-  //     firebaseApp.listenToMessageCounts(roomID, snap => {
-  //       console.log("!!notifications", notifications);
-  //       setCounts(roomID, snap.size);
-  //     });
-  //   },
-  //   [notifications]
-  // );
-
   // function setCounts(roomID, totalSize) {
   //   console.log("~~notifications", notifications);
   //   let index = notifications.findIndex(noti => {

@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid } from "semantic-ui-react";
 import Layout from "../../Components/Layout/Layout";
-import FreiendsList from "../../Components/PrivateChat/FreiendsList";
-import UserList from "../../Components/PrivateChat/UserList";
+import LeftSidePanel from "../../Components/PrivateChat/LeftSidePanel/LeftSidePanel";
+import UserList from "../../Components/PrivateChat/UserList/UserList";
 
 import "./PrivateChat.css";
 
@@ -11,7 +11,7 @@ function PrivateChat(props) {
     <Layout>
       <Grid stackable columns="equal">
         <Grid.Column tablet={6} computer={5} style={{ heigth: 100 }}>
-          <FreiendsList />
+          <LeftSidePanel />
         </Grid.Column>
         <Grid.Column tablet={9} computer={9}>
           <UserList />

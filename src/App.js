@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Switch, Route } from "react-router-dom";
 import Layout from "./Components/Layout/Layout";
 import Register from "./pages/register/Register";
@@ -30,6 +30,8 @@ function App() {
   const reload = useSelector(publicChatSelector.reload);
   const totalUsers = useSelector(userSelector.totalUsers);
   console.log("totalUsers", totalUsers);
+  const [temp, setTemp] = useState([1]);
+  console.log("temp", temp);
 
   useEffect(() => {
     // 로그인 유저 확인
@@ -47,11 +49,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // 전체 유저 정보 다운
+    // 전체 유저 정보 다운 - <UserList />에서 사용
     if (currentUser.id) {
       firebaseApp.listenToUsers(async snap => {
         const totalUsers = snap.docChanges().map(async change => {
           if (change.type === "added") {
+            console.log("~~size", snap.size);
+
+            console.log("change", change.doc);
+
+            setTemp(prev => [...prev, 1]);
             const user = await change.doc.data();
             delete user.createdAt;
 
@@ -64,7 +71,6 @@ function App() {
         });
 
         console.log("~~~totalUsers", totalUsers);
-
         const newTotalUsers = await Promise.all(totalUsers);
         if (newTotalUsers[0] !== undefined) {
           // change.type이 removed or modified일 경우 undefined가 들어옴
@@ -79,7 +85,7 @@ function App() {
   }, [currentUser.id]);
 
   useEffect(() => {
-    // 공개 채팅방 정보 다운
+    // 공개 채팅방 정보 다운 - <PublicChat />에서 사용
     const unsubscribe = firebaseApp.subscribeToAllRooms(async snap => {
       const totalRooms = snap.docChanges().map(async change => {
         if (change.type === "added") {
