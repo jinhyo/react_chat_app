@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Popup } from "semantic-ui-react";
 import firebaseApp from "../../firebase";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 function UserPopUp({ children, userID }) {
   const [addLoading, setAddLoading] = useState(false);

@@ -21,7 +21,8 @@ const userSlice = createSlice({
   initialState: {
     currentUser: InitialUser,
     isLogin: false,
-    totalUsers: []
+    totalUsers: [],
+    friends: []
   },
   reducers: {
     setCurrentUser: (state, { payload: currentUser }) => {
@@ -57,6 +58,9 @@ const userSlice = createSlice({
     },
     setTotalUsers: (state, { payload: users }) => {
       state.totalUsers.unshift(...users);
+    },
+    addFriends: (state, { payload: friends }) => {
+      state.friends.unshift(...friends);
     }
   }
 });

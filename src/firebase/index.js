@@ -377,6 +377,15 @@ class Firebase {
       console.error(error);
     }
   }
+
+  listenToFriends(cb) {
+    const unsubscribe = this.db
+      .collection("users")
+      .doc(this.auth.currentUser.uid)
+      .collection("friends")
+      .onSnapshot(cb);
+    return unsubscribe;
+  }
 }
 
 const firebaseApp = new Firebase();

@@ -40,7 +40,7 @@ function UserList() {
           <Comment.Group>
             {totalUsers.length > 0 &&
               totalUsers.map(user => (
-                <UserPopUp key={user.id} userID={user.id} toas={toast}>
+                <UserPopUp key={user.id} userID={user.id}>
                   <OwnerCard user={user} />
                 </UserPopUp>
               ))}

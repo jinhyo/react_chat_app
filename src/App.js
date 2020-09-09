@@ -139,6 +139,42 @@ function App() {
     return unsubscribe;
   }, [reload]);
 
+  useEffect(() => {
+    if (currentUser.id) {
+      async function addedCb(change) {
+        const { userRef } = change.doc.data();
+        const userSnapshot = await userRef.get();
+        const friend = { id: userSnapshot.id, ...userSnapshot.data() };
+        delete friend.roomsICreated;
+        delete friend.roomsIJoined;
+        delete friend.createdAt;
+
+        return friend;
+      }
+
+      const unsubscribe = firebaseApp.listenToFriends(async snap => {
+        const friends = snap.docChanges().map(async change => {
+          if (change.type === "added") {
+            const friend = await addedCb(change);
+            return friend;
+          } else if (change.type === "removed") {
+            console.log("friend removed");
+          } else if (change.type === "modified") {
+            console.log("friend modified");
+          }
+        });
+        const newFriends = await Promise.all(friends);
+        console.log("newFriends", newFriends);
+
+        if (newFriends[0] !== undefined) {
+          dispatch(userActions.addFriends(newFriends));
+        }
+      });
+
+      return unsubscribe;
+    }
+  }, [currentUser.id]);
+
   // if (!isLogin && currentUser.id) {
   //   return <Loader active inverted size="huge" />;
   // }
