@@ -11,9 +11,6 @@ import UserPopUp from "../../Share/UserPopUp";
 
 // <App/>에서 totlaUsers 확보
 function UserList() {
-  const dispatch = useDispatch();
-
-  const currentUser = useSelector(userSelector.currentUser);
   const totalUsers = useSelector(userSelector.totalUsers);
   console.log("totalUsers", totalUsers);
 

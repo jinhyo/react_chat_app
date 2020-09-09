@@ -378,6 +378,19 @@ class Firebase {
     }
   }
 
+  async removeFriend(friendID) {
+    try {
+      await this.db
+        .collection("users")
+        .doc(this.auth.currentUser.uid)
+        .collection("friends")
+        .doc(friendID)
+        .delete();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   listenToFriends(cb) {
     const unsubscribe = this.db
       .collection("users")

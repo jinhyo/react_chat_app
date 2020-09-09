@@ -10,13 +10,12 @@ function PrivateChat(props) {
   return (
     <Layout>
       <Grid stackable columns="equal">
-        <Grid.Column tablet={6} computer={5} style={{ heigth: 100 }}>
+        <Grid.Column tablet={7} computer={6} style={{ heigth: 100 }}>
           <LeftSidePanel />
         </Grid.Column>
-        <Grid.Column tablet={9} computer={9}>
+        <Grid.Column tablet={9} computer={10}>
           <UserList />
         </Grid.Column>
-        <Grid.Column tablet={1} computer={2}></Grid.Column>
       </Grid>
     </Layout>
   );

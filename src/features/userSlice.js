@@ -61,6 +61,9 @@ const userSlice = createSlice({
     },
     addFriends: (state, { payload: friends }) => {
       state.friends.unshift(...friends);
+    },
+    removeFriends: (state, { payload: friendID }) => {
+      state.friends = state.friends.filter(friend => friend.id !== friendID);
     }
   }
 });
@@ -89,6 +92,12 @@ const selectTotalUsers = createSelector(
   totalUsers => totalUsers
 );
 
+const selectFriends = createSelector(
+  state => state.friends,
+
+  friends => friends
+);
+
 export const USER = userSlice.name;
 export const userActions = userSlice.actions;
 export const userReducers = userSlice.reducer;
@@ -97,5 +106,6 @@ export const userSelector = {
   currentUser: state => selectCurrentUser(state[USER]),
   isLogin: state => selectIsLogin(state[USER]),
   roomsIJoined: state => selectRoomsIJoined(state[USER]),
-  totalUsers: state => selectTotalUsers(state[USER])
+  totalUsers: state => selectTotalUsers(state[USER]),
+  friends: state => selectFriends(state[USER])
 };

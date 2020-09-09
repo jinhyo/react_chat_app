@@ -28,3 +28,7 @@
   cursor: pointer;
   font-size: 20px !important;
 }
+
+.friends__list {
+  height: 80vh;
+}

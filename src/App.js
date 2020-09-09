@@ -139,6 +139,7 @@ function App() {
     return unsubscribe;
   }, [reload]);
 
+  // 친구목록 다운
   useEffect(() => {
     if (currentUser.id) {
       async function addedCb(change) {
@@ -159,6 +160,7 @@ function App() {
             return friend;
           } else if (change.type === "removed") {
             console.log("friend removed");
+            dispatch(userActions.removeFriends(change.doc.id));
           } else if (change.type === "modified") {
             console.log("friend modified");
           }
