@@ -23,8 +23,8 @@ function UserList() {
 
   return (
     <Segment style={{ height: "90vh" }}>
-      <ToastContainer autoClose={3000} />
       <Comment.Group>
+        <ToastContainer autoClose={3000} />
         {/* 헤더 */}
         <UserListHeader
           searchMode={searchMode}

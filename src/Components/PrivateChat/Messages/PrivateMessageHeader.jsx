@@ -9,7 +9,6 @@ function PrivateMessageHeader({
   handleSearchMode,
   setSearchResults
 }) {
-  const currentRoom = useSelector(publicChatSelector.currentRoom);
   const messages = useSelector(messagesSelector.publicMessages);
 
   useEffect(() => {
@@ -19,10 +18,15 @@ function PrivateMessageHeader({
     }
   }, [searchMode]);
 
-  useEffect(() => {
-    setSearchTerm("");
-    setSearchResults([]);
-  }, [currentRoom]);
+  useEffect(
+    () => {
+      setSearchTerm("");
+      setSearchResults([]);
+    },
+    [
+      /* currentRoom */
+    ]
+  );
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
@@ -52,7 +56,7 @@ function PrivateMessageHeader({
   return (
     <div>
       <Header as="h2" dividing textAlign="center">
-        <span>{currentRoom.name}</span>
+        <span>private chat</span>
         <Icon
           name="search"
           color="blue"

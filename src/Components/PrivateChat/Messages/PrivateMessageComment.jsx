@@ -4,9 +4,9 @@ import moment from "moment";
 import { Comment, Image } from "semantic-ui-react";
 import { userSelector } from "../../../features/userSlice";
 
-function PrivateMessageComment({ messages }) {
+function PrivateMessageComment({ privateMessages }) {
   const currentUser = useSelector(userSelector.currentUser);
-  console.log("~~messages", messages);
+  console.log("~~privateMessages", privateMessages);
 
   const isMyMessage = useCallback(
     message => currentUser.id === message.createdBy.id,
@@ -26,7 +26,7 @@ function PrivateMessageComment({ messages }) {
 
   return (
     <>
-      {messages.map((message, index) => (
+      {privateMessages.map((message, index) => (
         <div
           key={index}
           className={isMyMessage(message) ? "message__self" : ""}

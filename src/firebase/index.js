@@ -217,6 +217,7 @@ class Firebase {
       .doc(roomID)
       .collection("participants")
       .get();
+
     return snap.docs.map(doc => doc.data());
   }
 
@@ -397,8 +398,67 @@ class Firebase {
       .doc(this.auth.currentUser.uid)
       .collection("friends")
       .onSnapshot(cb);
+
     return unsubscribe;
   }
+
+  listenToPrivateRooms(cb) {
+    const unsubscribe = this.db
+      .collection("privateRoom")
+      .where("participants", "array-contains", this.auth.currentUser.uid)
+      .where("messageCounts", ">", 0)
+      .orderBy("messageCounts", "desc")
+      .orderBy("lastMessageTimestamp", "desc")
+      .onSnapshot(cb);
+
+    return unsubscribe;
+  }
+
+  async sendPrivateMessage(friendID, content) {
+    const privateRoomID = makePrivateRoomID(
+      this.auth.currentUser.uid,
+      friendID
+    );
+    const createdAt = new Date();
+
+    await this.db
+      .collection("privateRoom")
+      .doc(privateRoomID)
+      .collection("messages")
+      .add({
+        content,
+        createdAt,
+        createdBy: {
+          id: this.auth.currentUser.uid,
+          nickname: this.auth.currentUser.displayName
+        }
+      });
+
+    await this.db
+      .collection("privateRoom")
+      .doc(privateRoomID)
+      .update({
+        lastMessageTimestamp: createdAt,
+        messageCounts: this.fieldValue.increment(1)
+      });
+  }
+
+  // async sendPrivateImageMessage(imageURLs, createdBy, roomID) {
+  //   await this.db
+  //     .collection("rooms")
+  //     .doc(roomID)
+  //     .collection("messages")
+  //     .add({
+  //       content: imageURLs,
+  //       type: "image",
+  //       createdAt: new Date(),
+  //       createdBy
+  //     });
+  // }
+}
+
+export function makePrivateRoomID(myID, friendID) {
+  return myID > friendID ? myID + friendID : friendID + myID;
 }
 
 const firebaseApp = new Firebase();

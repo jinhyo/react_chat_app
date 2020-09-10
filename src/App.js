@@ -30,8 +30,6 @@ function App() {
   const reload = useSelector(publicChatSelector.reload);
   const totalUsers = useSelector(userSelector.totalUsers);
   console.log("totalUsers", totalUsers);
-  const [temp, setTemp] = useState([1]);
-  console.log("temp", temp);
 
   useEffect(() => {
     // 로그인 유저 확인
@@ -54,11 +52,6 @@ function App() {
       firebaseApp.listenToUsers(async snap => {
         const totalUsers = snap.docChanges().map(async change => {
           if (change.type === "added") {
-            console.log("~~size", snap.size);
-
-            console.log("change", change.doc);
-
-            setTemp(prev => [...prev, 1]);
             const user = await change.doc.data();
             delete user.createdAt;
 
@@ -70,7 +63,6 @@ function App() {
           }
         });
 
-        console.log("~~~totalUsers", totalUsers);
         const newTotalUsers = await Promise.all(totalUsers);
         if (newTotalUsers[0] !== undefined) {
           // change.type이 removed or modified일 경우 undefined가 들어옴

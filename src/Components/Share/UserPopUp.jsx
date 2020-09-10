@@ -1,28 +1,37 @@
 import React, { useCallback, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Popup } from "semantic-ui-react";
 import firebaseApp from "../../firebase";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { userSelector } from "../../features/userSlice";
+import { userSelector, userActions } from "../../features/userSlice";
 
 function UserPopUp({ children, userID }) {
+  const dispatch = useDispatch();
+
   const friends = useSelector(userSelector.friends);
+
   const [loading, setLoading] = useState(false);
 
-  const addFriend = useCallback(async friendID => {
+  const handleAddFriend = useCallback(async () => {
     setLoading(true);
-    firebaseApp.addFriend(friendID);
+    firebaseApp.addFriend(userID);
     setLoading(false);
     toast.success("친구 추가 완료");
-  }, []);
+  }, [userID]);
 
-  const removeFriend = useCallback(async friendID => {
+  const handleSetCurrentFriend = useCallback(() => {
+    dispatch(userActions.setCurrentFriend(userID));
+    // 이후 채팅방으로 이동하고 <PrivateMessages />를 뛰움
+  }, [userID]);
+
+  const handleRemoveFriend = useCallback(async () => {
     setLoading(true);
-    await firebaseApp.removeFriend(friendID);
+    await firebaseApp.removeFriend(userID);
     setLoading(false);
     toast.warning("친구 삭제 완료");
-  }, []);
+  }, [userID]);
 
   const isMyfriend = useCallback(
     userID => {
@@ -45,17 +54,26 @@ function UserPopUp({ children, userID }) {
         <Button size="small" color="blue" content="프로필" fluid />
       </Link>
       {isMyfriend(userID) ? (
-        <Button
-          onClick={() => removeFriend(userID)}
-          loading={loading}
-          size="small"
-          color="red"
-          content="친구삭제"
-          fluid
-        />
+        <>
+          <Button
+            onClick={handleRemoveFriend}
+            loading={loading}
+            size="small"
+            color="red"
+            content="친구삭제"
+            fluid
+          />
+          <Button
+            onClick={handleSetCurrentFriend}
+            size="small"
+            color="green"
+            content="채팅 시작"
+            fluid
+          />
+        </>
       ) : (
         <Button
-          onClick={() => addFriend(userID)}
+          onClick={handleAddFriend}
           loading={loading}
           size="small"
           color="green"

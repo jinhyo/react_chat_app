@@ -6,24 +6,19 @@ import { publicChatSelector } from "../../../features/publicChatSlice";
 import { userSelector } from "../../../features/userSlice";
 import { Picker } from "emoji-mart";
 import PictureModal from "./PictureModal";
+import { messagesSelector } from "../../../features/messageSlice";
 
 function PrivateMessageForm({ scrollToBottom }) {
   const inputRef = useRef();
 
   const currentUser = useSelector(userSelector.currentUser);
   const currentRoom = useSelector(publicChatSelector.currentRoom);
+  // const messages = userSelector(messagesSelector.privateMesaages);
+
   const [modal, setModal] = useState(false);
 
   const [text, setText] = useState("");
   const [emoji, setEmoji] = useState(false);
-
-  useEffect(() => {
-    if (text) {
-      firebaseApp.addTypingStatus(currentRoom.id);
-    } else {
-      firebaseApp.deleteTypingStatus(currentRoom.id);
-    }
-  }, [text]);
 
   const handleEmojiToggle = useCallback(() => {
     setEmoji(prev => !prev);

@@ -1,105 +1,74 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Comment, Segment, Input, Divider } from "semantic-ui-react";
-import MessageForm from "./MessageForm";
 import firebaseApp from "../../../firebase";
-import { publicChatSelector } from "../../../features/publicChatSlice";
-import MessageComment from "./MessageComment";
 import {
   messagesActions,
   messagesSelector
 } from "../../../features/messageSlice";
 
-import "./Messages.css";
-import MessageHeader from "./MessageHeader";
-import { userSelector } from "../../../features/userSlice";
-import Typing from "./Typing";
 import PrivateMessageComment from "./PrivateMessageComment";
 import PrivateMessageHeader from "./PrivateMessageHeader";
 import PrivateMessageForm from "./PrivateMessageForm";
+import { publicChatSelector } from "../../../features/publicChatSlice";
+import { userSelector } from "../../../features/userSlice";
 
 function PrivateMessages() {
   const toBottomRef = useRef();
   const dispatch = useDispatch();
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const currentUser = useSelector(userSelector.currentUser);
-  const messages = useSelector(messagesSelector.publicMessages);
-  console.log("messages", messages);
+  const privateMessages = useSelector(messagesSelector.privateMesaages);
+  console.log("privatemessages", privateMessages);
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  const [typingUsers, setTypingUsers] = useState([]);
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
   }, []);
 
   useEffect(() => {
-    if (currentRoom) {
-      function addedCallback(snap) {
-        if (snap.key !== currentUser.id) {
-          setTypingUsers(prev => [
-            ...prev,
-            { id: snap.key, nickname: snap.val() }
-          ]);
-        }
-      }
-
-      function removedCallback(snap) {
-        setTypingUsers(prev => prev.filter(user => user.id !== snap.key));
-      }
-
-      const { typingRef, connectedRef } = firebaseApp.listenToTypings(
-        currentRoom.id,
-        addedCallback,
-        removedCallback
-      );
-
-      return () => {
-        typingRef.off();
-        connectedRef.off();
-      };
-    }
-  }, [currentRoom, currentUser]);
-
-  useEffect(() => {
-    if (messages) {
+    if (privateMessages) {
       scrollToBottom();
     }
-  }, [messages]);
+  }, [privateMessages]);
 
-  useEffect(() => {
-    dispatch(messagesActions.clearMessages());
+  useEffect(
+    () => {
+      dispatch(messagesActions.clearPrivateMessages());
 
-    const participants = currentRoom.participants;
-    const avatarURLs = participants.reduce((ac, participant) => {
-      ac[participant.id] = participant.avatarURL;
-      return ac;
-    }, {});
-
-    const unsubscribe = firebaseApp.subscribeToRoomMessages(
-      currentRoom.id,
-      async snap => {
-        const messages = snap.docChanges().map(async change => {
-          if (change.type === "added") {
-            const senderID = change.doc.data().createdBy.id;
-            const createdAt = JSON.stringify(
-              change.doc.data().createdAt.toDate()
-            );
-            return {
-              ...change.doc.data(),
-              createdAt,
-              avatarURL: avatarURLs[senderID]
-            };
-          }
-        });
-        const totalMessages = await Promise.all(messages);
-        dispatch(messagesActions.setMessages(totalMessages));
-      }
-    );
-
-    return unsubscribe;
-  }, [currentRoom]);
+      // const participants = currentRoom.participants;
+      // const avatarURLs = participants.reduce((ac, participant) => {
+      //   ac[participant.id] = participant.avatarURL;
+      //   return ac;
+      // }, {});
+      // const unsubscribe = firebaseApp.subscribeToRoomMessages(
+      //   currentRoom.id,
+      //   async snap => {
+      //     const privateMessages = snap.docChanges().map(async change => {
+      //       if (change.type === "added") {
+      //         const senderID = change.doc.data().createdBy.id;
+      //         const createdAt = JSON.stringify(
+      //           change.doc.data().createdAt.toDate()
+      //         );
+      //         return {
+      //           ...change.doc.data(),
+      //           createdAt,
+      //           avatarURL: avatarURLs[senderID]
+      //         };
+      //       }
+      //     });
+      //     const totalMessages = await Promise.all(privateMessages);
+      //     dispatch(messagesActions.setMessages(totalMessages));
+      //   }
+      // );
+      // return unsubscribe;
+    },
+    [
+      /* currentRoom */
+    ]
+  );
 
   const scrollToBottom = useCallback(() => {
     if (toBottomRef.current) {
@@ -121,12 +90,10 @@ function PrivateMessages() {
         {/* 메시지 */}
         <Segment className={searchMode ? "messages__search" : "messages"}>
           {searchResults.length > 0 ? (
-            <PrivateMessageComment messages={searchResults} />
+            <PrivateMessageComment privateMessages={searchResults} />
           ) : (
-            <PrivateMessageComment messages={messages} />
+            <PrivateMessageComment privateMessages={privateMessages} />
           )}
-
-          {typingUsers && <Typing typingUsers={typingUsers} />}
 
           <div ref={toBottomRef}></div>
         </Segment>
