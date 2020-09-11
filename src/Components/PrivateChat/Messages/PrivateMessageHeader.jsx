@@ -58,7 +58,9 @@ function PrivateMessageHeader({
       <Header as="h4" dividing textAlign="center">
         {/* <span>private chat</span> */}
         <Image avatar src={currentPrivateRoom.friendAvatarURL} />
-        {currentPrivateRoom.friendNickname}
+        <span className="privateMessage__header">
+          {currentPrivateRoom.friendNickname}
+        </span>
         <Icon
           name="search"
           color="blue"
