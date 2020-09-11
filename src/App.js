@@ -74,6 +74,13 @@ function App() {
         });
         const newFriends = await Promise.all(friends);
         console.log("newFriends", newFriends);
+        console.log("friends", friends);
+
+        if (friends.length === 0) {
+          // 친구가 없을 경우 listenToPrivateRooms를 호출하기 위한
+          // isFriendsLoadDone을 true로 만들기 위해 사용
+          dispatch(userActions.addFriends(null));
+        }
 
         if (newFriends[0] !== undefined) {
           dispatch(userActions.addFriends(newFriends));

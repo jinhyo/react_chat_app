@@ -10,7 +10,23 @@ const privateChatSlice = createSlice({
   },
   reducers: {
     setPrivateRooms: (state, { payload: privateRooms }) => {
-      state.privateRooms.push(...privateRooms);
+      const index = state.privateRooms.findIndex(
+        room => room.friendID === privateRooms[0].friendID
+      );
+
+      // case1: 기존에 임의로 만든 privateRoom(첫 메시지용)에서 메시지를 보내면
+      // db에 새로운 privateRoom document가 생성되고 이쪽으로 전달된다.
+      // 따라서 기존에 임의로 만든 privateRoom을 대체해야 한다.
+      // case2: 기존의 privateRoom document가 수정 될 경우(ex) lastMessage) 기존 privateRoom을 대체해야 한다.
+      if (index !== -1) {
+        state.privateRooms.splice(index, 1);
+        state.privateRooms.unshift(privateRooms[0]);
+
+        // 만약 case1의 경우 currentPrivateRoom도 새로들어온 privateRoom으로 교체해줘야 함
+        // state.currentPrivateRoom = state.privateRooms.find(room => room.id === state.currentPrivateRoom.id)
+      } else {
+        state.privateRooms.push(...privateRooms);
+      }
     },
     setCurrentPrivateRoom: (
       state,

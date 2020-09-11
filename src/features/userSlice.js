@@ -62,7 +62,9 @@ const userSlice = createSlice({
       state.totalUsers.unshift(...users);
     },
     addFriends: (state, { payload: friends }) => {
-      state.friends.unshift(...friends);
+      if (friends !== null) {
+        state.friends.unshift(...friends);
+      }
       state.isFriendsLoadDone = true;
     },
     removeFriends: (state, { payload: friendID }) => {

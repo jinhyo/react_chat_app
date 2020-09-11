@@ -403,6 +403,8 @@ class Firebase {
   }
 
   listenToPrivateRooms(cb) {
+    console.log("this.auth.currentUser.uid", this.auth.currentUser.uid);
+
     const unsubscribe = this.db
       .collection("privateRooms")
       .where("participants", "array-contains", this.auth.currentUser.uid)
