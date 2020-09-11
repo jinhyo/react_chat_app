@@ -53,8 +53,6 @@ function PrivateChat() {
   useEffect(() => {
     // listenToPrivateRooms에서 받은 privateRooms들을 정리한 후 redux's privateRooms으로 보냄
     if (newPrivateRooms.length > 0 && friendsLoadDone === true) {
-      console.log("~~newPrivateRooms", newPrivateRooms);
-
       assignPrivateRooms(newPrivateRooms, friends);
     }
   }, [newPrivateRooms, friendsLoadDone]);

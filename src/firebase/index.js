@@ -419,6 +419,7 @@ class Firebase {
       .collection("privateRooms")
       .doc(privateRoomID)
       .collection("messages")
+      .orderBy("createdAt", "asc")
       .onSnapshot(cb);
 
     return unsubscribe;
