@@ -4,24 +4,30 @@ import { Menu, Segment } from "semantic-ui-react";
 import FriendList from "./FriendList";
 import ChatList from "./ChatList";
 import { userActions, userSelector } from "../../../features/userSlice";
+import {
+  privateChatSelector,
+  privateChatActions
+} from "../../../features/privateChatSlice";
 
 function LeftSidePanel({ currentItem, handleItemClick }) {
   const dispatch = useDispatch();
-  const currentFriend = useSelector(userSelector.currentFriend);
+  const currentPrivateRoom = useSelector(
+    privateChatSelector.currentPrivateRoom
+  );
 
   useEffect(() => {
     // 전체 이용자 버튼을 누를 경우 호출
     if (currentItem === "userList") {
-      dispatch(userActions.clearCurrentFriend());
+      dispatch(privateChatActions.clearCurrentPrivateRoom());
     }
   }, [currentItem]);
 
   useEffect(() => {
-    // 채팅 시작 버튼을 누를 경우 채팅 페이지로 이동
-    if (currentFriend) {
+    // 채팅 시작 버튼을 누를 경우 <ChatList />보여줌
+    if (currentPrivateRoom) {
       handleItemClick(null, { name: "chatList" });
     }
-  }, [currentFriend]);
+  }, [currentPrivateRoom]);
 
   return (
     <Segment style={{ backgroundColor: "#6DD5FA", height: "90vh" }}>

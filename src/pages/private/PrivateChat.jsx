@@ -10,40 +10,87 @@ import PrivateMessages from "../../Components/PrivateChat/Messages/PrivateMessag
 import { userActions, userSelector } from "../../features/userSlice";
 import firebaseApp from "../../firebase";
 import { messagesActions } from "../../features/messageSlice";
+import {
+  privateChatActions,
+  privateChatSelector
+} from "../../features/privateChatSlice";
 
 function PrivateChat() {
   const dispatch = useDispatch();
-  const currentFriend = useSelector(userSelector.currentFriend);
+  const currentPrivateRoom = useSelector(
+    privateChatSelector.currentPrivateRoom
+  );
   const currentUser = useSelector(userSelector.currentUser);
+  const friends = useSelector(userSelector.friends);
+  const friendsLoadDone = useSelector(userSelector.isFriendsLoadDone);
 
   const [currentItem, setCurrentItem] = useState("friendList");
-  console.log("currentFriend", currentFriend);
+  const [newPrivateRooms, setNewPrivateRooms] = useState([]);
 
   useEffect(() => {
-    // private rooms 다운
+    // private rooms 다운 / 해당 정보들은 assignPrivateRooms()에서 정리
     if (currentUser.id) {
-      const ubsubscribe = firebaseApp.listenToPrivateRooms(async snap => {
+      const ubsubscribe = firebaseApp.listenToPrivateRooms(snap => {
         const privateRooms = snap.docChanges().map(change => {
           if (change.type === "added") {
-            const privateRoom = change.doc.data();
-            console.log("~~privateRoom", privateRoom);
+            return { id: change.doc.id, ...change.doc.data() };
           } else if (change.type === "removed") {
             console.log("prive room removed");
-          } else if (change.type === "modifired") {
-            console.log("prive room removed");
+          } else if (change.type === "modified") {
+            console.log("prive room modifired", change.doc.data());
           }
         });
-        const newPrivateRooms = await Promise.all(privateRooms);
-        console.log("newPrivateRooms", newPrivateRooms);
 
-        if (newPrivateRooms[0] !== undefined) {
-          dispatch(messagesActions.setPrivateMessages());
+        if (privateRooms[0] !== undefined) {
+          setNewPrivateRooms(privateRooms);
         }
       });
 
       return ubsubscribe;
     }
   }, [currentUser.id]);
+
+  useEffect(() => {
+    // listenToPrivateRooms에서 받은 privateRooms들을 정리한 후 redux's privateRooms으로 보냄
+    if (newPrivateRooms.length > 0 && friendsLoadDone === true) {
+      console.log("~~newPrivateRooms", newPrivateRooms);
+
+      assignPrivateRooms(newPrivateRooms, friends);
+    }
+  }, [newPrivateRooms, friendsLoadDone]);
+
+  async function assignPrivateRooms(privateRooms, friends) {
+    // privateRooms의 내용물을 필요한 정보로 대체
+    const PrivateRoomsPromise = privateRooms.map(async room => {
+      const friendID = room.participants.find(
+        participantID => participantID !== currentUser.id
+      );
+
+      const friend = friends.find(friend => friend.id === friendID);
+      const privateRoom = {
+        id: room.id,
+        friendID,
+        lastMessageTimeStamp: JSON.stringify(room.lastMessageTimestamp),
+        lastMessage: room.lastMessage
+      };
+
+      if (friend) {
+        // redux의 friends목록에 이미 있는 경우: 거기서 해당 nickname과 avatarURL가져옴
+        privateRoom.friendNickname = friend.nickname;
+        privateRoom.friendAvatarURL = friend.avatarURL;
+      } else {
+        // friends목록에 없는 경우 userRefs를 통해 db에서 가져옴
+        const friendSnap = await room.userRefs.friendID.get();
+        const friend = friendSnap.data();
+        privateRoom.friendNickname = friend.nickname;
+        privateRoom.friendAvatarURL = friend.avatarURL;
+      }
+      return privateRoom;
+    });
+
+    const newPrivateRooms = await Promise.all(PrivateRoomsPromise);
+    dispatch(privateChatActions.setPrivateRooms(newPrivateRooms));
+  }
 
   const handleItemClick = useCallback((e, { name }) => {
     setCurrentItem(name);
@@ -59,7 +106,7 @@ function PrivateChat() {
           />
         </Grid.Column>
         <Grid.Column tablet={9} computer={10}>
-          {currentFriend ? <PrivateMessages /> : <UserList />}
+          {currentPrivateRoom ? <PrivateMessages /> : <UserList />}
         </Grid.Column>
       </Grid>
     </Layout>

@@ -1,16 +1,21 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Header, Icon, Divider, Input } from "semantic-ui-react";
+import { Header, Icon, Divider, Input, Image } from "semantic-ui-react";
 import { useSelector } from "react-redux";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { messagesSelector } from "../../../features/messageSlice";
+import { userSelector } from "../../../features/userSlice";
+import { privateChatSelector } from "../../../features/privateChatSlice";
 
 function PrivateMessageHeader({
   searchMode,
   handleSearchMode,
   setSearchResults
 }) {
-  const messages = useSelector(messagesSelector.publicMessages);
-
+  const messages = useSelector(messagesSelector.privateMesaages);
+  const currentFrined = useSelector(userSelector.currentFriend);
+  const currentPrivateRoom = useSelector(
+    privateChatSelector.currentPrivateRoom
+  );
   useEffect(() => {
     if (!searchMode) {
       setSearchTerm("");
@@ -18,15 +23,10 @@ function PrivateMessageHeader({
     }
   }, [searchMode]);
 
-  useEffect(
-    () => {
-      setSearchTerm("");
-      setSearchResults([]);
-    },
-    [
-      /* currentRoom */
-    ]
-  );
+  useEffect(() => {
+    setSearchTerm("");
+    setSearchResults([]);
+  }, [currentPrivateRoom]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
@@ -55,8 +55,10 @@ function PrivateMessageHeader({
 
   return (
     <div>
-      <Header as="h2" dividing textAlign="center">
-        <span>private chat</span>
+      <Header as="h4" dividing textAlign="center">
+        {/* <span>private chat</span> */}
+        <Image avatar src={currentPrivateRoom.friendAvatarURL} />
+        {currentPrivateRoom.friendNickname}
         <Icon
           name="search"
           color="blue"

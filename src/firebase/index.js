@@ -404,7 +404,7 @@ class Firebase {
 
   listenToPrivateRooms(cb) {
     const unsubscribe = this.db
-      .collection("privateRoom")
+      .collection("privateRooms")
       .where("participants", "array-contains", this.auth.currentUser.uid)
       .where("messageCounts", ">", 0)
       .orderBy("messageCounts", "desc")
@@ -414,33 +414,58 @@ class Firebase {
     return unsubscribe;
   }
 
-  async sendPrivateMessage(friendID, content) {
-    const privateRoomID = makePrivateRoomID(
-      this.auth.currentUser.uid,
-      friendID
-    );
-    const createdAt = new Date();
-
-    await this.db
-      .collection("privateRoom")
+  listenToPrivateMessages(privateRoomID, cb) {
+    const unsubscribe = this.db
+      .collection("privateRooms")
       .doc(privateRoomID)
       .collection("messages")
-      .add({
-        content,
-        createdAt,
-        createdBy: {
-          id: this.auth.currentUser.uid,
-          nickname: this.auth.currentUser.displayName
+      .onSnapshot(cb);
+
+    return unsubscribe;
+  }
+
+  async sendPrivateMessage(friendID, content) {
+    const myID = this.auth.currentUser.uid;
+
+    const privateRoomID = makePrivateRoomID(myID, friendID);
+    const createdAt = new Date();
+
+    const privateRoomRef = this.db
+      .collection("privateRooms")
+      .doc(privateRoomID);
+    const privateRoomSnap = await privateRoomRef.get();
+    if (!privateRoomSnap.exists) {
+      // 첫 메시지를 보낼 경우 아직 db의 privateRoom document가 안 만들어져 있기 때문에
+      // 먼저 privateRoom document를 만든다.
+      await privateRoomRef.set({
+        lastMessageTimestamp: createdAt,
+        messageCounts: 1,
+        lastMessage: content,
+        participants: [myID, friendID],
+        userRefs: {
+          [myID]: this.db.collection("users").doc(myID),
+          [friendID]: this.db.collection("users").doc(friendID)
         }
       });
-
-    await this.db
-      .collection("privateRoom")
-      .doc(privateRoomID)
-      .update({
+    } else {
+      // 이미 privateRoom document가 있는 경우에는 방 정보를 업데이트
+      await privateRoomRef.update({
         lastMessageTimestamp: createdAt,
-        messageCounts: this.fieldValue.increment(1)
+        messageCounts: this.fieldValue.increment(1),
+        lastMessage: content
       });
+    }
+
+    // 위에서 방을 먼저 만들거나 업데이트한 후 메시지를 추가
+    await privateRoomRef.collection("messages").add({
+      content,
+      type: "message",
+      createdAt,
+      createdBy: {
+        id: this.auth.currentUser.uid,
+        nickname: this.auth.currentUser.displayName
+      }
+    });
   }
 
   // async sendPrivateImageMessage(imageURLs, createdBy, roomID) {

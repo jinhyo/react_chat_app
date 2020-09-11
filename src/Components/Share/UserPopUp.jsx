@@ -6,11 +6,13 @@ import firebaseApp from "../../firebase";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { userSelector, userActions } from "../../features/userSlice";
+import { privateChatActions } from "../../features/privateChatSlice";
 
-function UserPopUp({ children, userID }) {
+function UserPopUp({ children, userID, friend }) {
   const dispatch = useDispatch();
 
   const friends = useSelector(userSelector.friends);
+  const currentUser = useSelector(userSelector.currentUser);
 
   const [loading, setLoading] = useState(false);
 
@@ -21,8 +23,15 @@ function UserPopUp({ children, userID }) {
     toast.success("친구 추가 완료");
   }, [userID]);
 
-  const handleSetCurrentFriend = useCallback(() => {
-    dispatch(userActions.setCurrentFriend(userID));
+  const handleSetCurrentPrivateRoom = useCallback(() => {
+    dispatch(
+      privateChatActions.setCurrentPrivateRoom({
+        friendID: userID,
+        currentUserID: currentUser.id,
+        friendNickname: friend.nickname,
+        friendAvatarURL: friend.avatarURL
+      })
+    );
     // 이후 채팅방으로 이동하고 <PrivateMessages />를 뛰움
   }, [userID]);
 
@@ -64,7 +73,7 @@ function UserPopUp({ children, userID }) {
             fluid
           />
           <Button
-            onClick={handleSetCurrentFriend}
+            onClick={handleSetCurrentPrivateRoom}
             size="small"
             color="green"
             content="채팅 시작"

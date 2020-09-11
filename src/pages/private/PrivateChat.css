@@ -1,9 +1,10 @@
-.messages {
-  height: 72vh;
+.privateMessages {
+  height: 70vh;
   overflow-y: scroll;
 }
-.messages__search {
-  height: 65vh;
+
+.privateMessages__search {
+  height: 64vh;
   overflow-y: scroll;
 }
 

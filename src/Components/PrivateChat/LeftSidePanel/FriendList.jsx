@@ -14,7 +14,7 @@ function FriendList() {
         <Comment.Group>
           {friends.length > 0 &&
             friends.map(friend => (
-              <UserPopUp key={friend.id} userID={friend.id}>
+              <UserPopUp key={friend.id} userID={friend.id} friend={friend}>
                 <OwnerCard user={friend} />
               </UserPopUp>
             ))}

@@ -1,33 +1,42 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Comment } from "semantic-ui-react";
-import { userActions } from "../../../features/userSlice";
+import { userActions, userSelector } from "../../../features/userSlice";
+import { privateChatActions } from "../../../features/privateChatSlice";
 
-function FriendCard({ friend }) {
+function FriendCard({ privateRoom }) {
   const dispatch = useDispatch();
+  const currentUser = useSelector(userSelector.currentUser);
 
   const [author, setAuthor] = useState("");
   const [avatarURL, setavatarURL] = useState("");
   const [lastMessage, setLastMessage] = useState("");
   const [lastMessageTimestamp, setLastMessageTimestamp] = useState("");
-  console.log("friend", friend);
+  console.log("888privateRoom", privateRoom);
 
   useEffect(() => {
-    if (friend) {
-      setAuthor(friend.friendNickname);
-      setavatarURL(friend.friendAvatarURL);
-      setLastMessage(friend?.lastMessage);
-      setLastMessageTimestamp(friend?.lastMessageTimestamp);
+    if (privateRoom) {
+      setAuthor(privateRoom.friendNickname);
+      setavatarURL(privateRoom.friendAvatarURL);
+      setLastMessage(privateRoom?.lastMessage);
+      setLastMessageTimestamp(privateRoom?.lastMessageTimestamp);
     }
-  }, [friend]);
+  }, [privateRoom]);
 
-  const handleSetCurrentFriend = useCallback(() => {
-    dispatch(userActions.setCurrentFriend(friend.friendID));
-    console.log("friend.id", friend.id);
-  }, [friend]);
+  const handleSetCurrentPrivateRoom = useCallback(() => {
+    dispatch(
+      privateChatActions.setCurrentPrivateRoom({
+        friendID: privateRoom.friendID,
+        currentUserID: currentUser.id
+      })
+    );
+  }, [privateRoom]);
 
   return (
-    <Comment style={{ cursor: "pointer" }} onClick={handleSetCurrentFriend}>
+    <Comment
+      style={{ cursor: "pointer" }}
+      onClick={handleSetCurrentPrivateRoom}
+    >
       <Comment.Avatar src={avatarURL} />
       <Comment.Content>
         <Comment.Author>{author}</Comment.Author>

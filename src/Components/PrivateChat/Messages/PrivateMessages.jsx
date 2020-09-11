@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Comment, Segment, Input, Divider } from "semantic-ui-react";
-import firebaseApp from "../../../firebase";
+import firebaseApp, { makePrivateRoomID } from "../../../firebase";
 import {
   messagesActions,
   messagesSelector
@@ -12,14 +12,19 @@ import PrivateMessageHeader from "./PrivateMessageHeader";
 import PrivateMessageForm from "./PrivateMessageForm";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { userSelector } from "../../../features/userSlice";
+import { privateChatSelector } from "../../../features/privateChatSlice";
 
 function PrivateMessages() {
   const toBottomRef = useRef();
   const dispatch = useDispatch();
-  const currentRoom = useSelector(publicChatSelector.currentRoom);
+  const currentPrivateRoom = useSelector(
+    privateChatSelector.currentPrivateRoom
+  );
   const currentUser = useSelector(userSelector.currentUser);
+
   const privateMessages = useSelector(messagesSelector.privateMesaages);
   console.log("privatemessages", privateMessages);
+  console.log("currentPrivateRoom", currentPrivateRoom);
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -34,41 +39,42 @@ function PrivateMessages() {
     }
   }, [privateMessages]);
 
-  useEffect(
-    () => {
-      dispatch(messagesActions.clearPrivateMessages());
+  useEffect(() => {
+    dispatch(messagesActions.clearPrivateMessages());
 
-      // const participants = currentRoom.participants;
-      // const avatarURLs = participants.reduce((ac, participant) => {
-      //   ac[participant.id] = participant.avatarURL;
-      //   return ac;
-      // }, {});
-      // const unsubscribe = firebaseApp.subscribeToRoomMessages(
-      //   currentRoom.id,
-      //   async snap => {
-      //     const privateMessages = snap.docChanges().map(async change => {
-      //       if (change.type === "added") {
-      //         const senderID = change.doc.data().createdBy.id;
-      //         const createdAt = JSON.stringify(
-      //           change.doc.data().createdAt.toDate()
-      //         );
-      //         return {
-      //           ...change.doc.data(),
-      //           createdAt,
-      //           avatarURL: avatarURLs[senderID]
-      //         };
-      //       }
-      //     });
-      //     const totalMessages = await Promise.all(privateMessages);
-      //     dispatch(messagesActions.setMessages(totalMessages));
-      //   }
-      // );
-      // return unsubscribe;
-    },
-    [
-      /* currentRoom */
-    ]
-  );
+    const avatarURLs = {
+      [currentPrivateRoom.friendID]: currentPrivateRoom.friendAvatarURL,
+      [currentUser.id]: currentUser.avatarURL
+    };
+
+    console.log("avatarURLs", avatarURLs);
+
+    const unsubscribe = firebaseApp.listenToPrivateMessages(
+      currentPrivateRoom.id,
+      async snap => {
+        const privateMessages = snap.docChanges().map(async change => {
+          if (change.type === "added") {
+            const senderID = change.doc.data().createdBy.id;
+            const createdAt = JSON.stringify(
+              change.doc.data().createdAt.toDate()
+            );
+            console.log("senderID", senderID);
+            return {
+              ...change.doc.data(),
+              createdAt,
+              avatarURL: avatarURLs[senderID]
+            };
+          }
+          debugger;
+        });
+        const totalMessages = await Promise.all(privateMessages);
+        console.log("totalMessages", totalMessages);
+
+        dispatch(messagesActions.setPrivateMessages(totalMessages));
+      }
+    );
+    return unsubscribe;
+  }, [currentPrivateRoom]);
 
   const scrollToBottom = useCallback(() => {
     if (toBottomRef.current) {
@@ -88,7 +94,9 @@ function PrivateMessages() {
         />
 
         {/* 메시지 */}
-        <Segment className={searchMode ? "messages__search" : "messages"}>
+        <Segment
+          className={searchMode ? "privateMessages__search" : "privateMessages"}
+        >
           {searchResults.length > 0 ? (
             <PrivateMessageComment privateMessages={searchResults} />
           ) : (

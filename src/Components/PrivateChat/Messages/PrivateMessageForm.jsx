@@ -7,13 +7,15 @@ import { userSelector } from "../../../features/userSlice";
 import { Picker } from "emoji-mart";
 import PictureModal from "./PictureModal";
 import { messagesSelector } from "../../../features/messageSlice";
+import { privateChatSelector } from "../../../features/privateChatSlice";
 
 function PrivateMessageForm({ scrollToBottom }) {
   const inputRef = useRef();
 
   const currentUser = useSelector(userSelector.currentUser);
-  const currentRoom = useSelector(publicChatSelector.currentRoom);
-  // const messages = userSelector(messagesSelector.privateMesaages);
+  const currentPrivateRoom = useSelector(
+    privateChatSelector.currentPrivateRoom
+  );
 
   const [modal, setModal] = useState(false);
 
@@ -32,18 +34,15 @@ function PrivateMessageForm({ scrollToBottom }) {
     if (!text) {
       return;
     }
-    const createdBy = {
-      id: currentUser.id,
-      nickname: currentUser.nickname
-    };
+
     try {
-      await firebaseApp.sendMessage(text, createdBy, currentRoom.id);
+      await firebaseApp.sendPrivateMessage(currentPrivateRoom.friendID, text);
       // scrollToBottom({bahavior:'smooth'});
     } catch (error) {
       console.error(error);
     }
     setText("");
-  }, [text, currentRoom, currentUser]);
+  }, [text, currentPrivateRoom, currentUser]);
 
   const handleAddEmoji = useCallback(emoji => {
     setText(prev => prev + emoji.native);
@@ -79,7 +78,6 @@ function PrivateMessageForm({ scrollToBottom }) {
           onChange={handleTextChange}
           value={text}
           labelPosition="right"
-          // onKeyUp={handleTyping}
           // className={errorMessage.indexOf("message") ? "error" : ""}
           label={<Button color="teal" content="전송" />}
         />
@@ -92,7 +90,7 @@ function PrivateMessageForm({ scrollToBottom }) {
       <Button
         icon="picture"
         color="olive"
-        // content={emoji ? "Close" : null}
+        content={emoji ? "Close" : null}
         onClick={openModal}
       />
       <PictureModal
