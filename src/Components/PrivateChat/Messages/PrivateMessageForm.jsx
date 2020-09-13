@@ -87,12 +87,7 @@ function PrivateMessageForm({ scrollToBottom }) {
         color="orange"
         onClick={handleEmojiToggle}
       />
-      <Button
-        icon="picture"
-        color="olive"
-        content={emoji ? "Close" : null}
-        onClick={openModal}
-      />
+      <Button icon="picture" color="olive" onClick={openModal} />
       <PictureModal
         modal={modal}
         closeModal={closeModal}
