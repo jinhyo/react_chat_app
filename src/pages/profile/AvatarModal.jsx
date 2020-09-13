@@ -41,13 +41,15 @@ function AvatarModal({ modal, closeModal }) {
   }, [fileRef.current]);
 
   const handleFileInput = useCallback(e => {
-    const file = e.target.files[0];
-    const reader = new FileReader(file);
+    if (e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader(file);
 
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      setPreviewImage(reader.result);
-    };
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        setPreviewImage(reader.result);
+      };
+    }
   }, []);
 
   const handleCoppedImage = useCallback(() => {
