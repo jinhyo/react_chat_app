@@ -66,6 +66,14 @@ const privateChatSlice = createSlice({
     },
     clearCurrentPrivateRoom: state => {
       state.currentPrivateRoom = null;
+    },
+    updatePrivateRoomInfo: (
+      state,
+      { payload: { id, lastMessage, lastMessageTimeStamp } }
+    ) => {
+      const privateRoom = state.privateRooms.find(room => room.id === id);
+      privateRoom.lastMessage = lastMessage;
+      privateRoom.lastMessageTimeStamp = lastMessageTimeStamp;
     }
   }
 });

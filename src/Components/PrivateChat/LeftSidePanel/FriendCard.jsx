@@ -3,25 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Comment } from "semantic-ui-react";
 import { userActions, userSelector } from "../../../features/userSlice";
 import { privateChatActions } from "../../../features/privateChatSlice";
+import moment from "moment";
 
 function FriendCard({ privateRoom }) {
   const dispatch = useDispatch();
   const currentUser = useSelector(userSelector.currentUser);
 
-  const [author, setAuthor] = useState("");
-  const [avatarURL, setavatarURL] = useState("");
-  const [lastMessage, setLastMessage] = useState("");
-  const [lastMessageTimestamp, setLastMessageTimestamp] = useState("");
-  console.log("888privateRoom", privateRoom);
-
-  useEffect(() => {
-    if (privateRoom) {
-      setAuthor(privateRoom.friendNickname);
-      setavatarURL(privateRoom.friendAvatarURL);
-      setLastMessage(privateRoom?.lastMessage);
-      setLastMessageTimestamp(privateRoom?.lastMessageTimestamp);
-    }
-  }, [privateRoom]);
+  console.log("privateRoom", privateRoom);
 
   const handleSetCurrentPrivateRoom = useCallback(() => {
     dispatch(
@@ -37,11 +25,11 @@ function FriendCard({ privateRoom }) {
       style={{ cursor: "pointer" }}
       onClick={handleSetCurrentPrivateRoom}
     >
-      <Comment.Avatar src={avatarURL} />
+      <Comment.Avatar src={privateRoom.friendAvatarURL} />
       <Comment.Content>
-        <Comment.Author>{author}</Comment.Author>
-        <Comment.Metadata>{lastMessageTimestamp}</Comment.Metadata>
-        <Comment.Text>{lastMessage}</Comment.Text>
+        <Comment.Author>{privateRoom.friendNickname}</Comment.Author>
+        <Comment.Metadata>{privateRoom.lastMessageTimeStamp}</Comment.Metadata>
+        <Comment.Text>{privateRoom.lastMessage}</Comment.Text>
       </Comment.Content>
     </Comment>
   );

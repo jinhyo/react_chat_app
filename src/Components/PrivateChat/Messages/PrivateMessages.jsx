@@ -13,6 +13,7 @@ import PrivateMessageForm from "./PrivateMessageForm";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { userSelector } from "../../../features/userSlice";
 import { privateChatSelector } from "../../../features/privateChatSlice";
+import moment from "moment";
 
 function PrivateMessages() {
   const toBottomRef = useRef();
@@ -47,8 +48,6 @@ function PrivateMessages() {
       [currentUser.id]: currentUser.avatarURL
     };
 
-    console.log("avatarURLs", avatarURLs);
-
     const unsubscribe = firebaseApp.listenToPrivateMessages(
       currentPrivateRoom.id,
       async snap => {
@@ -58,7 +57,7 @@ function PrivateMessages() {
             const createdAt = JSON.stringify(
               change.doc.data().createdAt.toDate()
             );
-            console.log("senderID", senderID);
+
             return {
               ...change.doc.data(),
               createdAt,
@@ -68,7 +67,6 @@ function PrivateMessages() {
           debugger;
         });
         const totalMessages = await Promise.all(privateMessages);
-        console.log("totalMessages", totalMessages);
 
         dispatch(messagesActions.setPrivateMessages(totalMessages));
       }

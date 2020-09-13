@@ -403,8 +403,6 @@ class Firebase {
   }
 
   listenToPrivateRooms(cb) {
-    console.log("this.auth.currentUser.uid", this.auth.currentUser.uid);
-
     const unsubscribe = this.db
       .collection("privateRooms")
       .where("participants", "array-contains", this.auth.currentUser.uid)
@@ -436,6 +434,7 @@ class Firebase {
     const privateRoomRef = this.db
       .collection("privateRooms")
       .doc(privateRoomID);
+
     const privateRoomSnap = await privateRoomRef.get();
     if (!privateRoomSnap.exists) {
       // 첫 메시지를 보낼 경우 아직 db의 privateRoom document가 안 만들어져 있기 때문에

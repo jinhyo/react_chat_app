@@ -8,7 +8,6 @@ import OtherProfile from "./pages/profile/OtherProfile";
 import PrivateChat from "./pages/private/PrivateChat";
 import PublicChat from "./pages/public/PublicChat";
 import { useDispatch } from "react-redux";
-import firebase from "./firebase";
 import { userActions, userSelector } from "./features/userSlice";
 import { useSelector } from "react-redux";
 import ProfileEdit from "./pages/profileEdit/ProfileEdit";
@@ -18,10 +17,14 @@ import {
   publicChatActions,
   publicChatSelector
 } from "./features/publicChatSlice";
+import moment from "moment";
+import "moment/locale/ko";
 
 import "emoji-mart/css/emoji-mart.css";
 import "semantic-ui-css/semantic.min.css";
 import "react-toastify/dist/ReactToastify.css";
+
+moment.locale("ko");
 
 function App() {
   const dispatch = useDispatch();
@@ -29,7 +32,6 @@ function App() {
   const currentUser = useSelector(userSelector.currentUser);
   const reload = useSelector(publicChatSelector.reload);
   const totalUsers = useSelector(userSelector.totalUsers);
-  console.log("totalUsers", totalUsers);
 
   useEffect(() => {
     // 로그인 유저 확인

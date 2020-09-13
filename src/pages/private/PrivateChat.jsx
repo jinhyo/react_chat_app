@@ -14,6 +14,7 @@ import {
   privateChatActions,
   privateChatSelector
 } from "../../features/privateChatSlice";
+import moment from "moment";
 
 function PrivateChat() {
   const dispatch = useDispatch();
@@ -30,17 +31,31 @@ function PrivateChat() {
   console.log("friendsLoadDone", friendsLoadDone);
 
   useEffect(() => {
-    // private rooms 다운 / 해당 정보들은 assignPrivateRooms()에서 정리
+    // private rooms 다운 / 해당 정보들은 editPrivateRooms()에서 정리
     if (currentUser.id) {
       const ubsubscribe = firebaseApp.listenToPrivateRooms(snap => {
         const privateRooms = snap.docChanges().map(change => {
           if (change.type === "added") {
             console.log("private room added", change.doc.data());
+
             return { id: change.doc.id, ...change.doc.data() };
           } else if (change.type === "removed") {
             console.log("prive room removed");
           } else if (change.type === "modified") {
             console.log("prive room modifired", change.doc.data());
+            const id = change.doc.id;
+            const { lastMessage } = change.doc.data();
+            const lastMessageTimeStamp = JSON.stringify(
+              change.doc.data().lastMessageTimestamp
+            );
+
+            dispatch(
+              privateChatActions.updatePrivateRoomInfo({
+                id,
+                lastMessage,
+                lastMessageTimeStamp
+              })
+            );
           }
         });
 
@@ -56,11 +71,11 @@ function PrivateChat() {
   useEffect(() => {
     // listenToPrivateRooms에서 받은 privateRooms들을 정리한 후 redux's privateRooms으로 보냄
     if (newPrivateRooms.length > 0 && friendsLoadDone === true) {
-      assignPrivateRooms(newPrivateRooms, friends);
+      editPrivateRooms(newPrivateRooms, friends);
     }
   }, [newPrivateRooms, friendsLoadDone]);
 
-  async function assignPrivateRooms(privateRooms, friends) {
+  async function editPrivateRooms(privateRooms, friends) {
     // privateRooms의 내용물을 필요한 정보로 대체
     const PrivateRoomsPromise = privateRooms.map(async room => {
       const friendID = room.participants.find(
@@ -68,10 +83,13 @@ function PrivateChat() {
       );
 
       const friend = friends.find(friend => friend.id === friendID);
+
       const privateRoom = {
         id: room.id,
         friendID,
-        lastMessageTimeStamp: JSON.stringify(room.lastMessageTimestamp),
+        lastMessageTimeStamp: moment(room.lastMessageTimestamp.toDate()).format(
+          "lll"
+        ),
         lastMessage: room.lastMessage
       };
 
@@ -81,11 +99,6 @@ function PrivateChat() {
         privateRoom.friendAvatarURL = friend.avatarURL;
       } else {
         // friends목록에 없는 경우 userRefs를 통해 db에서 가져옴
-        console.log("friendID", friendID);
-        console.log("room", room);
-        console.log("room userRefs", room.userRefs);
-        console.log("room userRefs friendID", room.userRefs.friendID);
-
         const friendSnap = await room.userRefs[friendID].get();
         const friend = friendSnap.data();
         privateRoom.friendNickname = friend.nickname;
@@ -95,7 +108,6 @@ function PrivateChat() {
     });
 
     const newPrivateRooms = await Promise.all(PrivateRoomsPromise);
-    console.log("~~newPrivateRooms", newPrivateRooms);
 
     dispatch(privateChatActions.setPrivateRooms(newPrivateRooms));
   }

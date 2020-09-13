@@ -16,7 +16,9 @@ function PrivateMessageComment({ privateMessages }) {
 
   const displayTime = useCallback(message => {
     const data = JSON.parse(message.createdAt);
-    return moment(data).fromNow();
+
+    // return moment(data).format("LT");
+    return moment(data).format("LLL");
   }, []);
 
   const isMessageOrImage = useCallback(
