@@ -28,7 +28,7 @@ function OwnerCard({ user, rightSide }) {
             <Icon name="map marker alternate" style={{ marginRight: 5 }} />{" "}
             {location}
             <Icon name="mail" style={{ marginRight: 5, marginLeft: 10 }} />
-            {email}
+            {user.privateEmail ? "비공개" : email}
           </Comment.Metadata>
         )}
 
