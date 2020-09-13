@@ -6,7 +6,6 @@ import { userSelector } from "../../../features/userSlice";
 
 function MessageComment({ messages }) {
   const currentUser = useSelector(userSelector.currentUser);
-  console.log("~~messages", messages);
 
   const isMyMessage = useCallback(
     message => currentUser.id === message.createdBy.id,

@@ -103,7 +103,7 @@ function RightSide() {
         >
           <Icon name="dropdown" />
           <Icon name="user circle" />
-          {currentRoom?.createdBy.nickname}
+          만든사람
         </Accordion.Title>
         <Accordion.Content active={activeIndex === 1}>
           <Header as="h4">

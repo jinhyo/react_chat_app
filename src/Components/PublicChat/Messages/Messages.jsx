@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Comment, Segment, Input, Divider } from "semantic-ui-react";
+import { Comment, Segment, Input, Divider, Loader } from "semantic-ui-react";
 import MessageForm from "./MessageForm";
 import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
@@ -117,6 +117,7 @@ function Messages() {
 
         {/* 메시지 출력 */}
         <Segment className={searchMode ? "messages__search" : "messages"}>
+          <Loader />
           {searchResults.length > 0 ? (
             <MessageComment messages={searchResults} />
           ) : (
