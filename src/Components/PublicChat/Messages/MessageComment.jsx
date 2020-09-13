@@ -4,7 +4,7 @@ import moment from "moment";
 import { Comment, Image } from "semantic-ui-react";
 import { userSelector } from "../../../features/userSlice";
 
-function MessageComment({ messages }) {
+function MessageComment({ messages, scrollToBottom }) {
   const currentUser = useSelector(userSelector.currentUser);
 
   const isMyMessage = useCallback(
@@ -49,6 +49,7 @@ function MessageComment({ messages }) {
                         style={{ marginTop: 5 }}
                         key={imageURL}
                         src={imageURL}
+                        onLoad={scrollToBottom}
                       />
                     ))}
               </Comment.Text>

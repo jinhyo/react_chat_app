@@ -130,7 +130,10 @@ function Messages() {
           {searchResults.length > 0 ? (
             <MessageComment messages={searchResults} />
           ) : (
-            <MessageComment messages={messages} />
+            <MessageComment
+              messages={messages}
+              scrollToBottom={scrollToBottom}
+            />
           )}
 
           {typingUsers && <Typing typingUsers={typingUsers} />}
@@ -140,7 +143,7 @@ function Messages() {
       </Comment.Group>
 
       {/* 메시지 입력 */}
-      <MessageForm scrollToBottom={scrollToBottom} />
+      <MessageForm />
     </Segment>
   );
 }

@@ -4,7 +4,7 @@ import moment from "moment";
 import { Comment, Image } from "semantic-ui-react";
 import { userSelector } from "../../../features/userSlice";
 
-function PrivateMessageComment({ privateMessages }) {
+function PrivateMessageComment({ privateMessages, scrollToBottom }) {
   const currentUser = useSelector(userSelector.currentUser);
 
   const isMyMessage = useCallback(
@@ -51,6 +51,7 @@ function PrivateMessageComment({ privateMessages }) {
                         style={{ marginTop: 5 }}
                         key={imageURL}
                         src={imageURL}
+                        onLoad={scrollToBottom}
                       />
                     ))}
               </Comment.Text>

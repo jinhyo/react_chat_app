@@ -7,7 +7,7 @@ import { userSelector } from "../../../features/userSlice";
 import { Picker } from "emoji-mart";
 import PictureModal from "./PictureModal";
 
-function MessageForm({ scrollToBottom }) {
+function MessageForm() {
   const inputRef = useRef();
 
   const currentUser = useSelector(userSelector.currentUser);
@@ -43,7 +43,6 @@ function MessageForm({ scrollToBottom }) {
     };
     try {
       await firebaseApp.sendMessage(text, createdBy, currentRoom.id);
-      // scrollToBottom({bahavior:'smooth'});
     } catch (error) {
       console.error(error);
     }
@@ -100,11 +99,7 @@ function MessageForm({ scrollToBottom }) {
         // content={emoji ? "Close" : null}
         onClick={openModal}
       />
-      <PictureModal
-        modal={modal}
-        closeModal={closeModal}
-        scrollToBottom={scrollToBottom}
-      />
+      <PictureModal modal={modal} closeModal={closeModal} />
     </>
   );
 }

@@ -13,7 +13,6 @@ import PrivateMessageForm from "./PrivateMessageForm";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { userSelector } from "../../../features/userSlice";
 import { privateChatSelector } from "../../../features/privateChatSlice";
-import moment from "moment";
 
 function PrivateMessages() {
   const toBottomRef = useRef();
@@ -100,7 +99,10 @@ function PrivateMessages() {
           {searchResults.length > 0 ? (
             <PrivateMessageComment privateMessages={searchResults} />
           ) : (
-            <PrivateMessageComment privateMessages={privateMessages} />
+            <PrivateMessageComment
+              privateMessages={privateMessages}
+              scrollToBottom={scrollToBottom}
+            />
           )}
 
           <div ref={toBottomRef}></div>
@@ -108,7 +110,7 @@ function PrivateMessages() {
       </Comment.Group>
 
       {/* 메시지 입력 */}
-      <PrivateMessageForm scrollToBottom={scrollToBottom} />
+      <PrivateMessageForm />
     </Segment>
   );
 }

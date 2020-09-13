@@ -9,7 +9,7 @@ import PictureModal from "./PictureModal";
 import { messagesSelector } from "../../../features/messageSlice";
 import { privateChatSelector } from "../../../features/privateChatSlice";
 
-function PrivateMessageForm({ scrollToBottom }) {
+function PrivateMessageForm() {
   const inputRef = useRef();
 
   const currentUser = useSelector(userSelector.currentUser);
@@ -37,7 +37,6 @@ function PrivateMessageForm({ scrollToBottom }) {
 
     try {
       await firebaseApp.sendPrivateMessage(currentPrivateRoom.friendID, text);
-      // scrollToBottom({bahavior:'smooth'});
     } catch (error) {
       console.error(error);
     }
@@ -88,11 +87,7 @@ function PrivateMessageForm({ scrollToBottom }) {
         onClick={handleEmojiToggle}
       />
       <Button icon="picture" color="olive" onClick={openModal} />
-      <PictureModal
-        modal={modal}
-        closeModal={closeModal}
-        scrollToBottom={scrollToBottom}
-      />
+      <PictureModal modal={modal} closeModal={closeModal} />
     </>
   );
 }
