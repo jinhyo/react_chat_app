@@ -6,14 +6,16 @@ import PreviewImages from "./PreviewImages";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import mime from "mime-types";
 import firebaseApp from "../../../firebase";
+import { privateChatSelector } from "../../../features/privateChatSlice";
 
 // in MessageForm
 function PictureModal({ modal, closeModal, scrollToBottom }) {
   const fileRef = useRef();
 
   const currentUser = useSelector(userSelector.currentUser);
-  const currentRoom = useSelector(publicChatSelector.currentRoom);
-
+  const currentPrivateRoom = useSelector(
+    privateChatSelector.currentPrivateRoom
+  );
   const [previewImages, setPreviewImages] = useState(null);
   const [imageTypes] = useState(["image/jpeg", "image/png", "image/gif"]);
   const [uploadLoading, setUploadLoading] = useState(false);
@@ -58,11 +60,11 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
       const imageURLs = previewImages.map(async image => {
         const metaData = { contentType: mime.lookup(image.name) };
         try {
-          return await firebaseApp.sendImageFile(
+          return await firebaseApp.sendPrivateImageFile(
             image,
             metaData,
-            currentRoom.id,
-            currentRoom
+            currentPrivateRoom.id,
+            currentPrivateRoom
           );
         } catch (error) {
           console.error(error);
@@ -78,10 +80,11 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
         const totalImageURLs = await Promise.all(imageURLs);
         console.log("totalImageURLs", totalImageURLs);
 
-        await firebaseApp.sendImageMessage(
+        await firebaseApp.sendPrivateImageMessage(
           totalImageURLs,
           createdBy,
-          currentRoom.id
+          currentPrivateRoom.id,
+          currentPrivateRoom.friendID
         );
         setUploadLoading(false);
         // scrollToBottom({bahavior:'smooth'});
@@ -90,7 +93,7 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
         console.error(error);
       }
     }
-  }, [previewImages, currentRoom, currentUser]);
+  }, [previewImages, currentPrivateRoom, currentUser]);
 
   return (
     <Modal open={modal} onClose={closeModal}>

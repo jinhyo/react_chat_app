@@ -470,18 +470,67 @@ class Firebase {
     });
   }
 
-  // async sendPrivateImageMessage(imageURLs, createdBy, roomID) {
-  //   await this.db
-  //     .collection("rooms")
-  //     .doc(roomID)
-  //     .collection("messages")
-  //     .add({
-  //       content: imageURLs,
-  //       type: "image",
-  //       createdAt: new Date(),
-  //       createdBy
-  //     });
-  // }
+  sendPrivateImageFile(imageFile, metaData, privateRoomID) {
+    return new Promise((resolve, reject) => {
+      this.storage
+        .ref(`privateChats/${privateRoomID}`)
+        .child(imageFile.name + "_" + imageFile.lastModified)
+        .put(imageFile, metaData)
+        .then(snap => {
+          snap.ref.getDownloadURL().then(url => {
+            resolve(url);
+          });
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
+  async sendPrivateImageMessage(imageURLs, createdBy, privateRoomID, friendID) {
+    const myID = this.auth.currentUser.uid;
+
+    const createdAt = new Date();
+
+    const privateRoomRef = this.db
+      .collection("privateRooms")
+      .doc(privateRoomID);
+
+    const privateRoomSnap = await privateRoomRef.get();
+    if (!privateRoomSnap.exists) {
+      // 첫 메시지를 보낼 경우 아직 db의 privateRoom document가 안 만들어져 있기 때문에
+      // 먼저 privateRoom document를 만든다.
+      await privateRoomRef.set({
+        lastMessageTimestamp: createdAt,
+        messageCounts: 1,
+        lastMessage: "- 이미지 파일 -",
+        participants: [myID, friendID],
+        userRefs: {
+          [myID]: this.db.collection("users").doc(myID),
+          [friendID]: this.db.collection("users").doc(friendID)
+        }
+      });
+    } else {
+      // 이미 privateRoom document가 있는 경우에는 방 정보를 업데이트
+      await privateRoomRef.update({
+        lastMessageTimestamp: createdAt,
+        messageCounts: this.fieldValue.increment(1),
+        lastMessage: "- 이미지 파일 -"
+      });
+    }
+
+    // 위에서 방을 먼저 만들거나 업데이트한 후 메시지를 추가
+    await this.db
+      .collection("privateRooms")
+      .doc(privateRoomID)
+      .collection("messages")
+      .add({
+        content: imageURLs,
+        type: "image",
+        createdAt: new Date(),
+        createdBy
+      });
+  }
 }
 
 export function makePrivateRoomID(myID, friendID) {
