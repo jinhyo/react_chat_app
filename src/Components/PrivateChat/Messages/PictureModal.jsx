@@ -16,13 +16,13 @@ function PictureModal({ modal, closeModal }) {
   const currentPrivateRoom = useSelector(
     privateChatSelector.currentPrivateRoom
   );
-  const [previewImages, setPreviewImages] = useState(null);
+  const [previewImages, setPreviewImages] = useState([]);
   const [imageTypes] = useState(["image/jpeg", "image/png", "image/gif"]);
   const [uploadLoading, setUploadLoading] = useState(false);
 
   useEffect(() => {
     if (!modal) {
-      setPreviewImages(null);
+      setPreviewImages([]);
     }
   }, [modal]);
 
@@ -88,7 +88,7 @@ function PictureModal({ modal, closeModal }) {
 
         setUploadLoading(false);
         closeModal();
-        setPreviewImages(null);
+        setPreviewImages([]);
       } catch (error) {
         console.error(error);
       }
@@ -118,7 +118,7 @@ function PictureModal({ modal, closeModal }) {
         <Button inverted onClick={handleFile} primary>
           사진 선택
         </Button>
-        {previewImages && (
+        {previewImages.length > 0 && (
           <Button
             inverted
             onClick={handleFile}

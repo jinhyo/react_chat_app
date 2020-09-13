@@ -14,13 +14,13 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
   const currentUser = useSelector(userSelector.currentUser);
   const currentRoom = useSelector(publicChatSelector.currentRoom);
 
-  const [previewImages, setPreviewImages] = useState(null);
+  const [previewImages, setPreviewImages] = useState([]);
   const [imageTypes] = useState(["image/jpeg", "image/png", "image/gif"]);
   const [uploadLoading, setUploadLoading] = useState(false);
 
   useEffect(() => {
     if (!modal) {
-      setPreviewImages(null);
+      setPreviewImages([]);
     }
   }, [modal]);
 
@@ -86,6 +86,7 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
         setUploadLoading(false);
         // scrollToBottom({bahavior:'smooth'});
         closeModal();
+        setPreviewImages([]);
       } catch (error) {
         console.error(error);
       }
@@ -115,7 +116,7 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
         <Button inverted onClick={handleFile} primary>
           사진 선택
         </Button>
-        {previewImages && (
+        {previewImages.length > 0 && (
           <Button
             inverted
             onClick={handleFile}
