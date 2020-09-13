@@ -27,8 +27,6 @@ function PrivateChat() {
 
   const [currentItem, setCurrentItem] = useState("friendList");
   const [newPrivateRooms, setNewPrivateRooms] = useState([]);
-  console.log("newPrivateRooms", newPrivateRooms);
-  console.log("friendsLoadDone", friendsLoadDone);
 
   useEffect(() => {
     // private rooms 다운 / 해당 정보들은 editPrivateRooms()에서 정리
@@ -45,9 +43,9 @@ function PrivateChat() {
             console.log("prive room modifired", change.doc.data());
             const id = change.doc.id;
             const { lastMessage } = change.doc.data();
-            const lastMessageTimeStamp = JSON.stringify(
-              change.doc.data().lastMessageTimestamp
-            );
+            const lastMessageTimeStamp = moment(
+              change.doc.data().lastMessageTimestamp.toDate()
+            ).format("lll");
 
             dispatch(
               privateChatActions.updatePrivateRoomInfo({

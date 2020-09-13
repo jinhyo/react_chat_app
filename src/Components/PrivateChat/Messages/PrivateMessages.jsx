@@ -22,10 +22,8 @@ function PrivateMessages() {
     privateChatSelector.currentPrivateRoom
   );
   const currentUser = useSelector(userSelector.currentUser);
-
   const privateMessages = useSelector(messagesSelector.privateMesaages);
-  console.log("privatemessages", privateMessages);
-  console.log("currentPrivateRoom", currentPrivateRoom);
+  console.log("privateMessages", privateMessages);
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);

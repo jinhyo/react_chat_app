@@ -6,7 +6,6 @@ import { userSelector } from "../../../features/userSlice";
 
 function PrivateMessageComment({ privateMessages }) {
   const currentUser = useSelector(userSelector.currentUser);
-  console.log("~~privateMessages", privateMessages);
 
   const isMyMessage = useCallback(
     message => currentUser.id === message.createdBy.id,

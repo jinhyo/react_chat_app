@@ -78,7 +78,6 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
 
       try {
         const totalImageURLs = await Promise.all(imageURLs);
-        console.log("totalImageURLs", totalImageURLs);
 
         await firebaseApp.sendPrivateImageMessage(
           totalImageURLs,
@@ -87,7 +86,7 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
           currentPrivateRoom.friendID
         );
         setUploadLoading(false);
-        // scrollToBottom({bahavior:'smooth'});
+        scrollToBottom({ bahavior: "smooth" });
         closeModal();
       } catch (error) {
         console.error(error);
