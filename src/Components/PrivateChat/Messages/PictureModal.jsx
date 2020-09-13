@@ -8,8 +8,8 @@ import mime from "mime-types";
 import firebaseApp from "../../../firebase";
 import { privateChatSelector } from "../../../features/privateChatSlice";
 
-// in MessageForm
-function PictureModal({ modal, closeModal, scrollToBottom }) {
+// in PrivateMessageForm
+function PictureModal({ modal, closeModal }) {
   const fileRef = useRef();
 
   const currentUser = useSelector(userSelector.currentUser);
@@ -85,9 +85,10 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
           currentPrivateRoom.id,
           currentPrivateRoom.friendID
         );
+
         setUploadLoading(false);
-        scrollToBottom({ bahavior: "smooth" });
         closeModal();
+        setPreviewImages(null);
       } catch (error) {
         console.error(error);
       }
