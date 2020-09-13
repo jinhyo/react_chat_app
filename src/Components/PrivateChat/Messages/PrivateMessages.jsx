@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Comment, Segment, Input, Divider } from "semantic-ui-react";
+import { Comment, Segment, Input, Divider, Loader } from "semantic-ui-react";
 import firebaseApp, { makePrivateRoomID } from "../../../firebase";
 import {
   messagesActions,
@@ -27,6 +27,7 @@ function PrivateMessages() {
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [messageLoading, setMessageLoading] = useState(true);
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
@@ -40,6 +41,7 @@ function PrivateMessages() {
 
   useEffect(() => {
     dispatch(messagesActions.clearPrivateMessages());
+    setMessageLoading(true);
 
     const avatarURLs = {
       [currentPrivateRoom.friendID]: currentPrivateRoom.friendAvatarURL,
@@ -67,6 +69,7 @@ function PrivateMessages() {
         const totalMessages = await Promise.all(privateMessages);
 
         dispatch(messagesActions.setPrivateMessages(totalMessages));
+        setMessageLoading(false);
       }
     );
     return unsubscribe;
@@ -93,6 +96,7 @@ function PrivateMessages() {
         <Segment
           className={searchMode ? "privateMessages__search" : "privateMessages"}
         >
+          {messageLoading && <Loader active />}
           {searchResults.length > 0 ? (
             <PrivateMessageComment privateMessages={searchResults} />
           ) : (

@@ -1,6 +1,13 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Comment, Segment, Input, Divider, Loader } from "semantic-ui-react";
+import {
+  Comment,
+  Segment,
+  Input,
+  Divider,
+  Loader,
+  Dimmer
+} from "semantic-ui-react";
 import MessageForm from "./MessageForm";
 import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
@@ -26,6 +33,7 @@ function Messages() {
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
+  const [messageLoading, setMessageLoading] = useState(true);
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
@@ -67,7 +75,7 @@ function Messages() {
 
   useEffect(() => {
     dispatch(messagesActions.clearMessages());
-
+    setMessageLoading(true);
     const participants = currentRoom.participants;
     const avatarURLs = participants.reduce((ac, participant) => {
       ac[participant.id] = participant.avatarURL;
@@ -92,6 +100,7 @@ function Messages() {
         });
         const totalMessages = await Promise.all(messages);
         dispatch(messagesActions.setMessages(totalMessages));
+        setMessageLoading(false);
       }
     );
 
@@ -117,7 +126,7 @@ function Messages() {
 
         {/* 메시지 출력 */}
         <Segment className={searchMode ? "messages__search" : "messages"}>
-          <Loader />
+          {messageLoading && <Loader active />}
           {searchResults.length > 0 ? (
             <MessageComment messages={searchResults} />
           ) : (
