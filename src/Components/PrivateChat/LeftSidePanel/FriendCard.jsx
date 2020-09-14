@@ -29,7 +29,9 @@ function FriendCard({ privateRoom }) {
       <Comment.Content>
         <Comment.Author>{privateRoom.friendNickname}</Comment.Author>
         <Comment.Metadata>{privateRoom.lastMessageTimeStamp}</Comment.Metadata>
-        <Comment.Text>{privateRoom.lastMessage}</Comment.Text>
+        <Comment.Text className="friendCard__text">
+          {privateRoom.lastMessage}
+        </Comment.Text>
       </Comment.Content>
     </Comment>
   );
