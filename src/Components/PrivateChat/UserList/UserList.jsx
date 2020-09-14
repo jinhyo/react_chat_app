@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Comment, Segment, Input, Divider } from "semantic-ui-react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 import UserListHeader from "./UserListHeader";
 import firebaseApp from "../../../firebase";
@@ -24,7 +24,7 @@ function UserList() {
   return (
     <Segment style={{ height: "90vh" }}>
       <Comment.Group>
-        <ToastContainer autoClose={3000} />
+        {/* <ToastContainer autoClose={3000} /> */}
         {/* 헤더 */}
         <UserListHeader
           searchMode={searchMode}
@@ -37,7 +37,7 @@ function UserList() {
           <Comment.Group>
             {totalUsers.length > 0 &&
               totalUsers.map(user => (
-                <UserPopUp key={user.id} userID={user.id}>
+                <UserPopUp key={user.id} userID={user.id} friend={user}>
                   <OwnerCard user={user} />
                 </UserPopUp>
               ))}

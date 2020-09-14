@@ -46,7 +46,7 @@ function RightSide() {
         <List.Item key={index}>
           <Image avatar src={info.avatarURL} />
           <List.Content>
-            <List.Header as="a">{name}</List.Header>
+            <List.Header>{name}</List.Header>
             <List.Description>{info.count}개 작성</List.Description>
           </List.Content>
         </List.Item>

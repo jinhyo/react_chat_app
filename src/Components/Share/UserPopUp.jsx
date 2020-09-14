@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Popup } from "semantic-ui-react";
@@ -8,8 +9,9 @@ import { useSelector } from "react-redux";
 import { userSelector, userActions } from "../../features/userSlice";
 import { privateChatActions } from "../../features/privateChatSlice";
 
-function UserPopUp({ children, userID, friend }) {
+function UserPopUp({ children, userID, friend, inPublicChat }) {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const friends = useSelector(userSelector.friends);
   const currentUser = useSelector(userSelector.currentUser);
@@ -34,11 +36,6 @@ function UserPopUp({ children, userID, friend }) {
       }, 1000);
     });
 
-    // const index = friends.findIndex(friend => friend.id === userID);
-    //   if (index !== -1) {
-    //     dispatch(userActions.setLoginStatus({ index, isLogin }));
-    //   }
-
     setLoading(false);
     toast.success("친구 추가 완료");
   }, [userID, friends]);
@@ -52,6 +49,10 @@ function UserPopUp({ children, userID, friend }) {
         friendAvatarURL: friend.avatarURL
       })
     );
+
+    if (inPublicChat) {
+      history.push("/private");
+    }
     // 이후 채팅방으로 이동하고 <PrivateMessages />를 뛰움
   }, [userID]);
 
@@ -102,14 +103,16 @@ function UserPopUp({ children, userID, friend }) {
           />
         </>
       ) : (
-        <Button
-          onClick={handleAddFriend}
-          loading={loading}
-          size="small"
-          color="green"
-          content="친구추가"
-          fluid
-        />
+        currentUser.id !== userID && (
+          <Button
+            onClick={handleAddFriend}
+            loading={loading}
+            size="small"
+            color="green"
+            content="친구추가"
+            fluid
+          />
+        )
       )}
     </Popup>
   );

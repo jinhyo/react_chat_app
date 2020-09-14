@@ -88,7 +88,6 @@ function Register(props) {
   if (isLogin) return null;
   return (
     <Layout>
-      <ToastContainer autoClose={3000} />
       <Grid
         style={{ marginTop: 40 }}
         textAlign="center"

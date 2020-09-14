@@ -17,6 +17,7 @@ import {
   publicChatSelector,
   publicChatActions
 } from "../../../features/publicChatSlice";
+import UserPopUp from "../../Share/UserPopUp";
 
 function RoomInfo() {
   const dispatch = useDispatch();
@@ -113,7 +114,13 @@ function RoomInfo() {
         만든사람
       </Header>
       <Comment.Group>
-        <OwnerCard user={currentRoom.createdBy} />
+        <UserPopUp
+          userID={currentRoom.createdBy.id}
+          friend={currentRoom.createdBy}
+          inPublicChat={true}
+        >
+          <OwnerCard user={currentRoom.createdBy} />
+        </UserPopUp>
       </Comment.Group>
 
       {/* 참가자 */}
