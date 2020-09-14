@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Comment, Icon } from "semantic-ui-react";
+import { Comment, Icon, Label } from "semantic-ui-react";
 
-function OwnerCard({ user, rightSide }) {
+function OwnerCard({ user, rightSide, friendList }) {
   const [author, setAuthor] = useState("");
   const [location, setLocation] = useState("");
   const [email, setEmail] = useState("");
@@ -29,6 +29,9 @@ function OwnerCard({ user, rightSide }) {
             {location}
             <Icon name="mail" style={{ marginRight: 5, marginLeft: 10 }} />
             {user.privateEmail ? "비공개" : email}
+            {friendList && (
+              <Label circular attached="top right" empty color="red" />
+            )}
           </Comment.Metadata>
         )}
 
