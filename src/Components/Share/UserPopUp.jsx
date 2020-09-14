@@ -13,15 +13,35 @@ function UserPopUp({ children, userID, friend }) {
 
   const friends = useSelector(userSelector.friends);
   const currentUser = useSelector(userSelector.currentUser);
+  const [loginStateDone, setLoginStateDone] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
   const handleAddFriend = useCallback(async () => {
     setLoading(true);
-    firebaseApp.addFriend(userID);
+    setLoginStateDone(false);
+    await firebaseApp.addFriend(userID);
+    await firebaseApp.checkUserLoginStatus(userID, snap => {
+      setTimeout(() => {
+        dispatch(
+          userActions.setLoginStatus({
+            index: null,
+            userID,
+            isLogin: snap.exists()
+          })
+        );
+        setLoginStateDone(true);
+      }, 1000);
+    });
+
+    // const index = friends.findIndex(friend => friend.id === userID);
+    //   if (index !== -1) {
+    //     dispatch(userActions.setLoginStatus({ index, isLogin }));
+    //   }
+
     setLoading(false);
     toast.success("친구 추가 완료");
-  }, [userID]);
+  }, [userID, friends]);
 
   const handleSetCurrentPrivateRoom = useCallback(() => {
     dispatch(
@@ -70,6 +90,7 @@ function UserPopUp({ children, userID, friend }) {
             size="small"
             color="red"
             content="친구삭제"
+            disabled={!loginStateDone}
             fluid
           />
           <Button

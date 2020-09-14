@@ -531,6 +531,42 @@ class Firebase {
         createdBy
       });
   }
+
+  setLoginStatus() {
+    const connectedRef = this.realtimeDB.ref(".info/connected");
+    const myPresenceRef = this.realtimeDB
+      .ref("presence")
+      .child(this.auth.currentUser.uid);
+
+    connectedRef.on("value", snap => {
+      if (snap.val() === true) {
+        myPresenceRef.set(true);
+
+        myPresenceRef
+          .onDisconnect()
+          .remove()
+          .then(err => {
+            console.error(err);
+          });
+      }
+    });
+
+    return connectedRef;
+  }
+
+  listenToLoginStatus(addedCb, removedCb) {
+    const presenceRef = this.realtimeDB.ref("presence");
+
+    presenceRef.on("child_added", addedCb);
+    presenceRef.on("child_removed", removedCb);
+
+    return presenceRef;
+  }
+
+  async checkUserLoginStatus(userID, cb) {
+    const presenceRef = this.realtimeDB.ref("presence");
+    presenceRef.child(userID).once("value", cb);
+  }
 }
 
 export function makePrivateRoomID(myID, friendID) {

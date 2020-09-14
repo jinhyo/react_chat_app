@@ -77,6 +77,14 @@ const userSlice = createSlice({
     },
     clearCurrentFriend: state => {
       state.currentFriend = null;
+    },
+    setLoginStatus: (state, { payload: { index, userID, isLogin } }) => {
+      if (index !== null) {
+        state.friends[index].isLogin = isLogin;
+      } else {
+        const friend = state.friends.find(friend => friend.id === userID);
+        friend.isLogin = isLogin;
+      }
     }
   }
 });

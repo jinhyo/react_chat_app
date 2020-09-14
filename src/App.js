@@ -32,6 +32,8 @@ function App() {
   const currentUser = useSelector(userSelector.currentUser);
   const reload = useSelector(publicChatSelector.reload);
   const totalUsers = useSelector(userSelector.totalUsers);
+  const isFriendsLoadDone = useSelector(userSelector.isFriendsLoadDone);
+  const friends = useSelector(userSelector.friends);
 
   useEffect(() => {
     // 로그인 유저 확인
@@ -54,7 +56,11 @@ function App() {
       async function addedCb(change) {
         const { userRef } = change.doc.data();
         const userSnapshot = await userRef.get();
-        const friend = { id: userSnapshot.id, ...userSnapshot.data() };
+        const friend = {
+          id: userSnapshot.id,
+          ...userSnapshot.data(),
+          isLogin: false
+        };
         delete friend.roomsICreated;
         delete friend.roomsIJoined;
         delete friend.createdAt;
@@ -66,6 +72,7 @@ function App() {
         const friends = snap.docChanges().map(async change => {
           if (change.type === "added") {
             const friend = await addedCb(change);
+
             return friend;
           } else if (change.type === "removed") {
             console.log("friend removed");
@@ -177,6 +184,43 @@ function App() {
 
     return unsubscribe;
   }, [reload]);
+
+  useEffect(() => {
+    // 로그인 상태 알림
+    if (currentUser.id) {
+      const connecteRef = firebaseApp.setLoginStatus();
+
+      return () => {
+        connecteRef.off();
+      };
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    // friends가 redux에 저장된 이후 loginStatus 확인
+
+    if (isFriendsLoadDone) {
+      function addedCb(snap) {
+        const index = friends.findIndex(friend => friend.id === snap.key);
+        if (index !== -1) {
+          dispatch(userActions.setLoginStatus({ index, isLogin: true }));
+        }
+      }
+
+      function removedCb(snap) {
+        const index = friends.findIndex(friend => friend.id === snap.key);
+        if (index !== -1) {
+          dispatch(userActions.setLoginStatus({ index, isLogin: false }));
+        }
+      }
+
+      const presenceRef = firebaseApp.listenToLoginStatus(addedCb, removedCb);
+
+      return () => {
+        presenceRef.off();
+      };
+    }
+  }, [isFriendsLoadDone]);
 
   // if (!isLogin && currentUser.id) {
   //   return <Loader active inverted size="huge" />;
