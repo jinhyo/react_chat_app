@@ -1,9 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Menu, Segment } from "semantic-ui-react";
 import FriendList from "./FriendList";
 import ChatList from "./ChatList";
-import { userActions, userSelector } from "../../../features/userSlice";
 import {
   privateChatSelector,
   privateChatActions

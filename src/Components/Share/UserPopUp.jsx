@@ -57,9 +57,7 @@ function UserPopUp({ children, userID, friend, inPublicChat }) {
   }, [userID]);
 
   const handleRemoveFriend = useCallback(async () => {
-    setLoading(true);
     await firebaseApp.removeFriend(userID);
-    setLoading(false);
     toast.warning("친구 삭제 완료");
   }, [userID]);
 
@@ -77,7 +75,7 @@ function UserPopUp({ children, userID, friend, inPublicChat }) {
   return (
     <Popup
       wide
-      trigger={<a style={{ cursor: "pointer" }}>{children}</a>}
+      trigger={<span style={{ cursor: "pointer" }}>{children}</span>}
       on="click"
     >
       <Link to={`/profile/${userID}`}>
