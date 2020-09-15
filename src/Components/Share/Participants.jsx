@@ -11,7 +11,7 @@ function Participants({ participants }) {
             key={index}
             userID={participant.id}
             friend={participant}
-            inPublicChat={true}
+            notInPrivateChat={true}
           >
             <Label as="a" image>
               <img src={participant.avatarURL} />

@@ -4,7 +4,6 @@ import Layout from "./Components/Layout/Layout";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 import Profile from "./pages/profile/Profile";
-import OtherProfile from "./pages/profile/OtherProfile";
 import PrivateChat from "./pages/private/PrivateChat";
 import PublicChat from "./pages/public/PublicChat";
 import { useDispatch } from "react-redux";
@@ -234,7 +233,7 @@ function App() {
       <Route path="/login" component={Login} />
       <Route path="/profile/edit" component={ProfileEdit} />
       <Route exact path="/profile" component={Profile} />
-      <Route exact path="/profile/:userID" component={OtherProfile} />
+      <Route exact path="/profile/:userID" component={Profile} />
       <Route path="/public" component={PublicChat} />
       <Route path="/private" component={PrivateChat} />
     </Switch>

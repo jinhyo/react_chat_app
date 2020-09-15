@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -9,14 +9,15 @@ import { useSelector } from "react-redux";
 import { userSelector, userActions } from "../../features/userSlice";
 import { privateChatActions } from "../../features/privateChatSlice";
 
-function UserPopUp({ children, userID, friend, inPublicChat }) {
+function UserPopUp({ children, userID, friend, notInPrivateChat }) {
   const dispatch = useDispatch();
   const history = useHistory();
+  const clickRef = useRef();
 
   const friends = useSelector(userSelector.friends);
   const currentUser = useSelector(userSelector.currentUser);
-  const [loginStateDone, setLoginStateDone] = useState(true);
 
+  const [loginStateDone, setLoginStateDone] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const handleAddFriend = useCallback(async () => {
@@ -50,13 +51,20 @@ function UserPopUp({ children, userID, friend, inPublicChat }) {
       })
     );
 
-    if (inPublicChat) {
+    if (notInPrivateChat) {
       history.push("/private");
     }
     // 이후 채팅방으로 이동하고 <PrivateMessages />를 뛰움
   }, [userID]);
 
+  const closePopUp = useCallback(() => {
+    if (clickRef.current) {
+      clickRef.current.click();
+    }
+  }, []);
+
   const handleRemoveFriend = useCallback(async () => {
+    closePopUp();
     await firebaseApp.removeFriend(userID);
     toast.warning("친구 삭제 완료");
   }, [userID]);
@@ -73,46 +81,57 @@ function UserPopUp({ children, userID, friend, inPublicChat }) {
   );
 
   return (
-    <Popup
-      wide
-      trigger={<span style={{ cursor: "pointer" }}>{children}</span>}
-      on="click"
-    >
-      <Link to={`/profile/${userID}`}>
-        <Button size="small" color="blue" content="프로필" fluid />
-      </Link>
-      {isMyfriend(userID) ? (
-        <>
+    <>
+      <Popup
+        wide
+        trigger={<span style={{ cursor: "pointer" }}>{children}</span>}
+        on="click"
+        // open={false}
+      >
+        <Link to={`/profile/${userID}`}>
           <Button
-            onClick={handleRemoveFriend}
-            loading={loading}
+            onClick={closePopUp}
             size="small"
-            color="red"
-            content="친구삭제"
-            disabled={!loginStateDone}
+            color="blue"
+            content="프로필"
             fluid
           />
-          <Button
-            onClick={handleSetCurrentPrivateRoom}
-            size="small"
-            color="green"
-            content="채팅 시작"
-            fluid
-          />
-        </>
-      ) : (
-        currentUser.id !== userID && (
-          <Button
-            onClick={handleAddFriend}
-            loading={loading}
-            size="small"
-            color="green"
-            content="친구추가"
-            fluid
-          />
-        )
-      )}
-    </Popup>
+        </Link>
+        {isMyfriend(userID) ? (
+          <>
+            <Button
+              onClick={handleRemoveFriend}
+              loading={loading}
+              size="small"
+              color="red"
+              content="친구삭제"
+              disabled={!loginStateDone}
+              fluid
+            />
+
+            <Button
+              onClick={handleSetCurrentPrivateRoom}
+              size="small"
+              color="green"
+              content="채팅 시작"
+              fluid
+            />
+          </>
+        ) : (
+          currentUser.id !== userID && (
+            <Button
+              onClick={handleAddFriend}
+              loading={loading}
+              size="small"
+              color="green"
+              content="친구추가"
+              fluid
+            />
+          )
+        )}
+      </Popup>
+      <span ref={clickRef}></span>
+    </>
   );
 }
 

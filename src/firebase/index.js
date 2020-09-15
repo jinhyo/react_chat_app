@@ -178,6 +178,7 @@ class Firebase {
   async createRoom(userID, nickname, roomName, details, avatarURL) {
     const newRoomRef = this.db.collection("rooms").doc();
     const userRef = this.db.collection("users").doc(userID);
+
     await newRoomRef.set({
       name: roomName,
       details,

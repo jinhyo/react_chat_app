@@ -1,9 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Modal, Button, Image, Grid, Icon } from "semantic-ui-react";
+import { Modal, Button, Image } from "semantic-ui-react";
 import AvatarEdit from "react-avatar-editor";
 import firebaseApp from "../../firebase";
-import { userActions, userSelector } from "../../features/userSlice";
+import { userSelector, userActions } from "../../features/userSlice";
 import { publicChatActions } from "../../features/publicChatSlice";
 
 // in Profile

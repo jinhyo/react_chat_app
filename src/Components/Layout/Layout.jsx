@@ -8,9 +8,8 @@ import "./Layout.css";
 function Layout({ children }) {
   return (
     <Container>
-      <ToastContainer autoClose={3000} />
-
       <BaseHeader />
+      <ToastContainer autoClose={3000} />
       {children}
     </Container>
   );

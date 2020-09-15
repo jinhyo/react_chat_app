@@ -117,7 +117,7 @@ function RoomInfo() {
         <UserPopUp
           userID={currentRoom.createdBy.id}
           friend={currentRoom.createdBy}
-          inPublicChat={true}
+          notInPrivateChat={true}
         >
           <OwnerCard user={currentRoom.createdBy} />
         </UserPopUp>
