@@ -65,6 +65,10 @@ function RoomInfo() {
   }, [currentRoom, currentUser]);
 
   const handleJoinRoom = useCallback(() => {
+    if (!currentUser.id) {
+      return alert("로그인이 필요합니다.");
+    }
+
     const { id, nickname, avatarURL } = currentUser;
     const { id: roomID, name: roomName } = currentRoom;
     try {
