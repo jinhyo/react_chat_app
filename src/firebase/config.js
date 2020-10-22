@@ -1,11 +1,13 @@
+require("dotenv").config();
+
 var firebaseConfig = {
-  apiKey: "AIzaSyAI2nnVrtzo2L-SFa_nYR3pUZ8lDJ4wMhI",
+  appId: process.env.REACT_APP_API_ID,
+  apiKey: process.env.REACT_APP_API_KEY,
   authDomain: "chat-app-ba7e4.firebaseapp.com",
   databaseURL: "https://chat-app-ba7e4.firebaseio.com",
   projectId: "chat-app-ba7e4",
   storageBucket: "chat-app-ba7e4.appspot.com",
-  messagingSenderId: "997623859500",
-  appId: "1:997623859500:web:4d58dcca677a5894dc0489"
+  messagingSenderId: "997623859500"
 };
 
 export default firebaseConfig;

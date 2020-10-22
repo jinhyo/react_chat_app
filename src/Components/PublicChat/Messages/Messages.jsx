@@ -76,6 +76,7 @@ function Messages() {
   useEffect(() => {
     dispatch(messagesActions.clearMessages());
     setMessageLoading(true);
+
     const participants = currentRoom.participants;
     const avatarURLs = participants.reduce((ac, participant) => {
       ac[participant.id] = participant.avatarURL;

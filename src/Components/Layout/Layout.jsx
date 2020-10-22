@@ -3,8 +3,6 @@ import { Container } from "semantic-ui-react";
 import BaseHeader from "./BaseHeader";
 import { ToastContainer } from "react-toastify";
 
-import "./Layout.css";
-
 function Layout({ children }) {
   return (
     <Container>

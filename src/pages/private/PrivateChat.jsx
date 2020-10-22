@@ -45,7 +45,7 @@ function PrivateChat() {
             const { lastMessage } = change.doc.data();
             const lastMessageTimeStamp = moment(
               change.doc.data().lastMessageTimestamp.toDate()
-            ).format("lll");
+            ).format("ll");
 
             dispatch(
               privateChatActions.updatePrivateRoomInfo({
@@ -86,7 +86,7 @@ function PrivateChat() {
         id: room.id,
         friendID,
         lastMessageTimeStamp: moment(room.lastMessageTimestamp.toDate()).format(
-          "lll"
+          "ll"
         ),
         lastMessage: room.lastMessage
       };
@@ -96,7 +96,7 @@ function PrivateChat() {
         privateRoom.friendNickname = friend.nickname;
         privateRoom.friendAvatarURL = friend.avatarURL;
       } else {
-        // friends목록에 없는 경우 userRefs를 통해 db에서 가져옴
+        // redux의 friends목록에 없는 경우 userRefs를 통해 db에서 가져옴
         const friendSnap = await room.userRefs[friendID].get();
         const friend = friendSnap.data();
         privateRoom.friendNickname = friend.nickname;

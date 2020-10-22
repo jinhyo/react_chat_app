@@ -71,6 +71,8 @@ function App() {
       const unsubscribe = firebaseApp.listenToFriends(async snap => {
         const friends = snap.docChanges().map(async change => {
           if (change.type === "added") {
+            // 처음 로딩 때는 모든 친구 목록이 added로 들어옴
+            // 이후에 추가할 경우에도 added로 들어옴
             const friend = await addedCb(change);
 
             return friend;
@@ -81,15 +83,14 @@ function App() {
             console.log("friend modified");
           }
         });
-        const newFriends = await Promise.all(friends);
-        console.log("newFriends", newFriends);
-        console.log("friends", friends);
-
         if (friends.length === 0) {
           // 친구가 없을 경우 listenToPrivateRooms를 호출하기 위한
           // isFriendsLoadDone을 true로 만들기 위해 사용
           dispatch(userActions.addFriends(null));
         }
+
+        const newFriends = await Promise.all(friends);
+        console.log("newFriends", newFriends);
 
         if (newFriends[0] !== undefined) {
           dispatch(userActions.addFriends(newFriends));
@@ -103,7 +104,7 @@ function App() {
   useEffect(() => {
     // 전체 유저 정보 다운 - <UserList />에서 사용
     if (currentUser.id) {
-      firebaseApp.listenToUsers(async snap => {
+      const unsubscribe = firebaseApp.listenToUsers(async snap => {
         const totalUsers = snap.docChanges().map(async change => {
           if (change.type === "added") {
             const user = await change.doc.data();
@@ -127,6 +128,8 @@ function App() {
           );
         }
       });
+
+      return unsubscribe;
     }
   }, [currentUser.id]);
 
@@ -220,7 +223,7 @@ function App() {
         presenceRef.off();
       };
     }
-  }, [isFriendsLoadDone]);
+  }, [isFriendsLoadDone, friends]);
 
   // if (!isLogin && currentUser.id) {
   //   return <Loader active inverted size="huge" />;

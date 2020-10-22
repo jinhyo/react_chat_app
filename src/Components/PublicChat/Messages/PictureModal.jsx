@@ -30,7 +30,7 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
     }
   }, [fileRef]);
 
-  function isAuthorized(file) {
+  function isAuthorized(file, imageTypes) {
     return imageTypes.includes(mime.lookup(file.name));
   }
 
@@ -119,7 +119,6 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
         {previewImages.length > 0 && (
           <Button
             inverted
-            onClick={handleFile}
             primary
             onClick={handleSendImages}
             loading={uploadLoading}

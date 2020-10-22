@@ -55,8 +55,7 @@ const publicChatSlice = createSlice({
     callReload: state => {
       state.totalRooms = [];
       state.currentRoom = null;
-      state.reload += 1;
-      // 아바타 변경 후 App의 firebaseApp.subscribeToAllRooms()재 발동의 트리거
+      state.reload += 1; // 아바타 변경 후 <App />의 firebaseApp.subscribeToAllRooms()재 발동의 트리거
     }
   }
 });

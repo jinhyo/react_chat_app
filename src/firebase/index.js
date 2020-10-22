@@ -65,6 +65,7 @@ class Firebase {
       .get();
     let currentUser = snapshot.data();
     delete currentUser.createdAt;
+
     return currentUser;
   }
 
