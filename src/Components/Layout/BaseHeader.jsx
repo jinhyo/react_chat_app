@@ -1,12 +1,13 @@
 import React, { useCallback } from "react";
 import { Menu, Icon, Image, Header, Dropdown } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { userSelector, userActions } from "../../features/userSlice";
 import firebaseApp from "../../firebase";
 
 function BaseHeader() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const currentUser = useSelector(userSelector.currentUser);
   console.log("currentUser", currentUser);
 
@@ -14,6 +15,13 @@ function BaseHeader() {
     firebaseApp.logOut();
     dispatch(userActions.clearUser());
   }, []);
+
+  const linkToPrivate = useCallback(() => {
+    if (!currentUser.id) {
+      return alert("로그인이 필요합니다.");
+    }
+    history.push("/private");
+  }, [currentUser]);
 
   return (
     <Menu
@@ -31,9 +39,9 @@ function BaseHeader() {
       <Link to="/public" className="item">
         <p>공개채팅</p>
       </Link>
-      <Link to="/private" className="item">
-        <p>개인채팅</p>
-      </Link>
+      <a className="item" onClick={linkToPrivate}>
+        개인채팅
+      </a>
       <Menu.Menu position="right">
         {currentUser.id ? (
           <>
