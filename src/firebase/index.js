@@ -232,7 +232,6 @@ class Firebase {
 
   async leaveRoom(userID, roomID, roomName) {
     const targetRoom = { id: roomID, name: roomName };
-    console.log("targetRoom", targetRoom);
 
     await this.db
       .collection("users")
@@ -241,12 +240,22 @@ class Firebase {
         roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
       });
 
-    await this.db
+    const participantsRef = this.db
       .collection("rooms")
       .doc(roomID)
-      .collection("participants")
-      .doc(userID)
-      .delete();
+      .collection("participants");
+
+    await participantsRef.doc(userID).delete(); // 참가자 목록에서 나 삭제
+
+    const participantsSnap = await participantsRef.get();
+
+    if (participantsSnap.empty) {
+      // 참가자 목록에 아무도 없으면 방 삭제
+      this.db
+        .collection("rooms")
+        .doc(roomID)
+        .delete();
+    }
   }
 
   async joinRoom(userID, userNickname, avatarURL, roomName, roomID) {

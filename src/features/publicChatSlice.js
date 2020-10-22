@@ -27,6 +27,9 @@ const publicChatSlice = createSlice({
         room => room.id === currentRoomID
       );
     },
+    clearCurrentRoom: state => {
+      state.currentRoom = null;
+    },
     setTotalRooms: (state, { payload: totalRooms }) => {
       state.totalRooms.unshift(...totalRooms);
     },

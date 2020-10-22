@@ -10,7 +10,9 @@ function RoomPopUp({ children, roomsIJoined }) {
         on="click"
       >
         {roomsIJoined?.map(room => (
-          <Label image>{room.name}</Label>
+          <Label key={room.id} image>
+            {room.name}
+          </Label>
         ))}
       </Popup>
     </>
