@@ -121,7 +121,6 @@ function Messages() {
         <MessageHeader
           searchMode={searchMode}
           handleSearchMode={handleSearchMode}
-          searchResults={searchResults}
           setSearchResults={setSearchResults}
         />
 

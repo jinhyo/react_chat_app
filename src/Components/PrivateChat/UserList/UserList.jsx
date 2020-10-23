@@ -21,6 +21,22 @@ function UserList() {
     setSearchMode(prev => !prev);
   }, []);
 
+  const displayUsers = useCallback(() => {
+    if (searchResults.length > 0) {
+      return searchResults.map(user => (
+        <UserPopUp key={user.id} userID={user.id} friend={user}>
+          <OwnerCard user={user} />
+        </UserPopUp>
+      ));
+    } else {
+      return totalUsers.map(user => (
+        <UserPopUp key={user.id} userID={user.id} friend={user}>
+          <OwnerCard user={user} />
+        </UserPopUp>
+      ));
+    }
+  }, [searchResults, totalUsers]);
+
   return (
     <Segment style={{ height: "90vh" }}>
       <Comment.Group>
@@ -29,19 +45,11 @@ function UserList() {
         <UserListHeader
           searchMode={searchMode}
           handleSearchMode={handleSearchMode}
-          searchResults={searchResults}
           setSearchResults={setSearchResults}
         />
 
         <Segment className={searchMode ? "userList__search" : "userList"}>
-          <Comment.Group>
-            {totalUsers.length > 0 &&
-              totalUsers.map(user => (
-                <UserPopUp key={user.id} userID={user.id} friend={user}>
-                  <OwnerCard user={user} />
-                </UserPopUp>
-              ))}
-          </Comment.Group>
+          <Comment.Group>{displayUsers()}</Comment.Group>
         </Segment>
       </Comment.Group>
     </Segment>

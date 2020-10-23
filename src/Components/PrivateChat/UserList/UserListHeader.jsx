@@ -3,10 +3,11 @@ import { Header, Icon, Divider, Input } from "semantic-ui-react";
 import { useSelector } from "react-redux";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { messagesSelector } from "../../../features/messageSlice";
+import { userSelector } from "../../../features/userSlice";
 
 function UserListHeader({ searchMode, handleSearchMode, setSearchResults }) {
   const currentRoom = useSelector(publicChatSelector.currentRoom);
-  const messages = useSelector(messagesSelector.publicMessages);
+  const totalUsers = useSelector(userSelector.totalUsers);
 
   useEffect(() => {
     if (!searchMode) {
@@ -23,27 +24,25 @@ function UserListHeader({ searchMode, handleSearchMode, setSearchResults }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // const handleChangeSearchTerm = useCallback(
-  //   e => {
-  //     setSearchLoading(true);
-  //     setSearchTerm(e.target.value);
-  //     const searchTerm = e.target.value;
-  //     const regex = new RegExp(searchTerm, "gi");
+  const handleChangeSearchTerm = useCallback(
+    e => {
+      setSearchLoading(true);
+      setSearchTerm(e.target.value);
+      const searchTerm = e.target.value;
+      const regex = new RegExp(searchTerm, "gi");
 
-  //     const searchResults = messages.filter(message => {
-  //       if (message.createdBy.nickname.match(regex)) {
-  //         return true;
-  //       } else if (message.type === "message" && message.content.match(regex)) {
-  //         return true;
-  //       }
-  //     });
-  //     setTimeout(() => {
-  //       setSearchLoading(false);
-  //     }, 500);
-  //     setSearchResults(searchResults);
-  //   },
-  //   [messages]
-  // );
+      const searchResults = totalUsers.filter(user => {
+        if (user.nickname.match(regex)) {
+          return true;
+        }
+      });
+      setTimeout(() => {
+        setSearchLoading(false);
+      }, 500);
+      setSearchResults(searchResults);
+    },
+    [totalUsers]
+  );
 
   return (
     <div>
@@ -65,7 +64,7 @@ function UserListHeader({ searchMode, handleSearchMode, setSearchResults }) {
             size="mini"
             icon="search"
             value={searchTerm}
-            // onChange={handleChangeSearchTerm}
+            onChange={handleChangeSearchTerm}
             loading={searchLoading}
           />
           <Divider />
