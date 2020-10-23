@@ -9,7 +9,9 @@ import { privateChatSelector } from "../../../features/privateChatSlice";
 function PrivateMessageHeader({
   searchMode,
   handleSearchMode,
-  setSearchResults
+  setSearchResults,
+  searchTerm,
+  setSearchTerm
 }) {
   const messages = useSelector(messagesSelector.privateMesaages);
   const currentFrined = useSelector(userSelector.currentFriend);
@@ -28,7 +30,6 @@ function PrivateMessageHeader({
     setSearchResults([]);
   }, [currentPrivateRoom]);
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
 
   const handleChangeSearchTerm = useCallback(

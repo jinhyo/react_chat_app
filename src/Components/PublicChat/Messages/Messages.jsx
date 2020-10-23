@@ -34,6 +34,7 @@ function Messages() {
   const [searchResults, setSearchResults] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
   const [messageLoading, setMessageLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
@@ -114,6 +115,16 @@ function Messages() {
     }
   }, [toBottomRef]);
 
+  const displayMessages = useCallback(() => {
+    if (searchResults.length > 0 || searchMode) {
+      return <MessageComment messages={searchResults} />;
+    } else if (!searchTerm) {
+      return (
+        <MessageComment messages={messages} scrollToBottom={scrollToBottom} />
+      );
+    }
+  }, [searchResults, messages]);
+
   return (
     <Segment style={{ height: "90vh" }}>
       <Comment.Group>
@@ -122,19 +133,14 @@ function Messages() {
           searchMode={searchMode}
           handleSearchMode={handleSearchMode}
           setSearchResults={setSearchResults}
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
         />
 
         {/* 메시지 출력 */}
         <Segment className={searchMode ? "messages__search" : "messages"}>
           {messageLoading && <Loader active />}
-          {searchResults.length > 0 ? (
-            <MessageComment messages={searchResults} />
-          ) : (
-            <MessageComment
-              messages={messages}
-              scrollToBottom={scrollToBottom}
-            />
-          )}
+          {displayMessages()}
 
           {typingUsers && <Typing typingUsers={typingUsers} />}
 

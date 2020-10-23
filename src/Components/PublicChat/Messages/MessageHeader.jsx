@@ -4,7 +4,13 @@ import { useSelector } from "react-redux";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { messagesSelector } from "../../../features/messageSlice";
 
-function MessageHeader({ searchMode, handleSearchMode, setSearchResults }) {
+function MessageHeader({
+  searchMode,
+  handleSearchMode,
+  setSearchResults,
+  setSearchTerm,
+  searchTerm
+}) {
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const messages = useSelector(messagesSelector.publicMessages);
 
@@ -20,7 +26,6 @@ function MessageHeader({ searchMode, handleSearchMode, setSearchResults }) {
     setSearchResults([]);
   }, [currentRoom]);
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
 
   const handleChangeSearchTerm = useCallback(

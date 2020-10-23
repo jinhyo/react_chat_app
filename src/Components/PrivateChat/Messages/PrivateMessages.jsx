@@ -10,7 +10,6 @@ import {
 import PrivateMessageComment from "./PrivateMessageComment";
 import PrivateMessageHeader from "./PrivateMessageHeader";
 import PrivateMessageForm from "./PrivateMessageForm";
-import { publicChatSelector } from "../../../features/publicChatSlice";
 import { userSelector } from "../../../features/userSlice";
 import { privateChatSelector } from "../../../features/privateChatSlice";
 
@@ -27,6 +26,7 @@ function PrivateMessages() {
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [messageLoading, setMessageLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchMode = useCallback(() => {
     setSearchMode(prev => !prev);
@@ -80,6 +80,19 @@ function PrivateMessages() {
     }
   }, [toBottomRef]);
 
+  const displayMessages = useCallback(() => {
+    if (searchResults.length > 0 || searchMode) {
+      return <PrivateMessageComment privateMessages={searchResults} />;
+    } else if (!searchTerm) {
+      return (
+        <PrivateMessageComment
+          privateMessages={privateMessages}
+          scrollToBottom={scrollToBottom}
+        />
+      );
+    }
+  }, [searchResults, privateMessages]);
+
   return (
     <Segment style={{ height: "90vh" }}>
       <Comment.Group>
@@ -89,6 +102,8 @@ function PrivateMessages() {
           handleSearchMode={handleSearchMode}
           searchResults={searchResults}
           setSearchResults={setSearchResults}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
         />
 
         {/* 메시지 */}
@@ -96,14 +111,8 @@ function PrivateMessages() {
           className={searchMode ? "privateMessages__search" : "privateMessages"}
         >
           {messageLoading && <Loader active />}
-          {searchResults.length > 0 ? (
-            <PrivateMessageComment privateMessages={searchResults} />
-          ) : (
-            <PrivateMessageComment
-              privateMessages={privateMessages}
-              scrollToBottom={scrollToBottom}
-            />
-          )}
+
+          {displayMessages()}
 
           <div ref={toBottomRef}></div>
         </Segment>

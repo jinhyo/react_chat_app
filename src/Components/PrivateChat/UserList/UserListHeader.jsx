@@ -5,7 +5,13 @@ import { publicChatSelector } from "../../../features/publicChatSlice";
 import { messagesSelector } from "../../../features/messageSlice";
 import { userSelector } from "../../../features/userSlice";
 
-function UserListHeader({ searchMode, handleSearchMode, setSearchResults }) {
+function UserListHeader({
+  searchMode,
+  handleSearchMode,
+  setSearchResults,
+  searchTerm,
+  setSearchTerm
+}) {
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const totalUsers = useSelector(userSelector.totalUsers);
 
@@ -21,7 +27,6 @@ function UserListHeader({ searchMode, handleSearchMode, setSearchResults }) {
     setSearchResults([]);
   }, [currentRoom]);
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
 
   const handleChangeSearchTerm = useCallback(
