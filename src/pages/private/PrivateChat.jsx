@@ -38,9 +38,9 @@ function PrivateChat() {
 
             return { id: change.doc.id, ...change.doc.data() };
           } else if (change.type === "removed") {
-            console.log("prive room removed");
+            console.log("private room removed");
           } else if (change.type === "modified") {
-            console.log("prive room modifired", change.doc.data());
+            console.log("private room modifired", change.doc.data());
             const id = change.doc.id;
             const { lastMessage } = change.doc.data();
             const lastMessageTimeStamp = moment(

@@ -1,11 +1,31 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { Comment, Image } from "semantic-ui-react";
+import { Comment, Image, Label } from "semantic-ui-react";
 import { userSelector } from "../../../features/userSlice";
 
 function PrivateMessageComment({ privateMessages, scrollToBottom }) {
   const currentUser = useSelector(userSelector.currentUser);
+
+  const [yearMonthDay, setYearMonthDay] = useState([]);
+
+  useEffect(() => {
+    // 년,월,일 계산
+    privateMessages.reduce((ac, message) => {
+      const date = JSON.parse(message.createdAt);
+      const yearMonthDay = date.slice(0, 10);
+
+      if (!ac.includes(yearMonthDay)) {
+        ac.push(yearMonthDay);
+        setYearMonthDay(prev => [...prev, date]);
+      }
+      return ac;
+    }, []);
+
+    return () => {
+      setYearMonthDay([]);
+    };
+  }, [privateMessages]);
 
   const isMyMessage = useCallback(
     message => currentUser.id === message.createdBy.id,
@@ -13,11 +33,26 @@ function PrivateMessageComment({ privateMessages, scrollToBottom }) {
     [currentUser]
   );
 
-  const displayTime = useCallback(message => {
-    const data = JSON.parse(message.createdAt);
+  const displayYearMonthDay = useCallback(
+    createdAt => {
+      const date = JSON.parse(createdAt);
+      if (yearMonthDay.includes(date)) {
+        return (
+          <div className="chat__yearMonthDay">
+            <Label color="teal">{moment(date).format("ll")}</Label>
+          </div>
+        );
+      } else {
+        return null;
+      }
+    },
+    [yearMonthDay]
+  );
 
-    // return moment(data).format("LT");
-    return moment(data).format("LLL");
+  const displayTime = useCallback(message => {
+    const date = JSON.parse(message.createdAt);
+
+    return moment(date).format("LT");
   }, []);
 
   const isMessageOrImage = useCallback(
@@ -32,6 +67,9 @@ function PrivateMessageComment({ privateMessages, scrollToBottom }) {
           key={index}
           className={isMyMessage(message) ? "message__self" : ""}
         >
+          {/* 년, 월, 일 표시 */}
+          {displayYearMonthDay(message.createdAt)}
+
           <Comment>
             <div className={isMyMessage(message) ? "comment__dot" : ""}> </div>
             <Comment.Avatar src={message.avatarURL} />
