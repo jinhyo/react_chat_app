@@ -17,16 +17,18 @@ import Participants from "../../Components/Share/Participants";
 import firebaseApp from "../../firebase";
 import RoomPopUp from "../../Components/Profile/RoomPopUp";
 
-function Profile(props) {
+function Profile() {
   const history = useHistory();
   const { userID } = useParams();
   console.log("userID", userID);
 
-  const friends = useSelector(userSelector.friends);
+  const currentUserFriends = useSelector(userSelector.friends);
   const currentUser = useSelector(userSelector.currentUser);
   const isLogin = useSelector(userSelector.isLogin);
+
   const [userInfo, setUserInfo] = useState(null);
   const [modal, setModal] = useState(false);
+  const [friends, setFriends] = useState([]);
 
   useEffect(() => {
     if (userID) {
@@ -45,6 +47,9 @@ function Profile(props) {
   async function getUserInfo(userID) {
     try {
       const userInfo = await firebaseApp.getUser(userID);
+      const friends = await firebaseApp.getUserAvatar(userID);
+
+      setFriends(friends);
       setUserInfo(userInfo);
     } catch (error) {
       console.error(error);
@@ -140,7 +145,9 @@ function Profile(props) {
 
             <Divider />
             <h3>친구 목록</h3>
-            <Participants participants={friends} />
+            <Participants
+              participants={isMyProfile() ? currentUserFriends : friends}
+            />
           </Segment>
           <AvatarModal modal={modal} closeModal={closeModal} />
         </Grid.Column>

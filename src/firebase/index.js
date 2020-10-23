@@ -59,14 +59,29 @@ class Firebase {
   }
 
   async getUser(userId) {
-    const snapshot = await this.db
-      .collection("users")
-      .doc(userId)
-      .get();
-    let currentUser = snapshot.data();
+    const userRef = this.db.collection("users").doc(userId);
+    const userSnapshot = await userRef.get();
+    let currentUser = userSnapshot.data();
     delete currentUser.createdAt;
 
     return currentUser;
+  }
+
+  async getUserAvatar(userId) {
+    const userRef = this.db.collection("users").doc(userId);
+
+    const friendsSnap = await userRef.collection("friends").get();
+    const friendsRefs = friendsSnap.docs.map(doc => doc.data());
+
+    const friendsPromise = friendsRefs.map(async ({ userRef }) => {
+      const friendSnap = await userRef.get();
+      const friend = friendSnap.data();
+
+      return { id: friendSnap.id, ...friend };
+    });
+    const friends = await Promise.all(friendsPromise);
+
+    return friends;
   }
 
   async checkUniqueNickname(nickname) {
