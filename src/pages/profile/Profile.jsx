@@ -59,6 +59,10 @@ function Profile(props) {
     setModal(true);
   }, []);
 
+  const isMyProfile = useCallback(() => {
+    return currentUser.id === userInfo.id;
+  }, [currentUser, userInfo]);
+
   if (!isLogin) return null;
   if (!userInfo) return null;
 
@@ -78,7 +82,7 @@ function Profile(props) {
             <Card centered>
               <Image
                 size="medium"
-                src={userInfo.avatarURL}
+                src={isMyProfile() ? currentUser.avatarURL : userInfo.avatarURL}
                 wrapped
                 ui={false}
               />

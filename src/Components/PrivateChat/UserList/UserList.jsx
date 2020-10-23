@@ -1,10 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Comment, Segment, Input, Divider } from "semantic-ui-react";
-import { toast } from "react-toastify";
 
 import UserListHeader from "./UserListHeader";
-import firebaseApp from "../../../firebase";
 import { userActions, userSelector } from "../../../features/userSlice";
 import OwnerCard from "../../Share/OwnerCard";
 import UserPopUp from "../../Share/UserPopUp";
@@ -12,7 +10,6 @@ import UserPopUp from "../../Share/UserPopUp";
 // <App/>에서 totlaUsers 확보
 function UserList() {
   const totalUsers = useSelector(userSelector.totalUsers);
-  console.log("totalUsers", totalUsers);
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
