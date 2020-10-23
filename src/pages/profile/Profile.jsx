@@ -123,15 +123,21 @@ function Profile(props) {
                 </RoomPopUp>
               </Card.Content>
             </Card>
-            <Button
-              size="small"
-              content="아바타 변경"
-              primary
-              onClick={openModal}
-            />
-            <Link to="/profile/edit">
-              <Button size="small" content="프로필 수정" primary />
-            </Link>
+
+            {isMyProfile() && (
+              <>
+                <Button
+                  size="small"
+                  content="아바타 변경"
+                  primary
+                  onClick={openModal}
+                />
+                <Link to="/profile/edit">
+                  <Button size="small" content="프로필 수정" primary />
+                </Link>
+              </>
+            )}
+
             <Divider />
             <h3>친구 목록</h3>
             <Participants participants={friends} />
