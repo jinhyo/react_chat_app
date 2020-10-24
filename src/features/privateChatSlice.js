@@ -69,11 +69,24 @@ const privateChatSlice = createSlice({
     },
     updatePrivateRoomInfo: (
       state,
-      { payload: { id, lastMessage, lastMessageTimeStamp } }
+      { payload: { id, lastMessage, lastMessageTimeStamp, currentUserID } }
     ) => {
       const privateRoom = state.privateRooms.find(room => room.id === id);
       privateRoom.lastMessage = lastMessage;
       privateRoom.lastMessageTimeStamp = lastMessageTimeStamp;
+      privateRoom.messageCounts++;
+      if (currentUserID) {
+        privateRoom.userMsgCount[currentUserID]++;
+      }
+    },
+    setUnreadMessageCountEqual: (
+      state,
+      { payload: { privateRoomID, currentUserID } }
+    ) => {
+      const privateRoom = state.privateRooms.find(
+        room => room.id === privateRoomID
+      );
+      privateRoom.userMsgCount[currentUserID] = privateRoom.messageCounts;
     }
   }
 });
@@ -94,11 +107,18 @@ const selectCurrentPrivateRoom = createSelector(
   currentPrivateRoom => currentPrivateRoom
 );
 
+const selectCurrentPrivateRoomID = createSelector(
+  state => state.currentPrivateRoom?.id,
+
+  selectCurrentPrivateRoomID => selectCurrentPrivateRoomID
+);
+
 export const PRIVATE = privateChatSlice.name;
 export const privateChatActions = privateChatSlice.actions;
 export const privateChatReducers = privateChatSlice.reducer;
 
 export const privateChatSelector = {
   privateRooms: state => selectPrivateRooms(state[PRIVATE]),
-  currentPrivateRoom: state => selectCurrentPrivateRoom(state[PRIVATE])
+  currentPrivateRoom: state => selectCurrentPrivateRoom(state[PRIVATE]),
+  currentPrivateRoomID: state => selectCurrentPrivateRoomID(state[PRIVATE])
 };

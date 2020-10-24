@@ -1,23 +1,36 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Comment } from "semantic-ui-react";
+import { Comment, Label } from "semantic-ui-react";
 import { userActions, userSelector } from "../../../features/userSlice";
 import { privateChatActions } from "../../../features/privateChatSlice";
-import moment from "moment";
+
+import "./LeftSidePanel.css";
 
 function FriendCard({ privateRoom }) {
   const dispatch = useDispatch();
-  const currentUser = useSelector(userSelector.currentUser);
-
-  console.log("privateRoom", privateRoom);
+  const currentUserID = useSelector(userSelector.currentUserID);
 
   const handleSetCurrentPrivateRoom = useCallback(() => {
     dispatch(
       privateChatActions.setCurrentPrivateRoom({
         friendID: privateRoom.friendID,
-        currentUserID: currentUser.id
+        currentUserID
       })
     );
+  }, [privateRoom, currentUserID]);
+
+  const displayUnreadMessage = useCallback(() => {
+    if (privateRoom.userMsgCount) {
+      const unreadMsgCount =
+        privateRoom.messageCounts - privateRoom.userMsgCount[currentUserID];
+      if (unreadMsgCount > 0) {
+        return (
+          <div className="friendCard__label">
+            <Label floating color="teal" content={unreadMsgCount} />
+          </div>
+        );
+      }
+    }
   }, [privateRoom]);
 
   return (
@@ -29,6 +42,7 @@ function FriendCard({ privateRoom }) {
       <Comment.Content>
         <Comment.Author>{privateRoom.friendNickname}</Comment.Author>
         <Comment.Metadata>{privateRoom.lastMessageTimeStamp}</Comment.Metadata>
+        {displayUnreadMessage()}
         <Comment.Text className="friendCard__text">
           {privateRoom.lastMessage}
         </Comment.Text>

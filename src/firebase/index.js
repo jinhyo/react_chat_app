@@ -451,6 +451,50 @@ class Firebase {
     return unsubscribe;
   }
 
+  // 채팅을 입력할 때마다 내가 읽은 메시지 카운트도 1씩 증가
+  async changePrivateRoomMsgCount(privateRoomID, friendID) {
+    const privateRoomRef = this.db
+      .collection("privateRooms")
+      .doc(privateRoomID);
+
+    const privateRoomSnap = await privateRoomRef.get();
+    const { userMsgCount, messageCounts } = privateRoomSnap.data();
+
+    await privateRoomRef.update({
+      userMsgCount: {
+        [this.auth.currentUser.uid]: messageCounts,
+        [friendID]: userMsgCount[friendID]
+      }
+    });
+  }
+
+  // 처음 개인채팅방에 들어가면 전체 메시지 카운트랑 내가 읽은 메시지 카운트를 같게
+  async setCountsEqual(privateRoomID) {
+    const privateRoomRef = this.db
+      .collection("privateRooms")
+      .doc(privateRoomID);
+    const privateRoomSnap = await privateRoomRef.get();
+
+    // 처음 채팅을 시작할 때는 방이 만들어져 있지 않아서 privateRoomSnap.exists=false 나옴
+    if (privateRoomSnap.exists) {
+      const privateRoomData = privateRoomSnap.data();
+      const friendID = privateRoomData.participants.find(
+        participantID => participantID !== this.auth.currentUser.uid
+      );
+
+      await privateRoomRef.update({
+        userMsgCount: {
+          [this.auth.currentUser.uid]: privateRoomData.messageCounts,
+          [friendID]: privateRoomData.userMsgCount[friendID]
+        }
+      });
+
+      return privateRoomData.messageCounts;
+    } else {
+      return null;
+    }
+  }
+
   async sendPrivateMessage(friendID, content) {
     const myID = this.auth.currentUser.uid;
 
@@ -469,6 +513,11 @@ class Firebase {
         lastMessageTimestamp: createdAt,
         messageCounts: 1,
         lastMessage: content,
+        lastMessageCreatedBy: myID,
+        userMsgCount: {
+          [myID]: 1,
+          [friendID]: 0
+        },
         participants: [myID, friendID],
         userRefs: {
           [myID]: this.db.collection("users").doc(myID),
@@ -479,8 +528,9 @@ class Firebase {
       // 이미 privateRoom document가 있는 경우에는 방 정보를 업데이트
       await privateRoomRef.update({
         lastMessageTimestamp: createdAt,
-        messageCounts: this.fieldValue.increment(1),
-        lastMessage: content
+        lastMessageCreatedBy: myID,
+        lastMessage: content,
+        messageCounts: this.fieldValue.increment(1)
       });
     }
 

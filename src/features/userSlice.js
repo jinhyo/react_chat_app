@@ -95,6 +95,12 @@ const selectCurrentUser = createSelector(
   currentUser => currentUser
 );
 
+const selectCurrentUserID = createSelector(
+  state => state.currentUser?.id,
+
+  currentUserID => currentUserID
+);
+
 const selectIsLogin = createSelector(
   state => state.isLogin,
 
@@ -142,5 +148,6 @@ export const userSelector = {
   totalUsers: state => selectTotalUsers(state[USER]),
   friends: state => selectFriends(state[USER]),
   currentFriend: state => selectCurrentFriend(state[USER]),
-  isFriendsLoadDone: state => selectIsFriendsLoadDone(state[USER])
+  isFriendsLoadDone: state => selectIsFriendsLoadDone(state[USER]),
+  currentUserID: state => selectCurrentUserID(state[USER])
 };

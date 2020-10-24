@@ -68,7 +68,7 @@ function Profile() {
     return currentUser.id === userInfo.id;
   }, [currentUser, userInfo]);
 
-  if (!isLogin) return null;
+  // if (!isLogin) return null;
   if (!userInfo) return null;
 
   return (

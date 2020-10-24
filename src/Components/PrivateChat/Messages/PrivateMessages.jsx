@@ -63,7 +63,6 @@ function PrivateMessages() {
               avatarURL: avatarURLs[senderID]
             };
           }
-          debugger;
         });
         const totalMessages = await Promise.all(privateMessages);
 
