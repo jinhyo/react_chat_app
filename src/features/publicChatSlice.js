@@ -38,6 +38,13 @@ const publicChatSlice = createSlice({
         }
       });
     },
+    replaceRoom: (state, { payload: publicRoom }) => {
+      const index = state.totalRooms.findIndex(
+        room => room.id === publicRoom.id
+      );
+      console.log("~!!!index", index);
+      state.totalRooms[index] = publicRoom;
+    },
     deleteRoomFromTotalRooms: (state, { payload: targetRoomID }) => {
       state.totalRooms = state.totalRooms.filter(
         room => room.id !== targetRoomID

@@ -14,8 +14,9 @@ function JoinedRooms() {
     if (roomsIJoined.length > 0 && totalRooms.length > 0) {
       const roomDatas = roomsIJoined.reduce((ac, room) => {
         const joinedRoom = totalRooms.find(troom => troom.id === room.id);
-        console.log("joinedRoom", joinedRoom);
-        ac.push(joinedRoom);
+        if (joinedRoom) {
+          ac.push(joinedRoom);
+        }
 
         return ac;
       }, []);

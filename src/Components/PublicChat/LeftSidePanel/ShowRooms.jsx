@@ -46,6 +46,10 @@ function ShowRooms({ rooms, type, currentType, roomDatas }) {
         console.log("~~roomDatas", roomDatas);
         console.log("~~currentRoomData", currentRoomData);
 
+        if (!currentRoomData) {
+          return null;
+        }
+
         const unreadMsgCount =
           currentRoomData.messageCounts -
           currentRoomData.userMsgCount[currentUserID];

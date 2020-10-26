@@ -257,6 +257,22 @@ class Firebase {
         roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
       });
 
+    const participantsRef = this.db
+      .collection("rooms")
+      .doc(roomID)
+      .collection("participants");
+    const participantsSnap = await participantsRef.get();
+
+    if (participantsSnap.size === 1) {
+      // 참가자 목록에 내가 마지막이면 방 삭제
+      return this.db
+        .collection("rooms")
+        .doc(roomID)
+        .delete();
+    }
+
+    await participantsRef.doc(userID).delete(); // 참가자 목록에서 나 삭제
+
     const roomRef = this.db.collection("rooms").doc(roomID);
     const roomSnap = await roomRef.get();
 
@@ -265,26 +281,8 @@ class Firebase {
 
     // userMsgCount에서 내 목록 삭제
     await roomRef.update({
-      userMsgCount: currentUserMsgCount,
-      participants: this.fieldValue.arrayRemove(this.auth.currentUser.uid)
+      userMsgCount: currentUserMsgCount
     });
-
-    const participantsRef = this.db
-      .collection("rooms")
-      .doc(roomID)
-      .collection("participants");
-
-    await participantsRef.doc(userID).delete(); // 참가자 목록에서 나 삭제
-
-    const participantsSnap = await participantsRef.get();
-
-    if (participantsSnap.empty) {
-      // 참가자 목록에 아무도 없으면 방 삭제
-      this.db
-        .collection("rooms")
-        .doc(roomID)
-        .delete();
-    }
   }
 
   async joinRoom(userID, userNickname, avatarURL, roomName, roomID) {

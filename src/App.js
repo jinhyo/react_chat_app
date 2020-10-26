@@ -146,128 +146,40 @@ function App() {
 
           if (change.type === "added") {
             const data = change.doc.data();
-            const createdBySnap = await data.createdBy.get();
-            console.log("room added", change.doc.data());
-
-            const createdBy = {
-              id: createdBySnap.id,
-              ...createdBySnap.data()
-            };
-            if (createdBy.privateEmail) {
-              createdBy.email = "비공개";
-            }
-
-            delete createdBy.roomsICreated;
-            delete createdBy.roomsIJoined;
-            delete createdBy.createdAt;
-
+            console.log("room added", data);
             const roomID = change.doc.id;
-            const participants = await firebaseApp.getParticipants(roomID);
-            ///////////////////////////////////
-            const { messageCounts, userMsgCount } = data;
+            const roomData = await arrangeRoomData(data, roomID);
 
-            const participantsIDs = participants.map(data => data.id);
-
-            const createdAt = JSON.stringify(
-              change.doc.data().createdAt.toDate()
-            );
-
-            return {
-              id: roomID,
-              ...change.doc.data(),
-              createdAt,
-              createdBy,
-              participants,
-              messageCounts,
-              userMsgCount,
-              participantsIDs
-            };
+            return roomData;
           } else if (change.type === "removed") {
             console.log("room removed", change.doc.data());
             dispatch(publicChatActions.deleteRoomFromTotalRooms(change.doc.id));
           } else if (change.type === "modified") {
+            const data = change.doc.data();
             console.log("room modified", change.doc.data());
-            const participants = await firebaseApp.getParticipants(
-              change.doc.id
-            );
-            const participantsIDs = participants.map(data => data.id);
-            const friendID = participantsIDs.find(id => id !== currentUserID);
-            console.log("~~~!friendID", friendID);
-
             const roomID = change.doc.id;
+            const roomData = await arrangeRoomData(data, roomID);
+            console.log("!@@@!!~~roomData", roomData);
 
-            if (participantsIDs.includes(currentUserID)) {
-              // 내가 참여중인 방들 중 하나일 경우
-              const data = change.doc.data();
-              const {
-                userMsgCount,
-                lastMessageCreatedBy,
-                messageCounts
-              } = data;
-
+            if (roomData.participantsIDs.includes(currentUserID)) {
+              // 내가 참여하고 있는 방일 경우
               if (
                 currentPublicRoomID === roomID &&
-                lastMessageCreatedBy === currentUserID &&
-                userMsgCount[friendID] !== messageCounts &&
+                roomData.lastMessageCreatedBy !== currentUserID &&
+                roomData.userMsgCount[currentUserID] !==
+                  roomData.messageCounts &&
                 type === "chat"
               ) {
-                // 내가 채팅방에 있고 내가 메시지를 보낸 경우
-                dispatch(
-                  publicChatActions.changePublicRoomMsgCounts({
-                    roomID,
-                    currentUserID
-                  })
-                );
-                console.log("1");
-              } else if (
-                currentPublicRoomID === roomID &&
-                lastMessageCreatedBy !== currentUserID &&
-                userMsgCount[currentUserID] !== messageCounts &&
-                type === "chat"
-              ) {
-                console.log("2");
                 // 내가 채팅방에 있고 메시지를 보내지 않은 경우
-                try {
-                  await firebaseApp.changePublicRoomMsgCount(
-                    currentPublicRoomID
-                  );
-                  dispatch(
-                    publicChatActions.changePublicRoomMsgCounts({
-                      roomID,
-                      currentUserID
-                    })
-                  );
-                } catch (error) {
-                  console.error(error);
-                }
-              } else if (
-                (currentPublicRoomID !== roomID || type === "info") &&
-                userMsgCount[currentUserID] !== messageCounts
-              ) {
-                console.log("3");
-                // 내가 채팅방에 있지 않은 경우
-                dispatch(
-                  publicChatActions.changePublicRoomMsgCounts({
-                    roomID,
-                    currentUserID: null
-                  })
-                );
-              } else if (
-                currentPublicRoomID === roomID &&
-                userMsgCount[currentUserID] === messageCounts &&
-                userMsgCount[friendID] === messageCounts &&
-                type === "chat"
-              ) {
-                // 내가 다시 채팅방에 들어간 경우(안 읽은 메시지 카운트 0으로 바꿈)
-                console.log("4");
-                dispatch(
-                  publicChatActions.setUnreadMsgCountZero({
-                    roomID,
-                    currentUserID
-                  })
-                );
+
+                // 새로 참가하는 사람이 있을 때 currentRoom의 participants 수정을 위해
+                // dispatch(publicChatActions.setCurrentRoom(roomData));
+
+                return await firebaseApp.changePublicRoomMsgCount(roomData.id);
               }
             }
+
+            dispatch(publicChatActions.replaceRoom(roomData));
           }
         });
 
@@ -280,7 +192,7 @@ function App() {
 
       return unsubscribe;
     }
-  }, [reload, roomsIJoined, currentUserID, currentPublicRoomID, type]);
+  }, [reload, /* roomsIJoined */ currentUserID, currentPublicRoomID, type]);
 
   useEffect(() => {
     // 로그인 상태 알림
@@ -319,9 +231,36 @@ function App() {
     }
   }, [isFriendsLoadDone, friends]);
 
-  // if (!isLogin && currentUserID) {
-  //   return <Loader active inverted size="huge" />;
-  // }
+  async function arrangeRoomData(roomData, roomID) {
+    const createdBySnap = await roomData.createdBy.get();
+
+    const createdBy = {
+      id: createdBySnap.id,
+      ...createdBySnap.data()
+    };
+    if (createdBy.privateEmail) {
+      createdBy.email = "비공개";
+    }
+
+    delete createdBy.roomsICreated;
+    delete createdBy.roomsIJoined;
+    delete createdBy.createdAt;
+
+    const participants = await firebaseApp.getParticipants(roomID);
+
+    const participantsIDs = participants.map(data => data.id);
+
+    const createdAt = JSON.stringify(roomData.createdAt.toDate());
+
+    return {
+      id: roomID,
+      ...roomData,
+      createdAt,
+      createdBy,
+      participants,
+      participantsIDs
+    };
+  }
 
   return (
     <Switch>

@@ -37,8 +37,8 @@ function RoomInfo() {
   }, [currentRoom, currentUser]);
 
   const handleLeaveRoom = useCallback(async () => {
-    const { id } = currentUser;
-    const { id: roomID } = currentRoom;
+    // const { id } = currentUser;
+    // const { id: roomID } = currentRoom;
     try {
       await firebaseApp.leaveRoom(
         currentUser.id,
@@ -47,18 +47,18 @@ function RoomInfo() {
       );
 
       dispatch(userActions.deleteRoomsIJoined(currentRoom.id));
-      dispatch(
-        publicChatActions.deleteParticipant({ roomID, participantID: id })
-      );
+      dispatch(publicChatActions.clearCurrentRoom());
+      // dispatch(
+      //   publicChatActions.deleteParticipant({ roomID, participantID: id })
+      // );
 
-      if (currentRoom.participants.length === 1) {
-        // 내가 마지막 참가자일 경우 방을 나가는 순간 방이 삭제됨(이런 경우는 제외)
-        dispatch(userActions.deleteRoomsIJoined(currentRoom.id));
-        dispatch(
-          publicChatActions.deleteParticipant({ roomID, participantID: id })
-        );
-        dispatch(publicChatActions.clearCurrentRoom());
-      }
+      // if (currentRoom.participants.length === 1) {
+      //   // 내가 마지막 참가자일 경우 방을 나가는 순간 방이 삭제됨(이런 경우는 제외)
+      //   dispatch(userActions.deleteRoomsIJoined(currentRoom.id));
+      // }
+      //     dispatch(
+      //       publicChatActions.deleteParticipant({ roomID, participantID: id })
+      //     );
     } catch (error) {
       console.error(error);
     }
