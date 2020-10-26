@@ -201,8 +201,7 @@ class Firebase {
       createdAt: new Date(),
       createdBy: userRef,
       messageCounts: 0,
-      userMsgCount: { [this.auth.currentUser.uid]: 0 },
-      participants: [this.auth.currentUser.uid]
+      userMsgCount: { [this.auth.currentUser.uid]: 0 }
     });
 
     await newRoomRef
@@ -306,8 +305,7 @@ class Firebase {
     const { messageCounts } = roomData;
 
     await roomRef.update({
-      userMsgCount: { ...currentUserMsgCount, [userID]: messageCounts },
-      participants: this.fieldValue.arrayUnion(this.auth.currentUser.uid)
+      userMsgCount: { ...currentUserMsgCount, [userID]: messageCounts }
     });
 
     await roomRef

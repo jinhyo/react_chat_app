@@ -164,11 +164,9 @@ function App() {
             const roomID = change.doc.id;
             const participants = await firebaseApp.getParticipants(roomID);
             ///////////////////////////////////
-            const {
-              messageCounts,
-              userMsgCount,
-              participants: participantsIDs
-            } = data;
+            const { messageCounts, userMsgCount } = data;
+
+            const participantsIDs = participants.map(data => data.id);
 
             const createdAt = JSON.stringify(
               change.doc.data().createdAt.toDate()
@@ -189,15 +187,16 @@ function App() {
             dispatch(publicChatActions.deleteRoomFromTotalRooms(change.doc.id));
           } else if (change.type === "modified") {
             console.log("room modified", change.doc.data());
-
-            const data = change.doc.data();
-            const { participants: participantsIDs } = data;
+            const participants = await firebaseApp.getParticipants(
+              change.doc.id
+            );
+            const participantsIDs = participants.map(data => data.id);
             const friendID = participantsIDs.find(id => id !== currentUserID);
             console.log("~~~!friendID", friendID);
 
             const roomID = change.doc.id;
 
-            if (roomsIJoined.findIndex(room => room.id === roomID) !== -1) {
+            if (participantsIDs.includes(currentUserID)) {
               // 내가 참여중인 방들 중 하나일 경우
               const data = change.doc.data();
               const {
@@ -241,7 +240,10 @@ function App() {
                 } catch (error) {
                   console.error(error);
                 }
-              } else if (currentPublicRoomID !== roomID || type === "info") {
+              } else if (
+                (currentPublicRoomID !== roomID || type === "info") &&
+                userMsgCount[currentUserID] !== messageCounts
+              ) {
                 console.log("3");
                 // 내가 채팅방에 있지 않은 경우
                 dispatch(

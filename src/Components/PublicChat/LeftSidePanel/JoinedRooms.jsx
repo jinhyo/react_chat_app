@@ -1,17 +1,37 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Menu, Header, Icon, Label } from "semantic-ui-react";
-import { userSelector, userActions } from "../../../features/userSlice";
+import { userSelector } from "../../../features/userSlice";
 import ShowRooms from "./ShowRooms";
 import { publicChatSelector } from "../../../features/publicChatSlice";
-import firebaseApp from "../../../firebase";
 
 function JoinedRooms() {
-  const dispatch = useDispatch();
-
   const roomsIJoined = useSelector(userSelector.roomsIJoined);
   const currentType = useSelector(publicChatSelector.type);
-  const currentRoom = useSelector(publicChatSelector.currentRoom);
+  const totalRooms = useSelector(publicChatSelector.totalRooms);
+
+  const displayRooms = useCallback(() => {
+    if (roomsIJoined.length > 0 && totalRooms.length > 0) {
+      const roomDatas = roomsIJoined.reduce((ac, room) => {
+        const joinedRoom = totalRooms.find(troom => troom.id === room.id);
+        console.log("joinedRoom", joinedRoom);
+        ac.push(joinedRoom);
+
+        return ac;
+      }, []);
+
+      console.log("roomDatas", roomDatas);
+
+      return (
+        <ShowRooms
+          rooms={roomsIJoined}
+          roomDatas={roomDatas}
+          type="chat"
+          currentType={currentType}
+        />
+      );
+    }
+  }, [roomsIJoined, totalRooms]);
 
   return (
     <Menu.Menu>
@@ -19,9 +39,7 @@ function JoinedRooms() {
         <Icon name="comments" size="small" />
         참가 목록
       </Header>
-      {roomsIJoined.length > 0 && (
-        <ShowRooms rooms={roomsIJoined} type="chat" currentType={currentType} />
-      )}
+      {displayRooms()}
     </Menu.Menu>
   );
 }
