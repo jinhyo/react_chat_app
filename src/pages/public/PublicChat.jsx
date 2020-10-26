@@ -5,7 +5,7 @@ import LeftSidePanel from "../../Components/PublicChat/LeftSidePanel/LeftSidePan
 import RightSide from "../../Components/PublicChat/RightSide/RightSide";
 import "./PublicChat.css";
 import RoomInfo from "../../Components/PublicChat/RoomInfo.jsx/RoomInfo";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   publicChatActions,
   publicChatSelector
@@ -13,10 +13,18 @@ import {
 import Messages from "../../Components/PublicChat/Messages/Messages";
 
 function PublicChat(props) {
+  const dispatch = useDispatch();
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const currentType = useSelector(publicChatSelector.type);
 
   console.log("currentRoom", currentRoom);
+
+  useEffect(() => {
+    return () => {
+      dispatch(publicChatActions.setType(""));
+      dispatch(publicChatActions.clearCurrentRoom());
+    };
+  }, []);
 
   const displayMain = useCallback(() => {
     if (currentRoom && currentType === "info") {

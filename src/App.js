@@ -29,11 +29,14 @@ moment.locale("ko");
 function App() {
   const dispatch = useDispatch();
   const isLogin = useSelector(userSelector.isLogin);
-  const currentUser = useSelector(userSelector.currentUser);
+  const totalRooms = useSelector(publicChatSelector.totalRooms);
+  const currentUserID = useSelector(userSelector.currentUserID);
+  const currentPublicRoomID = useSelector(publicChatSelector.currentRoomID);
   const reload = useSelector(publicChatSelector.reload);
-  const totalUsers = useSelector(userSelector.totalUsers);
   const isFriendsLoadDone = useSelector(userSelector.isFriendsLoadDone);
   const friends = useSelector(userSelector.friends);
+  const roomsIJoined = useSelector(userSelector.roomsIJoined);
+  const type = useSelector(publicChatSelector.type);
 
   useEffect(() => {
     // 로그인 유저 확인
@@ -52,7 +55,7 @@ function App() {
 
   useEffect(() => {
     // 친구목록 다운
-    if (currentUser.id) {
+    if (currentUserID && totalRooms) {
       async function addedCb(change) {
         const { userRef } = change.doc.data();
         const userSnapshot = await userRef.get();
@@ -99,11 +102,11 @@ function App() {
 
       return unsubscribe;
     }
-  }, [currentUser.id]);
+  }, [currentUserID]);
 
   useEffect(() => {
     // 전체 유저 정보 다운 - <UserList />에서 사용
-    if (currentUser.id) {
+    if (currentUserID) {
       const unsubscribe = firebaseApp.listenToUsers(async snap => {
         const totalUsers = snap.docChanges().map(async change => {
           if (change.type === "added") {
@@ -123,7 +126,7 @@ function App() {
           // change.type이 removed or modified일 경우 undefined가 들어옴
           dispatch(
             userActions.setTotalUsers(
-              newTotalUsers.filter(user => user?.id !== currentUser.id)
+              newTotalUsers.filter(user => user?.id !== currentUserID)
             )
           );
         }
@@ -131,73 +134,162 @@ function App() {
 
       return unsubscribe;
     }
-  }, [currentUser.id]);
+  }, [currentUserID]);
 
   useEffect(() => {
     // 공개 채팅방 정보 다운 - <PublicChat />에서 사용
-    const unsubscribe = firebaseApp.subscribeToAllRooms(async snap => {
-      const totalRooms = snap.docChanges().map(async change => {
-        if (change.type === "added") {
-          const createdBySnap = await change.doc.data().createdBy.get();
+    if (currentUserID) {
+      const unsubscribe = firebaseApp.subscribeToAllRooms(async snap => {
+        console.log("~~~~~~~~~subscribeToAllRooms");
+        const totalRooms = snap.docChanges().map(async change => {
+          console.log("!!!~~~~~~~~~subscribeToAllRooms");
 
-          const createdBy = {
-            id: createdBySnap.id,
-            ...createdBySnap.data()
-          };
-          if (createdBy.privateEmail) {
-            createdBy.email = "비공개";
+          if (change.type === "added") {
+            const data = change.doc.data();
+            const createdBySnap = await data.createdBy.get();
+            console.log("room added", change.doc.data());
+
+            const createdBy = {
+              id: createdBySnap.id,
+              ...createdBySnap.data()
+            };
+            if (createdBy.privateEmail) {
+              createdBy.email = "비공개";
+            }
+
+            delete createdBy.roomsICreated;
+            delete createdBy.roomsIJoined;
+            delete createdBy.createdAt;
+
+            const roomID = change.doc.id;
+            const participants = await firebaseApp.getParticipants(roomID);
+            ///////////////////////////////////
+            const {
+              messageCounts,
+              userMsgCount,
+              participants: participantsIDs
+            } = data;
+
+            const createdAt = JSON.stringify(
+              change.doc.data().createdAt.toDate()
+            );
+
+            return {
+              id: roomID,
+              ...change.doc.data(),
+              createdAt,
+              createdBy,
+              participants,
+              messageCounts,
+              userMsgCount,
+              participantsIDs
+            };
+          } else if (change.type === "removed") {
+            console.log("room removed", change.doc.data());
+            dispatch(publicChatActions.deleteRoomFromTotalRooms(change.doc.id));
+          } else if (change.type === "modified") {
+            console.log("room modified", change.doc.data());
+
+            const data = change.doc.data();
+            const { participants: participantsIDs } = data;
+            const friendID = participantsIDs.find(id => id !== currentUserID);
+            console.log("~~~!friendID", friendID);
+
+            const roomID = change.doc.id;
+
+            if (roomsIJoined.findIndex(room => room.id === roomID) !== -1) {
+              // 내가 참여중인 방들 중 하나일 경우
+              const data = change.doc.data();
+              const {
+                userMsgCount,
+                lastMessageCreatedBy,
+                messageCounts
+              } = data;
+
+              if (
+                currentPublicRoomID === roomID &&
+                lastMessageCreatedBy === currentUserID &&
+                userMsgCount[friendID] !== messageCounts &&
+                type === "chat"
+              ) {
+                // 내가 채팅방에 있고 내가 메시지를 보낸 경우
+                dispatch(
+                  publicChatActions.changePublicRoomMsgCounts({
+                    roomID,
+                    currentUserID
+                  })
+                );
+                console.log("1");
+              } else if (
+                currentPublicRoomID === roomID &&
+                lastMessageCreatedBy !== currentUserID &&
+                userMsgCount[currentUserID] !== messageCounts &&
+                type === "chat"
+              ) {
+                console.log("2");
+                // 내가 채팅방에 있고 메시지를 보내지 않은 경우
+                try {
+                  await firebaseApp.changePublicRoomMsgCount(
+                    currentPublicRoomID
+                  );
+                  dispatch(
+                    publicChatActions.changePublicRoomMsgCounts({
+                      roomID,
+                      currentUserID
+                    })
+                  );
+                } catch (error) {
+                  console.error(error);
+                }
+              } else if (currentPublicRoomID !== roomID || type === "info") {
+                console.log("3");
+                // 내가 채팅방에 있지 않은 경우
+                dispatch(
+                  publicChatActions.changePublicRoomMsgCounts({
+                    roomID,
+                    currentUserID: null
+                  })
+                );
+              } else if (
+                currentPublicRoomID === roomID &&
+                userMsgCount[currentUserID] === messageCounts &&
+                userMsgCount[friendID] === messageCounts &&
+                type === "chat"
+              ) {
+                // 내가 다시 채팅방에 들어간 경우(안 읽은 메시지 카운트 0으로 바꿈)
+                console.log("4");
+                dispatch(
+                  publicChatActions.setUnreadMsgCountZero({
+                    roomID,
+                    currentUserID
+                  })
+                );
+              }
+            }
           }
+        });
 
-          delete createdBy.roomsICreated;
-          delete createdBy.roomsIJoined;
-          delete createdBy.createdAt;
-
-          const roomID = change.doc.id;
-          const participants = await firebaseApp.getParticipants(roomID);
-
-          const messageCounts = await firebaseApp.getMessageCountFromPublicRoom(
-            roomID
-          );
-          const createdAt = JSON.stringify(
-            change.doc.data().createdAt.toDate()
-          );
-
-          return {
-            id: roomID,
-            ...change.doc.data(),
-            createdAt,
-            createdBy,
-            participants,
-            messageCounts
-          };
-        } else if (change.type === "removed") {
-          console.log("room removed", change.doc.data());
-          dispatch(publicChatActions.deleteRoomFromTotalRooms(change.doc.id));
-        } else if (change.type === "modified") {
-          console.log("room modified", change.doc.data());
+        const newTotalRooms = await Promise.all(totalRooms);
+        if (newTotalRooms[0] !== undefined) {
+          // removed & modified의 경우 newTotalRooms[0]에 undefined가 들어있음
+          dispatch(publicChatActions.setTotalRooms(newTotalRooms));
         }
       });
 
-      const newTotalRooms = await Promise.all(totalRooms);
-      if (newTotalRooms[0] !== undefined) {
-        // removed & modified의 경우 newTotalRooms[0]에 undefined가 들어있음
-        dispatch(publicChatActions.setTotalRooms(newTotalRooms));
-      }
-    });
-
-    return unsubscribe;
-  }, [reload]);
+      return unsubscribe;
+    }
+  }, [reload, roomsIJoined, currentUserID, currentPublicRoomID, type]);
 
   useEffect(() => {
     // 로그인 상태 알림
-    if (currentUser.id) {
+    if (currentUserID) {
       const connecteRef = firebaseApp.setLoginStatus();
 
       return () => {
         connecteRef.off();
       };
     }
-  }, [currentUser]);
+  }, [currentUserID]);
 
   useEffect(() => {
     // friends가 redux에 저장된 이후 loginStatus 확인
@@ -225,7 +317,7 @@ function App() {
     }
   }, [isFriendsLoadDone, friends]);
 
-  // if (!isLogin && currentUser.id) {
+  // if (!isLogin && currentUserID) {
   //   return <Loader active inverted size="huge" />;
   // }
 

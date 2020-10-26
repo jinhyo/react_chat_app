@@ -9,15 +9,17 @@ import {
   Divider
 } from "semantic-ui-react";
 import { useHistory, useParams, Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Layout from "../../Components/Layout/Layout";
 import { userSelector } from "../../features/userSlice";
 import AvatarModal from "../../Components/Profile/AvatarModal";
 import Participants from "../../Components/Share/Participants";
 import firebaseApp from "../../firebase";
 import RoomPopUp from "../../Components/Profile/RoomPopUp";
+import { publicChatActions } from "../../features/publicChatSlice";
 
 function Profile() {
+  const dispatch = useDispatch();
   const history = useHistory();
   const { userID } = useParams();
   console.log("userID", userID);

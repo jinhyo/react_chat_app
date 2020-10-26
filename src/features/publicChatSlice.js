@@ -20,9 +20,6 @@ const publicChatSlice = createSlice({
   },
   reducers: {
     setCurrentRoom: (state, { payload: currentRoomID }) => {
-      // state.currentRoom = original(
-      //   state.totalRooms.find(room => room.id === currentRoomID)
-      // );
       state.currentRoom = state.totalRooms.find(
         room => room.id === currentRoomID
       );
@@ -30,8 +27,16 @@ const publicChatSlice = createSlice({
     clearCurrentRoom: state => {
       state.currentRoom = null;
     },
+    clearTotalRooms: state => {
+      state.totalRooms = [];
+    },
     setTotalRooms: (state, { payload: totalRooms }) => {
-      state.totalRooms.unshift(...totalRooms);
+      const totalRoomsIDs = state.totalRooms.map(room => room.id);
+      totalRooms.forEach(room => {
+        if (!totalRoomsIDs.includes(room.id)) {
+          state.totalRooms.unshift(room);
+        }
+      });
     },
     deleteRoomFromTotalRooms: (state, { payload: targetRoomID }) => {
       state.totalRooms = state.totalRooms.filter(
@@ -59,6 +64,36 @@ const publicChatSlice = createSlice({
       state.totalRooms = [];
       state.currentRoom = null;
       state.reload += 1; // 아바타 변경 후 <App />의 firebaseApp.subscribeToAllRooms()재 발동의 트리거
+    },
+    changePublicRoomMsgCounts: (
+      state,
+      { payload: { roomID, currentUserID } }
+    ) => {
+      const currentPublicRoom = state.totalRooms.find(
+        room => room.id === roomID
+      );
+      currentPublicRoom.messageCounts++;
+
+      if (currentUserID) {
+        currentPublicRoom.userMsgCount[currentUserID]++;
+      }
+    },
+    setUnreadMsgCountZero: (state, { payload: { roomID, currentUserID } }) => {
+      const currentPublicRoom = state.totalRooms.find(
+        room => room.id === roomID
+      );
+      console.log("currentPublicRoom", currentPublicRoom);
+      console.log("roomID, currentUserID", roomID, currentUserID);
+
+      currentPublicRoom.userMsgCount[currentUserID] =
+        currentPublicRoom.messageCounts;
+    },
+    setJoinedRooms: (state, { payload: { roomID, currentUserID } }) => {
+      const joinedRoom = state.totalRooms.find(room => room.id === roomID);
+      console.log("currentPublicRoom", joinedRoom);
+      console.log("roomID, currentUserID", roomID, currentUserID);
+
+      joinedRoom.userMsgCount[currentUserID] = joinedRoom.messageCounts;
     }
   }
 });
@@ -67,6 +102,12 @@ const selectCurrentRoom = createSelector(
   state => state.currentRoom,
 
   currentRoom => currentRoom
+);
+
+const selectCurrentRoomID = createSelector(
+  state => state.currentRoom?.id,
+
+  currentRoomID => currentRoomID
 );
 
 const selectTotalRooms = createSelector(
@@ -93,6 +134,7 @@ export const publicChatReducers = publicChatSlice.reducer;
 
 export const publicChatSelector = {
   currentRoom: state => selectCurrentRoom(state[PUBLIC]),
+  currentRoomID: state => selectCurrentRoomID(state[PUBLIC]),
   totalRooms: state => selectTotalRooms(state[PUBLIC]),
   type: state => selectType(state[PUBLIC]),
   reload: state => selectReload(state[PUBLIC])

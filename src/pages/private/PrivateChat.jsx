@@ -7,13 +7,14 @@ import UserList from "../../Components/PrivateChat/UserList/UserList";
 
 import "./PrivateChat.css";
 import PrivateMessages from "../../Components/PrivateChat/Messages/PrivateMessages";
-import { userActions, userSelector } from "../../features/userSlice";
+import { userSelector } from "../../features/userSlice";
 import firebaseApp from "../../firebase";
 import {
   privateChatActions,
   privateChatSelector
 } from "../../features/privateChatSlice";
 import moment from "moment";
+import { publicChatActions } from "../../features/publicChatSlice";
 
 function PrivateChat() {
   const dispatch = useDispatch();
@@ -73,6 +74,7 @@ function PrivateChat() {
               messageCounts !== userMsgCount[currentUserID]
             ) {
               // 둘 중 누군가 메세지를 보낼때 마다 개인 채팅방에 있는 유저에게서 실행됨
+              // 혼자 있을경우는 한명에게만, 두 명이 방에 있을 경우에는 두 명 다 실행됨
               await firebaseApp.changePrivateRoomMsgCount(
                 currentPrivateRoomID,
                 friendID
@@ -104,6 +106,7 @@ function PrivateChat() {
               messageCounts === userMsgCount[currentUserID]
             ) {
               // 채팅방에 다시 들어올 경우 내가 읽지 않은 메시지 카운트를 전체 메시지 카운트와 동일하게 변경
+              // (안 읽은 메시지 카운트 0으로 바꿈)
               dispatch(
                 privateChatActions.setUnreadMessageCountEqual({
                   privateRoomID: id,
@@ -115,7 +118,6 @@ function PrivateChat() {
         });
 
         const newPrivateRooms = await Promise.all(privateRooms);
-
         if (newPrivateRooms[0] !== undefined) {
           setNewPrivateRooms(newPrivateRooms);
         }

@@ -199,7 +199,10 @@ class Firebase {
       name: roomName,
       details,
       createdAt: new Date(),
-      createdBy: userRef
+      createdBy: userRef,
+      messageCounts: 0,
+      userMsgCount: { [this.auth.currentUser.uid]: 0 },
+      participants: [this.auth.currentUser.uid]
     });
 
     await newRoomRef
@@ -255,6 +258,18 @@ class Firebase {
         roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
       });
 
+    const roomRef = this.db.collection("rooms").doc(roomID);
+    const roomSnap = await roomRef.get();
+
+    const currentUserMsgCount = roomSnap.data().userMsgCount;
+    delete currentUserMsgCount[userID];
+
+    // userMsgCount에서 내 목록 삭제
+    await roomRef.update({
+      userMsgCount: currentUserMsgCount,
+      participants: this.fieldValue.arrayRemove(this.auth.currentUser.uid)
+    });
+
     const participantsRef = this.db
       .collection("rooms")
       .doc(roomID)
@@ -284,9 +299,18 @@ class Firebase {
         })
       });
 
-    await this.db
-      .collection("rooms")
-      .doc(roomID)
+    const roomRef = this.db.collection("rooms").doc(roomID);
+    const roomSnap = await roomRef.get();
+    const roomData = roomSnap.data();
+    const currentUserMsgCount = roomData.userMsgCount;
+    const { messageCounts } = roomData;
+
+    await roomRef.update({
+      userMsgCount: { ...currentUserMsgCount, [userID]: messageCounts },
+      participants: this.fieldValue.arrayUnion(this.auth.currentUser.uid)
+    });
+
+    await roomRef
       .collection("participants")
       .doc(userID)
       .set({
@@ -296,30 +320,74 @@ class Firebase {
       });
   }
 
+  async setPublicMsgCountEqual(roomID) {
+    const roomRef = this.db.collection("rooms").doc(roomID);
+    const roomSnap = await roomRef.get();
+    const roomData = roomSnap.data();
+    const currentUserMsgCount = roomData.userMsgCount;
+    const { messageCounts } = roomData;
+    console.log("~~~setPublicMsgCountEqual");
+
+    await roomRef.update({
+      userMsgCount: {
+        ...currentUserMsgCount,
+        [this.auth.currentUser.uid]: messageCounts
+      }
+    });
+  }
+
   async sendMessage(content, createdBy, roomID) {
-    await this.db
-      .collection("rooms")
-      .doc(roomID)
-      .collection("messages")
-      .add({
-        content,
-        type: "message",
-        createdAt: new Date(),
-        createdBy
-      });
+    const roomRef = this.db.collection("rooms").doc(roomID);
+    console.log("~~~sendMessage");
+
+    await roomRef.collection("messages").add({
+      content,
+      type: "message",
+      createdAt: new Date(),
+      createdBy
+    });
+
+    const roomSnap = await roomRef.get();
+    const { userMsgCount } = roomSnap.data();
+    userMsgCount[this.auth.currentUser.uid]++;
+
+    await roomRef.update({
+      userMsgCount,
+      messageCounts: this.fieldValue.increment(1),
+      lastMessageCreatedBy: this.auth.currentUser.uid
+    });
+  }
+
+  async changePublicRoomMsgCount(publicRoomID) {
+    const publicRoomRef = this.db.collection("rooms").doc(publicRoomID);
+    console.log("~~~changePublicRoomMsgCount");
+
+    const publicRoomSnap = await publicRoomRef.get();
+    const { userMsgCount, messageCounts } = publicRoomSnap.data();
+    userMsgCount[this.auth.currentUser.uid] = messageCounts;
+
+    await publicRoomRef.update({
+      userMsgCount
+    });
   }
 
   async sendImageMessage(imageURLs, createdBy, roomID) {
-    await this.db
-      .collection("rooms")
-      .doc(roomID)
-      .collection("messages")
-      .add({
-        content: imageURLs,
-        type: "image",
-        createdAt: new Date(),
-        createdBy
-      });
+    const roomRef = this.db.collection("rooms").doc(roomID);
+    await roomRef.collection("messages").add({
+      content: imageURLs,
+      type: "image",
+      createdAt: new Date(),
+      createdBy
+    });
+
+    const roomSnap = await roomRef.get();
+    const { userMsgCount } = roomSnap.data();
+    userMsgCount[this.auth.currentUser.uid]++;
+
+    await roomRef.update({
+      userMsgCount,
+      messageCounts: this.fieldValue.increment(1)
+    });
   }
 
   subscribeToRoomMessages(roomID, cb) {
@@ -329,16 +397,6 @@ class Firebase {
       .collection("messages")
       .orderBy("createdAt", "asc")
       .onSnapshot(cb);
-  }
-
-  async getMessageCountFromPublicRoom(roomID) {
-    const snap = await this.db
-      .collection("rooms")
-      .doc(roomID)
-      .collection("messages")
-      .get();
-
-    return snap.size;
   }
 
   addTypingStatus(roomID) {
@@ -435,6 +493,15 @@ class Firebase {
       .where("messageCounts", ">", 0)
       .orderBy("messageCounts", "desc")
       .orderBy("lastMessageTimestamp", "desc")
+      .onSnapshot(cb);
+
+    return unsubscribe;
+  }
+
+  listenToPublicRooms(cb) {
+    const unsubscribe = this.db
+      .collection("rooms")
+      .where("participants", "array-contains", this.auth.currentUser.uid)
       .onSnapshot(cb);
 
     return unsubscribe;

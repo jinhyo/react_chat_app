@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { publicChatActions } from "../../../features/publicChatSlice";
 import { Icon, Label, Menu } from "semantic-ui-react";
+import firebaseApp from "../../../firebase";
 
 function ShowRooms({ rooms, type, currentType }) {
   const dispatch = useDispatch();
@@ -15,11 +16,20 @@ function ShowRooms({ rooms, type, currentType }) {
   }, [currentType, type]);
 
   const handleChangeChannel = useCallback(
-    (e, { name }) => {
+    async (e, { name }) => {
       setCurrentRoomID(name);
       const currentRoom = rooms.find(room => room.id === name);
+
       dispatch(publicChatActions.setType(type));
       dispatch(publicChatActions.setCurrentRoom(currentRoom.id));
+
+      if (type === "chat") {
+        try {
+          await firebaseApp.setPublicMsgCountEqual(currentRoom.id);
+        } catch (error) {
+          console.error(error);
+        }
+      }
     },
     [rooms]
   );
