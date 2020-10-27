@@ -15,6 +15,7 @@ function Login() {
   const [initialState, setInitialState] = useState({ email: "", password: "" });
   const [loginLoading, setLoginLoading] = useState(false);
   const [googleLoginLoading, setGoogleLoginLoading] = useState(false);
+  console.log("~~error", error);
 
   useEffect(() => {
     if (isLogin) {
@@ -35,13 +36,18 @@ function Login() {
     try {
       setLoginLoading(true);
       await firebaseApp.logIn(initialState.email, initialState.password);
-    } catch (error) {
-      if (error.code === "auth/wrong-password") {
-        setError("잘못된 비밀번호 입니다.");
-      }
-    } finally {
       setLoginLoading(false);
       history.push("/");
+    } catch (error) {
+      console.log("error", error);
+      console.log("error.code", error.code);
+
+      if (error.code === "auth/wrong-password") {
+        setError("잘못된 비밀번호 입니다.");
+      } else if (error.code === "auth/user-not-found") {
+        setError("가입되지 않은 이메일 입니다.");
+      }
+      setLoginLoading(false);
     }
   }, [initialState]);
 
