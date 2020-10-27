@@ -74,7 +74,6 @@ function AvatarModal({ modal, closeModal }) {
         })
       );
       closeModal();
-      dispatch(publicChatActions.callReload());
       dispatch(publicChatActions.clearCurrentRoom());
     } catch (error) {
       console.error(error);

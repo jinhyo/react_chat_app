@@ -78,25 +78,31 @@ function Messages() {
     dispatch(messagesActions.clearMessages());
     setMessageLoading(true);
 
-    const participants = currentRoom.participants;
-    const avatarURLs = participants.reduce((ac, participant) => {
-      ac[participant.id] = participant.avatarURL;
-      return ac;
-    }, {});
+    // const participants = currentRoom.participants;
+    // const avatarURLs = participants.reduce((ac, participant) => {
+    //   ac[participant.id] = participant.avatarURL;
+    //   return ac;
+    // }, {});
 
     const unsubscribe = firebaseApp.subscribeToRoomMessages(
       currentRoom.id,
       async snap => {
         const messages = snap.docChanges().map(async change => {
           if (change.type === "added") {
-            const senderID = change.doc.data().createdBy.id;
-            const createdAt = JSON.stringify(
-              change.doc.data().createdAt.toDate()
-            );
+            const data = change.doc.data();
+            const createdBySnap = await data.createdBy.get();
+            console.log("~~~~createdBySnap", createdBySnap);
+
+            const { nickname, avatarURL } = createdBySnap.data();
+            console.log("~~~~nickname, avatarURL", nickname, avatarURL);
+            const createdBy = { id: createdBySnap.id, nickname };
+            const createdAt = JSON.stringify(data.createdAt.toDate());
+            delete data.createdBy;
             return {
               ...change.doc.data(),
               createdAt,
-              avatarURL: avatarURLs[senderID]
+              avatarURL,
+              createdBy
             };
           }
         });

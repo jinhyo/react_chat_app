@@ -332,15 +332,15 @@ class Firebase {
     });
   }
 
-  async sendMessage(content, createdBy, roomID) {
+  async sendMessage(content, roomID) {
     const roomRef = this.db.collection("rooms").doc(roomID);
-    console.log("~~~sendMessage");
+    const userRef = this.db.collection("users").doc(this.auth.currentUser.uid);
 
     await roomRef.collection("messages").add({
       content,
       type: "message",
       createdAt: new Date(),
-      createdBy
+      createdBy: userRef
     });
 
     const roomSnap = await roomRef.get();

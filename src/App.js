@@ -32,10 +32,8 @@ function App() {
   const totalRooms = useSelector(publicChatSelector.totalRooms);
   const currentUserID = useSelector(userSelector.currentUserID);
   const currentPublicRoomID = useSelector(publicChatSelector.currentRoomID);
-  const reload = useSelector(publicChatSelector.reload);
   const isFriendsLoadDone = useSelector(userSelector.isFriendsLoadDone);
   const friends = useSelector(userSelector.friends);
-  const roomsIJoined = useSelector(userSelector.roomsIJoined);
   const type = useSelector(publicChatSelector.type);
 
   useEffect(() => {
@@ -171,10 +169,6 @@ function App() {
                 type === "chat"
               ) {
                 // 내가 채팅방에 있고 메시지를 보내지 않은 경우
-
-                // 새로 참가하는 사람이 있을 때 currentRoom의 participants 수정을 위해
-                // dispatch(publicChatActions.setCurrentRoom(roomData));
-
                 return await firebaseApp.changePublicRoomMsgCount(roomData.id);
               }
             }
@@ -192,7 +186,7 @@ function App() {
 
       return unsubscribe;
     }
-  }, [reload, /* roomsIJoined */ currentUserID, currentPublicRoomID, type]);
+  }, [/* roomsIJoined */ currentUserID, currentPublicRoomID, type]);
 
   useEffect(() => {
     // 로그인 상태 알림

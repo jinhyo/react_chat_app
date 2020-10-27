@@ -28,8 +28,8 @@ const userSlice = createSlice({
   },
   reducers: {
     setCurrentUser: (state, { payload: currentUser }) => {
-      state.isLogin = true;
       state.currentUser = currentUser;
+      state.isUserLoading = false;
     },
     updateProfile: (state, { payload: updatedInfo }) => {
       state.currentUser = { ...state.currentUser, ...updatedInfo };

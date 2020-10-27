@@ -37,12 +37,9 @@ function MessageForm() {
     if (!text) {
       return;
     }
-    const createdBy = {
-      id: currentUser.id,
-      nickname: currentUser.nickname
-    };
+
     try {
-      await firebaseApp.sendMessage(text, createdBy, currentRoom.id);
+      await firebaseApp.sendMessage(text, currentRoom.id);
     } catch (error) {
       console.error(error);
     }
