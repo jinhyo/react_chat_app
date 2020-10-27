@@ -1,6 +1,5 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { makePrivateRoomID } from "../firebase";
-import { original } from "immer";
 
 const privateChatSlice = createSlice({
   name: "privateChatSlice",
@@ -25,13 +24,6 @@ const privateChatSlice = createSlice({
         // 만약 case1의 경우 currentPrivateRoom도 새로들어온 privateRoom으로 교체해줘야 함
         // state.currentPrivateRoom = state.privateRooms.find(room => room.id === state.currentPrivateRoom.id)
       } else {
-        // const privateRoomsIDs = state.privateRooms.map(room => room.id);
-        // privateRooms.forEach(room => {
-        //   if (!privateRoomsIDs.includes(room.id)) {
-        //     state.privateRooms.push(room);
-        //   }
-        // });
-
         state.privateRooms.push(...privateRooms);
       }
     },

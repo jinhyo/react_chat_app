@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Form, Input, Button, Segment } from "semantic-ui-react";
+import { Form, Input, Button } from "semantic-ui-react";
+import { Picker } from "emoji-mart";
+
 import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { userSelector } from "../../../features/userSlice";
-import { Picker } from "emoji-mart";
 import PictureModal from "./PictureModal";
 
 function MessageForm() {
@@ -12,8 +13,8 @@ function MessageForm() {
 
   const currentUser = useSelector(userSelector.currentUser);
   const currentRoom = useSelector(publicChatSelector.currentRoom);
-  const [modal, setModal] = useState(false);
 
+  const [modal, setModal] = useState(false);
   const [text, setText] = useState("");
   const [emoji, setEmoji] = useState(false);
 
@@ -80,8 +81,6 @@ function MessageForm() {
           onChange={handleTextChange}
           value={text}
           labelPosition="right"
-          // onKeyUp={handleTyping}
-          // className={errorMessage.indexOf("message") ? "error" : ""}
           label={<Button color="teal" content="전송" />}
         />
       </Form>
@@ -90,12 +89,7 @@ function MessageForm() {
         color="orange"
         onClick={handleEmojiToggle}
       />
-      <Button
-        icon="picture"
-        color="olive"
-        // content={emoji ? "Close" : null}
-        onClick={openModal}
-      />
+      <Button icon="picture" color="olive" onClick={openModal} />
       <PictureModal modal={modal} closeModal={closeModal} />
     </>
   );

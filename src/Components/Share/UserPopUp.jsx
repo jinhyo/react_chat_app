@@ -1,11 +1,10 @@
 import React, { useCallback, useState, useRef } from "react";
-import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { Button, Popup } from "semantic-ui-react";
-import firebaseApp from "../../firebase";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+
+import firebaseApp from "../../firebase";
 import { userSelector, userActions } from "../../features/userSlice";
 import { privateChatActions } from "../../features/privateChatSlice";
 

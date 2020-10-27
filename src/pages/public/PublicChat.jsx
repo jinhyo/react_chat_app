@@ -1,22 +1,22 @@
 import React, { useEffect, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Grid } from "semantic-ui-react";
+
 import Layout from "../../Components/Layout/Layout";
 import LeftSidePanel from "../../Components/PublicChat/LeftSidePanel/LeftSidePanel";
 import RightSide from "../../Components/PublicChat/RightSide/RightSide";
 import RoomInfo from "../../Components/PublicChat/RoomInfo.jsx/RoomInfo";
-import { useSelector, useDispatch } from "react-redux";
 import {
   publicChatActions,
   publicChatSelector
 } from "../../features/publicChatSlice";
 import Messages from "../../Components/PublicChat/Messages/Messages";
 
-function PublicChat(props) {
+function PublicChat() {
   const dispatch = useDispatch();
+
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const currentType = useSelector(publicChatSelector.type);
-
-  console.log("currentRoom", currentRoom);
 
   useEffect(() => {
     return () => {

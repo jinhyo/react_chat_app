@@ -1,7 +1,8 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { userSelector } from "../../../features/userSlice";
 import { Segment, Comment } from "semantic-ui-react";
+
+import { userSelector } from "../../../features/userSlice";
 import UserPopUp from "../../Share/UserPopUp";
 import OwnerCard from "../../Share/OwnerCard";
 

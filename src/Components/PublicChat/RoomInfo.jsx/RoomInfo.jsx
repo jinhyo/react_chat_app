@@ -1,22 +1,16 @@
 import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  Segment,
-  Header,
-  Comment,
-  Icon,
-  Button,
-  Label
-} from "semantic-ui-react";
-import Participants from "../../Share/Participants";
-import OwnerCard from "../../Share/OwnerCard";
+import { Segment, Header, Comment, Icon, Label } from "semantic-ui-react";
 import moment from "moment";
-import { userSelector, userActions } from "../../../features/userSlice";
-import firebaseApp from "../../../firebase";
+
 import {
   publicChatSelector,
   publicChatActions
 } from "../../../features/publicChatSlice";
+import Participants from "../../Share/Participants";
+import OwnerCard from "../../Share/OwnerCard";
+import { userSelector, userActions } from "../../../features/userSlice";
+import firebaseApp from "../../../firebase";
 import UserPopUp from "../../Share/UserPopUp";
 
 function RoomInfo() {
@@ -37,8 +31,6 @@ function RoomInfo() {
   }, [currentRoom, currentUser]);
 
   const handleLeaveRoom = useCallback(async () => {
-    // const { id } = currentUser;
-    // const { id: roomID } = currentRoom;
     try {
       await firebaseApp.leaveRoom(
         currentUser.id,
@@ -48,17 +40,6 @@ function RoomInfo() {
 
       dispatch(userActions.deleteRoomsIJoined(currentRoom.id));
       dispatch(publicChatActions.clearCurrentRoom());
-      // dispatch(
-      //   publicChatActions.deleteParticipant({ roomID, participantID: id })
-      // );
-
-      // if (currentRoom.participants.length === 1) {
-      //   // 내가 마지막 참가자일 경우 방을 나가는 순간 방이 삭제됨(이런 경우는 제외)
-      //   dispatch(userActions.deleteRoomsIJoined(currentRoom.id));
-      // }
-      //     dispatch(
-      //       publicChatActions.deleteParticipant({ roomID, participantID: id })
-      //     );
     } catch (error) {
       console.error(error);
     }

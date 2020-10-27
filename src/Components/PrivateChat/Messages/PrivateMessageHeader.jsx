@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Header, Icon, Divider, Input, Image } from "semantic-ui-react";
 import { useSelector } from "react-redux";
-import { publicChatSelector } from "../../../features/publicChatSlice";
+
 import { messagesSelector } from "../../../features/messageSlice";
-import { userSelector } from "../../../features/userSlice";
 import { privateChatSelector } from "../../../features/privateChatSlice";
 
 function PrivateMessageHeader({
@@ -14,10 +13,10 @@ function PrivateMessageHeader({
   setSearchTerm
 }) {
   const messages = useSelector(messagesSelector.privateMesaages);
-  const currentFrined = useSelector(userSelector.currentFriend);
   const currentPrivateRoom = useSelector(
     privateChatSelector.currentPrivateRoom
   );
+
   useEffect(() => {
     if (!searchMode) {
       setSearchTerm("");

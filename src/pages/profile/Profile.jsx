@@ -9,7 +9,8 @@ import {
   Divider
 } from "semantic-ui-react";
 import { useHistory, useParams, Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+
 import Layout from "../../Components/Layout/Layout";
 import { userSelector } from "../../features/userSlice";
 import AvatarModal from "../../Components/Profile/AvatarModal";
@@ -67,7 +68,6 @@ function Profile() {
     return currentUser.id === userInfo.id;
   }, [currentUser, userInfo]);
 
-  // if (!isLogin) return null;
   if (!userInfo) return null;
 
   return (

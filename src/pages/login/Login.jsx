@@ -1,19 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
-import "./Login";
-import Layout from "../../Components/Layout/Layout";
-import { useHistory } from "react-router-dom";
-import {
-  Grid,
-  Header,
-  Icon,
-  Form,
-  Segment,
-  Button,
-  Message
-} from "semantic-ui-react";
-import firebaseApp from "../../firebase";
 import { useSelector } from "react-redux";
-import { userSelector, userActions } from "../../features/userSlice";
+import { useHistory } from "react-router-dom";
+import { Grid, Icon, Form, Segment, Button, Message } from "semantic-ui-react";
+
+import Layout from "../../Components/Layout/Layout";
+import firebaseApp from "../../firebase";
+import { userSelector } from "../../features/userSlice";
 
 function Login() {
   const history = useHistory();

@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Comment, Segment, Input, Divider } from "semantic-ui-react";
+import React, { useState, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { Comment, Segment } from "semantic-ui-react";
 
 import UserListHeader from "./UserListHeader";
-import { userActions, userSelector } from "../../../features/userSlice";
+import { userSelector } from "../../../features/userSlice";
 import OwnerCard from "../../Share/OwnerCard";
 import UserPopUp from "../../Share/UserPopUp";
 

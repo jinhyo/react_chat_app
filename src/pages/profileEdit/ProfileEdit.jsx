@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
-import Layout from "../../Components/Layout/Layout";
+import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import {
   Grid,
   Header,
@@ -11,10 +12,10 @@ import {
   Checkbox,
   TextArea
 } from "semantic-ui-react";
+
 import firebaseApp from "../../firebase";
-import { useSelector, useDispatch } from "react-redux";
+import Layout from "../../Components/Layout/Layout";
 import { userSelector, userActions } from "../../features/userSlice";
-import { useHistory } from "react-router-dom";
 
 function ProfileEdit() {
   const dispatch = useDispatch();

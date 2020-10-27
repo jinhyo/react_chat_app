@@ -1,15 +1,16 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { publicChatActions } from "../../../features/publicChatSlice";
 import { Icon, Label, Menu } from "semantic-ui-react";
+
+import { publicChatActions } from "../../../features/publicChatSlice";
 import firebaseApp from "../../../firebase";
 import { userSelector } from "../../../features/userSlice";
 
 function ShowRooms({ rooms, type, currentType, roomDatas }) {
-  console.log("!!~~roomDatas", roomDatas);
   const dispatch = useDispatch();
 
   const currentUserID = useSelector(userSelector.currentUserID);
+
   const [currentRoomID, setCurrentRoomID] = useState("");
 
   useEffect(() => {
@@ -43,8 +44,6 @@ function ShowRooms({ rooms, type, currentType, roomDatas }) {
         const currentRoomData = roomDatas.find(
           roomData => roomData.id === room.id
         );
-        console.log("~~roomDatas", roomDatas);
-        console.log("~~currentRoomData", currentRoomData);
 
         if (!currentRoomData) {
           return null;
@@ -53,7 +52,6 @@ function ShowRooms({ rooms, type, currentType, roomDatas }) {
         const unreadMsgCount =
           currentRoomData.messageCounts -
           currentRoomData.userMsgCount[currentUserID];
-        console.log("~~unreadMsgCount", unreadMsgCount);
 
         if (unreadMsgCount > 0) {
           return <Label color="teal" content={unreadMsgCount} />;

@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { Menu, Header, Icon, Button, Label } from "semantic-ui-react";
+import React, { useState, useCallback } from "react";
+import { Menu, Header, Icon, Button } from "semantic-ui-react";
 import AddRoomModal from "./AddRoomModal";
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { useSelector } from "react-redux";

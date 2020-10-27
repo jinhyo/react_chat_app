@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { Comment, Image, Label } from "semantic-ui-react";
+
 import { userSelector } from "../../../features/userSlice";
 
 function MessageComment({ messages, scrollToBottom }) {

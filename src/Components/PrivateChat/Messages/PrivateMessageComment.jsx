@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { Comment, Image, Label } from "semantic-ui-react";
+
 import { userSelector } from "../../../features/userSlice";
 
 function PrivateMessageComment({ privateMessages, scrollToBottom }) {
@@ -52,7 +53,6 @@ function PrivateMessageComment({ privateMessages, scrollToBottom }) {
   const displayTime = useCallback(message => {
     const date = JSON.parse(message.createdAt);
 
-    // return moment(date).format("LT");
     return moment(date).format("LLL");
   }, []);
 

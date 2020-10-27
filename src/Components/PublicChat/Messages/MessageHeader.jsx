@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Header, Icon, Divider, Input } from "semantic-ui-react";
 import { useSelector } from "react-redux";
+
 import { publicChatSelector } from "../../../features/publicChatSlice";
 import { messagesSelector } from "../../../features/messageSlice";
 
@@ -14,6 +15,8 @@ function MessageHeader({
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const messages = useSelector(messagesSelector.publicMessages);
 
+  const [searchLoading, setSearchLoading] = useState(false);
+
   useEffect(() => {
     if (!searchMode) {
       setSearchTerm("");
@@ -25,8 +28,6 @@ function MessageHeader({
     setSearchTerm("");
     setSearchResults([]);
   }, [currentRoom]);
-
-  const [searchLoading, setSearchLoading] = useState(false);
 
   const handleChangeSearchTerm = useCallback(
     e => {

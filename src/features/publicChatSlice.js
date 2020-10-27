@@ -1,14 +1,4 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
-import { original } from "immer";
-
-const INITIAL_CURRENT_ROOM = {
-  id: "",
-  name: "",
-  details: "",
-  createdAt: "",
-  createdBy: { id: "", nickname: "" },
-  participants: { userId: { nickname: "", avatarURL: "" } }
-};
 
 const publicChatSlice = createSlice({
   name: "publicChatSlice",
@@ -42,7 +32,6 @@ const publicChatSlice = createSlice({
       const index = state.totalRooms.findIndex(
         room => room.id === publicRoom.id
       );
-      console.log("~!!!index", index);
       state.totalRooms[index] = publicRoom;
     },
     deleteRoomFromTotalRooms: (state, { payload: targetRoomID }) => {
@@ -89,17 +78,11 @@ const publicChatSlice = createSlice({
       const currentPublicRoom = state.totalRooms.find(
         room => room.id === roomID
       );
-      console.log("currentPublicRoom", currentPublicRoom);
-      console.log("roomID, currentUserID", roomID, currentUserID);
-
       currentPublicRoom.userMsgCount[currentUserID] =
         currentPublicRoom.messageCounts;
     },
     setJoinedRooms: (state, { payload: { roomID, currentUserID } }) => {
       const joinedRoom = state.totalRooms.find(room => room.id === roomID);
-      console.log("currentPublicRoom", joinedRoom);
-      console.log("roomID, currentUserID", roomID, currentUserID);
-
       joinedRoom.userMsgCount[currentUserID] = joinedRoom.messageCounts;
     }
   }

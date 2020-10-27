@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from "react";
+import React from "react";
 import { Popup, Label } from "semantic-ui-react";
 
 function RoomPopUp({ children, roomsIJoined }) {

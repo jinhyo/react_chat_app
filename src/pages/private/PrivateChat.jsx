@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Grid } from "semantic-ui-react";
+import moment from "moment";
+import { useHistory } from "react-router-dom";
+
 import Layout from "../../Components/Layout/Layout";
 import LeftSidePanel from "../../Components/PrivateChat/LeftSidePanel/LeftSidePanel";
 import UserList from "../../Components/PrivateChat/UserList/UserList";
-import { useHistory } from "react-router-dom";
-
-import "./PrivateChat.css";
 import PrivateMessages from "../../Components/PrivateChat/Messages/PrivateMessages";
 import { userSelector } from "../../features/userSlice";
 import firebaseApp from "../../firebase";
@@ -14,7 +14,7 @@ import {
   privateChatActions,
   privateChatSelector
 } from "../../features/privateChatSlice";
-import moment from "moment";
+import "./PrivateChat.css";
 
 function PrivateChat() {
   const dispatch = useDispatch();
@@ -24,7 +24,6 @@ function PrivateChat() {
   );
   const isLogin = useSelector(userSelector.isLogin);
   const currentUserID = useSelector(userSelector.currentUserID);
-  const friends = useSelector(userSelector.friends);
   const friendsLoadDone = useSelector(userSelector.isFriendsLoadDone);
 
   const [currentItem, setCurrentItem] = useState("friendList");

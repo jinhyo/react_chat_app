@@ -326,7 +326,6 @@ class Firebase {
     const roomData = roomSnap.data();
     const currentUserMsgCount = roomData.userMsgCount;
     const { messageCounts } = roomData;
-    console.log("~~~setPublicMsgCountEqual");
 
     await roomRef.update({
       userMsgCount: {
@@ -360,7 +359,6 @@ class Firebase {
 
   async changePublicRoomMsgCount(publicRoomID) {
     const publicRoomRef = this.db.collection("rooms").doc(publicRoomID);
-    console.log("~~~changePublicRoomMsgCount");
 
     const publicRoomSnap = await publicRoomRef.get();
     const { userMsgCount, messageCounts } = publicRoomSnap.data();

@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { Menu, Icon, Image, Header, Dropdown } from "semantic-ui-react";
 import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+
 import { userSelector, userActions } from "../../features/userSlice";
 import firebaseApp from "../../firebase";
 
@@ -9,7 +10,6 @@ function BaseHeader() {
   const dispatch = useDispatch();
   const history = useHistory();
   const currentUser = useSelector(userSelector.currentUser);
-  console.log("currentUser", currentUser);
 
   const logout = useCallback(() => {
     firebaseApp.logOut();
@@ -69,7 +69,6 @@ function BaseHeader() {
                       <span style={{ color: "black" }}>프로필</span>
                     </Link>
                   </Dropdown.Item>
-                  <Dropdown.Item>배경색</Dropdown.Item>
                   <Dropdown.Item onClick={logout}>로그아웃</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

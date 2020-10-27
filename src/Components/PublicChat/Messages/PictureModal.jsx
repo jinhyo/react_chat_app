@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Modal, Button, Image, Grid, Icon } from "semantic-ui-react";
+import { useSelector } from "react-redux";
+import { Modal, Button } from "semantic-ui-react";
+
 import { userSelector } from "../../../features/userSlice";
 import PreviewImages from "./PreviewImages";
 import { publicChatSelector } from "../../../features/publicChatSlice";
@@ -71,7 +72,6 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
 
       try {
         const totalImageURLs = await Promise.all(imageURLs);
-        console.log("totalImageURLs", totalImageURLs);
 
         await firebaseApp.sendImageMessage(totalImageURLs, currentRoom.id);
         setUploadLoading(false);

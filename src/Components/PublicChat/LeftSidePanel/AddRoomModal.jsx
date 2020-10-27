@@ -3,13 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   Modal,
   Button,
-  Grid,
   Form,
   Input,
   Segment,
   TextArea,
   Message
 } from "semantic-ui-react";
+
 import { userSelector, userActions } from "../../../features/userSlice";
 import firebaseApp from "../../../firebase";
 

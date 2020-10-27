@@ -1,30 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Switch, Route } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  publicChatActions,
+  publicChatSelector
+} from "./features/publicChatSlice";
 import Layout from "./Components/Layout/Layout";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 import Profile from "./pages/profile/Profile";
 import PrivateChat from "./pages/private/PrivateChat";
 import PublicChat from "./pages/public/PublicChat";
-import { useDispatch } from "react-redux";
 import { userActions, userSelector } from "./features/userSlice";
-import { useSelector } from "react-redux";
 import ProfileEdit from "./pages/profileEdit/ProfileEdit";
-import { Loader } from "semantic-ui-react";
 import firebaseApp from "./firebase";
-import {
-  publicChatActions,
-  publicChatSelector
-} from "./features/publicChatSlice";
-import moment from "moment";
-
+import Loading from "./Loading";
 import "moment/locale/ko";
-
 import "emoji-mart/css/emoji-mart.css";
 import "semantic-ui-css/semantic.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import Loading from "./Loading";
-
+import moment from "moment";
 moment.locale("ko");
 
 function App() {
@@ -81,10 +77,8 @@ function App() {
 
             return friend;
           } else if (change.type === "removed") {
-            console.log("friend removed");
             dispatch(userActions.removeFriends(change.doc.id));
           } else if (change.type === "modified") {
-            console.log("friend modified");
           }
         });
         if (friends.length === 0) {
@@ -94,8 +88,6 @@ function App() {
         }
 
         const newFriends = await Promise.all(friends);
-        console.log("newFriends", newFriends);
-
         if (newFriends[0] !== undefined) {
           dispatch(userActions.addFriends(newFriends));
         }
@@ -141,26 +133,19 @@ function App() {
     // 공개 채팅방 정보 다운 - <PublicChat />에서 사용
     if (currentUserID) {
       const unsubscribe = firebaseApp.subscribeToAllRooms(async snap => {
-        console.log("~~~~~~~~~subscribeToAllRooms");
         const totalRooms = snap.docChanges().map(async change => {
-          console.log("!!!~~~~~~~~~subscribeToAllRooms");
-
           if (change.type === "added") {
             const data = change.doc.data();
-            console.log("room added", data);
             const roomID = change.doc.id;
             const roomData = await arrangeRoomData(data, roomID);
 
             return roomData;
           } else if (change.type === "removed") {
-            console.log("room removed", change.doc.data());
             dispatch(publicChatActions.deleteRoomFromTotalRooms(change.doc.id));
           } else if (change.type === "modified") {
             const data = change.doc.data();
-            console.log("room modified", change.doc.data());
             const roomID = change.doc.id;
             const roomData = await arrangeRoomData(data, roomID);
-            console.log("!@@@!!~~roomData", roomData);
 
             if (roomData.participantsIDs.includes(currentUserID)) {
               // 내가 참여하고 있는 방일 경우
@@ -189,7 +174,7 @@ function App() {
 
       return unsubscribe;
     }
-  }, [/* roomsIJoined */ currentUserID, currentPublicRoomID, type]);
+  }, [currentUserID, currentPublicRoomID, type]);
 
   useEffect(() => {
     // 로그인 상태 알림

@@ -11,6 +11,6 @@ const rootReducer = combineReducers({
   [PRIVATE]: privateChatReducers
 });
 
-const store = configureStore({ reducer: rootReducer });
+const store = configureStore({ reducer: rootReducer, devTools: false });
 
 export default store;

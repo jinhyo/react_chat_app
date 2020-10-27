@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import Layout from "../../Components/Layout/Layout";
 import {
   Grid,
-  Header,
-  Icon,
   Form,
   Segment,
   Button,
@@ -12,9 +10,10 @@ import {
   TextArea,
   Checkbox
 } from "semantic-ui-react";
+import { toast } from "react-toastify";
+
 import validateRegisterForm from "../../utils/validateRegisterForm";
 import firebase from "../../firebase";
-import { ToastContainer, toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { userSelector } from "../../features/userSlice";
@@ -29,7 +28,7 @@ const INITIAL_VALUES = {
   selfIntro: ""
 };
 
-function Register(props) {
+function Register() {
   const history = useHistory();
   const isLogin = useSelector(userSelector.isLogin);
 
@@ -64,7 +63,6 @@ function Register(props) {
       selfIntro,
       createdAt
     );
-    // setIsSubmitting(false);
   }
 
   const handleEmailCheck = useCallback(() => {

@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Comment, Segment, Input, Divider, Loader } from "semantic-ui-react";
-import firebaseApp, { makePrivateRoomID } from "../../../firebase";
+import { Comment, Segment, Loader } from "semantic-ui-react";
+
 import {
   messagesActions,
   messagesSelector
 } from "../../../features/messageSlice";
-
+import firebaseApp from "../../../firebase";
 import PrivateMessageComment from "./PrivateMessageComment";
 import PrivateMessageHeader from "./PrivateMessageHeader";
 import PrivateMessageForm from "./PrivateMessageForm";
@@ -16,12 +16,12 @@ import { privateChatSelector } from "../../../features/privateChatSlice";
 function PrivateMessages() {
   const toBottomRef = useRef();
   const dispatch = useDispatch();
+
   const currentPrivateRoom = useSelector(
     privateChatSelector.currentPrivateRoom
   );
   const currentUser = useSelector(userSelector.currentUser);
   const privateMessages = useSelector(messagesSelector.privateMesaages);
-  console.log("privateMessages", privateMessages);
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);

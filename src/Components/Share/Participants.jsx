@@ -1,5 +1,6 @@
 import React from "react";
 import { Label } from "semantic-ui-react";
+
 import UserPopUp from "./UserPopUp";
 
 function Participants({ participants }) {

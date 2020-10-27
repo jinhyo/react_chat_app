@@ -1,10 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Modal, Button, Image, Grid, Icon } from "semantic-ui-react";
+import { useSelector } from "react-redux";
+import { Modal, Button } from "semantic-ui-react";
+import mime from "mime-types";
+
 import { userSelector } from "../../../features/userSlice";
 import PreviewImages from "./PreviewImages";
-import { publicChatSelector } from "../../../features/publicChatSlice";
-import mime from "mime-types";
 import firebaseApp from "../../../firebase";
 import { privateChatSelector } from "../../../features/privateChatSlice";
 

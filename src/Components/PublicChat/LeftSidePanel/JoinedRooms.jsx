@@ -1,6 +1,7 @@
-import React, { useEffect, useCallback, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Menu, Header, Icon, Label } from "semantic-ui-react";
+import React, { useCallback } from "react";
+import { useSelector } from "react-redux";
+import { Menu, Header, Icon } from "semantic-ui-react";
+
 import { userSelector } from "../../../features/userSlice";
 import ShowRooms from "./ShowRooms";
 import { publicChatSelector } from "../../../features/publicChatSlice";

@@ -1,13 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  Comment,
-  Segment,
-  Input,
-  Divider,
-  Loader,
-  Dimmer
-} from "semantic-ui-react";
+import { Comment, Segment, Loader } from "semantic-ui-react";
+
 import MessageForm from "./MessageForm";
 import firebaseApp from "../../../firebase";
 import { publicChatSelector } from "../../../features/publicChatSlice";
@@ -16,29 +10,24 @@ import {
   messagesActions,
   messagesSelector
 } from "../../../features/messageSlice";
-
-import "./Messages.css";
 import MessageHeader from "./MessageHeader";
 import { userSelector } from "../../../features/userSlice";
 import Typing from "./Typing";
+import "./Messages.css";
 
 function Messages() {
   const toBottomRef = useRef();
   const dispatch = useDispatch();
+
   const currentRoom = useSelector(publicChatSelector.currentRoom);
   const currentUser = useSelector(userSelector.currentUser);
   const messages = useSelector(messagesSelector.publicMessages);
-  console.log("messages", messages);
 
   const [searchMode, setSearchMode] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [typingUsers, setTypingUsers] = useState([]);
   const [messageLoading, setMessageLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const handleSearchMode = useCallback(() => {
-    setSearchMode(prev => !prev);
-  }, []);
 
   useEffect(() => {
     if (currentRoom) {
@@ -78,12 +67,6 @@ function Messages() {
     dispatch(messagesActions.clearMessages());
     setMessageLoading(true);
 
-    // const participants = currentRoom.participants;
-    // const avatarURLs = participants.reduce((ac, participant) => {
-    //   ac[participant.id] = participant.avatarURL;
-    //   return ac;
-    // }, {});
-
     const unsubscribe = firebaseApp.subscribeToRoomMessages(
       currentRoom.id,
       async snap => {
@@ -91,10 +74,8 @@ function Messages() {
           if (change.type === "added") {
             const data = change.doc.data();
             const createdBySnap = await data.createdBy.get();
-            console.log("~~~~createdBySnap", createdBySnap);
 
             const { nickname, avatarURL } = createdBySnap.data();
-            console.log("~~~~nickname, avatarURL", nickname, avatarURL);
             const createdBy = { id: createdBySnap.id, nickname };
             const createdAt = JSON.stringify(data.createdAt.toDate());
             delete data.createdBy;
@@ -114,6 +95,10 @@ function Messages() {
 
     return unsubscribe;
   }, [currentRoom]);
+
+  const handleSearchMode = useCallback(() => {
+    setSearchMode(prev => !prev);
+  }, []);
 
   const scrollToBottom = useCallback(() => {
     if (toBottomRef.current) {

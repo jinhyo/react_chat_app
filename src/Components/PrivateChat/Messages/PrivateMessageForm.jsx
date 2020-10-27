@@ -1,12 +1,11 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useSelector } from "react-redux";
-import { Form, Input, Button, Segment } from "semantic-ui-react";
-import firebaseApp from "../../../firebase";
-import { publicChatSelector } from "../../../features/publicChatSlice";
-import { userSelector } from "../../../features/userSlice";
+import { Form, Input, Button } from "semantic-ui-react";
 import { Picker } from "emoji-mart";
+
+import firebaseApp from "../../../firebase";
+import { userSelector } from "../../../features/userSlice";
 import PictureModal from "./PictureModal";
-import { messagesSelector } from "../../../features/messageSlice";
 import { privateChatSelector } from "../../../features/privateChatSlice";
 
 function PrivateMessageForm() {
@@ -77,7 +76,6 @@ function PrivateMessageForm() {
           onChange={handleTextChange}
           value={text}
           labelPosition="right"
-          // className={errorMessage.indexOf("message") ? "error" : ""}
           label={<Button color="teal" content="전송" />}
         />
       </Form>
