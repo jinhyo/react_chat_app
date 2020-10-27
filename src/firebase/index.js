@@ -595,11 +595,15 @@ class Firebase {
       });
     } else {
       // 이미 privateRoom document가 있는 경우에는 방 정보를 업데이트
+      const { userMsgCount } = privateRoomSnap.data();
+      userMsgCount[myID]++;
+
       await privateRoomRef.update({
         lastMessageTimestamp: createdAt,
         lastMessageCreatedBy: myID,
         lastMessage: content,
-        messageCounts: this.fieldValue.increment(1)
+        messageCounts: this.fieldValue.increment(1),
+        userMsgCount
       });
     }
 
@@ -657,10 +661,14 @@ class Firebase {
       });
     } else {
       // 이미 privateRoom document가 있는 경우에는 방 정보를 업데이트
+      const { userMsgCount } = privateRoomSnap.data();
+      userMsgCount[myID]++;
+
       await privateRoomRef.update({
         lastMessageTimestamp: createdAt,
         messageCounts: this.fieldValue.increment(1),
-        lastMessage: "- 이미지 파일 -"
+        lastMessage: "- 이미지 파일 -",
+        userMsgCount
       });
     }
 

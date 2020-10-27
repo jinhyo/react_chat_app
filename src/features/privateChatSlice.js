@@ -25,8 +25,21 @@ const privateChatSlice = createSlice({
         // 만약 case1의 경우 currentPrivateRoom도 새로들어온 privateRoom으로 교체해줘야 함
         // state.currentPrivateRoom = state.privateRooms.find(room => room.id === state.currentPrivateRoom.id)
       } else {
+        // const privateRoomsIDs = state.privateRooms.map(room => room.id);
+        // privateRooms.forEach(room => {
+        //   if (!privateRoomsIDs.includes(room.id)) {
+        //     state.privateRooms.push(room);
+        //   }
+        // });
+
         state.privateRooms.push(...privateRooms);
       }
+    },
+    replacePrivateRoom: (state, { payload: privateRoom }) => {
+      const index = state.privateRooms.findIndex(
+        room => room.id === privateRoom.id
+      );
+      state.privateRooms[index] = privateRoom;
     },
     setCurrentPrivateRoom: (
       state,
@@ -81,12 +94,12 @@ const privateChatSlice = createSlice({
     },
     setUnreadMessageCountEqual: (
       state,
-      { payload: { privateRoomID, currentUserID } }
+      { payload: { privateRoomID, currentUserID, messageCounts } }
     ) => {
       const privateRoom = state.privateRooms.find(
         room => room.id === privateRoomID
       );
-      privateRoom.userMsgCount[currentUserID] = privateRoom.messageCounts;
+      privateRoom.userMsgCount[currentUserID] = messageCounts;
     }
   }
 });
