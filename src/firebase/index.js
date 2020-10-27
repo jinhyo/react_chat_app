@@ -118,7 +118,10 @@ class Firebase {
         privateEmail: true,
         location: "",
         selfIntro: "",
-        avatarURL: user.photoURL
+        avatarURL: user.photoURL,
+        roomsIJoined: [],
+        roomsICreated: [],
+        createdAt: new Date()
       });
   }
 
