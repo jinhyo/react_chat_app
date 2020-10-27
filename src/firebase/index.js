@@ -62,6 +62,7 @@ class Firebase {
     const userRef = this.db.collection("users").doc(userId);
     const userSnapshot = await userRef.get();
     let currentUser = userSnapshot.data();
+
     delete currentUser.createdAt;
 
     return currentUser;
@@ -370,13 +371,15 @@ class Firebase {
     });
   }
 
-  async sendImageMessage(imageURLs, createdBy, roomID) {
+  async sendImageMessage(imageURLs, roomID) {
     const roomRef = this.db.collection("rooms").doc(roomID);
+    const userRef = this.db.collection("users").doc(this.auth.currentUser.uid);
+
     await roomRef.collection("messages").add({
       content: imageURLs,
       type: "image",
       createdAt: new Date(),
-      createdBy
+      createdBy: userRef
     });
 
     const roomSnap = await roomRef.get();

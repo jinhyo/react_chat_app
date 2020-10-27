@@ -69,20 +69,11 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
         }
       });
 
-      const createdBy = {
-        id: currentUser.id,
-        nickname: currentUser.nickname
-      };
-
       try {
         const totalImageURLs = await Promise.all(imageURLs);
         console.log("totalImageURLs", totalImageURLs);
 
-        await firebaseApp.sendImageMessage(
-          totalImageURLs,
-          createdBy,
-          currentRoom.id
-        );
+        await firebaseApp.sendImageMessage(totalImageURLs, currentRoom.id);
         setUploadLoading(false);
         // scrollToBottom({bahavior:'smooth'});
         closeModal();
