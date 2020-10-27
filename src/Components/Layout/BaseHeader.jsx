@@ -14,6 +14,7 @@ function BaseHeader() {
   const logout = useCallback(() => {
     firebaseApp.logOut();
     dispatch(userActions.clearUser());
+    history.push("/");
   }, []);
 
   const linkToPrivate = useCallback(() => {
