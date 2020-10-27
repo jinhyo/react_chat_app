@@ -50,7 +50,9 @@ function AddRoomModal({ modal, closeModal }) {
     }
     try {
       setCreateLoading(true);
-      const isDuplicateName = await firebaseApp.checkDuplicateName(roomName);
+      const isDuplicateName = await firebaseApp.checkDuplicateName(
+        roomName.trim()
+      );
       if (isDuplicateName) {
         return alert("이미 같은 이름의 방이 있습니다.");
       }
