@@ -112,7 +112,7 @@ function ProfileEdit() {
                 checked={privateEmail}
                 onChange={handleEmailCheck}
                 color="teal"
-                label="비공개"
+                label="이메일 비공개"
               />
               <Form.Field>
                 <Input
