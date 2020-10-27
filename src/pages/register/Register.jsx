@@ -64,8 +64,7 @@ function Register(props) {
       selfIntro,
       createdAt
     );
-    // window.location.reload();
-    setIsSubmitting(false);
+    // setIsSubmitting(false);
   }
 
   const handleEmailCheck = useCallback(() => {

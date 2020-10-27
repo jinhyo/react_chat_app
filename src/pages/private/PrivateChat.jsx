@@ -4,6 +4,7 @@ import { Grid } from "semantic-ui-react";
 import Layout from "../../Components/Layout/Layout";
 import LeftSidePanel from "../../Components/PrivateChat/LeftSidePanel/LeftSidePanel";
 import UserList from "../../Components/PrivateChat/UserList/UserList";
+import { useHistory } from "react-router-dom";
 
 import "./PrivateChat.css";
 import PrivateMessages from "../../Components/PrivateChat/Messages/PrivateMessages";
@@ -14,19 +15,26 @@ import {
   privateChatSelector
 } from "../../features/privateChatSlice";
 import moment from "moment";
-import { publicChatActions } from "../../features/publicChatSlice";
 
 function PrivateChat() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const currentPrivateRoomID = useSelector(
     privateChatSelector.currentPrivateRoomID
   );
+  const isLogin = useSelector(userSelector.isLogin);
   const currentUserID = useSelector(userSelector.currentUserID);
   const friends = useSelector(userSelector.friends);
   const friendsLoadDone = useSelector(userSelector.isFriendsLoadDone);
 
   const [currentItem, setCurrentItem] = useState("friendList");
   const [newPrivateRooms, setNewPrivateRooms] = useState([]);
+
+  useEffect(() => {
+    if (!isLogin) {
+      history.push("/login");
+    }
+  }, [isLogin]);
 
   // 안 읽은 메시지 카운트 리셋
   useEffect(() => {

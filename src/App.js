@@ -46,6 +46,8 @@ function App() {
             userActions.setCurrentUser({ id: user.uid, ...currentUser })
           );
         });
+      } else {
+        dispatch(userActions.clearUser());
       }
     });
 

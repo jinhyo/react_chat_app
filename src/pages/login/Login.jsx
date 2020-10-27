@@ -59,9 +59,7 @@ function Login() {
       await firebaseApp.logInWithGoogle();
     } catch (error) {
       console.error(error);
-    } finally {
       setGoogleLoginLoading(false);
-      history.push("/");
     }
   }, []);
 

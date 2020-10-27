@@ -37,8 +37,9 @@ const userSlice = createSlice({
       state.currentUser = { ...state.currentUser, ...updatedInfo };
     },
     clearUser: state => {
-      state.isLogin = false;
       state.currentUser = InitialUser;
+      state.isLogin = false;
+      state.isUserLoading = false;
     },
     setUserAvatar: (state, { payload: { avatarURL } }) => {
       state.currentUser.avatarURL = avatarURL;
