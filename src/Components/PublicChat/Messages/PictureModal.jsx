@@ -36,6 +36,10 @@ function PictureModal({ modal, closeModal, scrollToBottom }) {
   }
 
   const handleFileInput = useCallback(e => {
+    if (e.target.files.length > 4) {
+      return alert("최대 4개의 이미지 파일을 보낼 수 있습니다.");
+    }
+
     let files = [];
 
     [].forEach.call(e.target.files, file => {
