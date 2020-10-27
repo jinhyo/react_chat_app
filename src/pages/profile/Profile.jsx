@@ -16,13 +16,10 @@ import AvatarModal from "../../Components/Profile/AvatarModal";
 import Participants from "../../Components/Share/Participants";
 import firebaseApp from "../../firebase";
 import RoomPopUp from "../../Components/Profile/RoomPopUp";
-import { publicChatActions } from "../../features/publicChatSlice";
 
 function Profile() {
-  const dispatch = useDispatch();
   const history = useHistory();
   const { userID } = useParams();
-  console.log("userID", userID);
 
   const currentUserFriends = useSelector(userSelector.friends);
   const currentUser = useSelector(userSelector.currentUser);

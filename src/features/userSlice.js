@@ -24,12 +24,14 @@ const userSlice = createSlice({
     totalUsers: [],
     friends: [],
     currentFriend: null,
-    isFriendsLoadDone: false
+    isFriendsLoadDone: false,
+    isUserLoading: true
   },
   reducers: {
     setCurrentUser: (state, { payload: currentUser }) => {
       state.currentUser = currentUser;
       state.isUserLoading = false;
+      state.isLogin = true;
     },
     updateProfile: (state, { payload: updatedInfo }) => {
       state.currentUser = { ...state.currentUser, ...updatedInfo };
@@ -137,6 +139,12 @@ const selectIsFriendsLoadDone = createSelector(
   isFriendsLoadDone => isFriendsLoadDone
 );
 
+const selectIsUserLoading = createSelector(
+  state => state.isUserLoading,
+
+  isUserLoading => isUserLoading
+);
+
 export const USER = userSlice.name;
 export const userActions = userSlice.actions;
 export const userReducers = userSlice.reducer;
@@ -149,5 +157,6 @@ export const userSelector = {
   friends: state => selectFriends(state[USER]),
   currentFriend: state => selectCurrentFriend(state[USER]),
   isFriendsLoadDone: state => selectIsFriendsLoadDone(state[USER]),
-  currentUserID: state => selectCurrentUserID(state[USER])
+  currentUserID: state => selectCurrentUserID(state[USER]),
+  isUserLoading: state => selectIsUserLoading(state[USER])
 };

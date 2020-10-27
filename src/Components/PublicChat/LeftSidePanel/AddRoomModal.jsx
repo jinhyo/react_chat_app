@@ -50,6 +50,10 @@ function AddRoomModal({ modal, closeModal }) {
     }
     try {
       setCreateLoading(true);
+      const isDuplicateName = await firebaseApp.checkDuplicateName(roomName);
+      if (isDuplicateName) {
+        return alert("이미 같은 이름의 방이 있습니다.");
+      }
       const newRoomID = await firebaseApp.createRoom(
         currentUser.id,
         currentUser.nickname,
@@ -59,12 +63,12 @@ function AddRoomModal({ modal, closeModal }) {
       );
       dispatch(userActions.addRoomsICreated({ id: newRoomID, name: roomName }));
       dispatch(userActions.addRoomsIJoined({ id: newRoomID, name: roomName }));
+      closeModal();
     } catch (error) {
       console.error(error);
     } finally {
       setCreateLoading(false);
       setError("");
-      closeModal();
     }
   }, [initialState]);
 

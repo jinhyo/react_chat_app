@@ -23,18 +23,19 @@ import "moment/locale/ko";
 import "emoji-mart/css/emoji-mart.css";
 import "semantic-ui-css/semantic.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import Loading from "./Loading";
 
 moment.locale("ko");
 
 function App() {
   const dispatch = useDispatch();
-  const isLogin = useSelector(userSelector.isLogin);
   const totalRooms = useSelector(publicChatSelector.totalRooms);
   const currentUserID = useSelector(userSelector.currentUserID);
   const currentPublicRoomID = useSelector(publicChatSelector.currentRoomID);
   const isFriendsLoadDone = useSelector(userSelector.isFriendsLoadDone);
   const friends = useSelector(userSelector.friends);
   const type = useSelector(publicChatSelector.type);
+  const isUserLoading = useSelector(userSelector.isUserLoading);
 
   useEffect(() => {
     // 로그인 유저 확인
@@ -256,7 +257,9 @@ function App() {
     };
   }
 
-  return (
+  return isUserLoading ? (
+    <Loading />
+  ) : (
     <Switch>
       <Route exact path="/" component={Layout} />
       <Route path="/register" component={Register} />

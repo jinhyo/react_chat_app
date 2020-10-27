@@ -706,6 +706,19 @@ class Firebase {
     const presenceRef = this.realtimeDB.ref("presence");
     presenceRef.child(userID).once("value", cb);
   }
+
+  async checkDuplicateName(name) {
+    const snap = await this.db
+      .collection("rooms")
+      .where("name", "==", name)
+      .get();
+
+    if (snap.empty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
 
 export function makePrivateRoomID(myID, friendID) {

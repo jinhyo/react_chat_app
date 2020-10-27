@@ -3,7 +3,6 @@ import { Grid } from "semantic-ui-react";
 import Layout from "../../Components/Layout/Layout";
 import LeftSidePanel from "../../Components/PublicChat/LeftSidePanel/LeftSidePanel";
 import RightSide from "../../Components/PublicChat/RightSide/RightSide";
-import "./PublicChat.css";
 import RoomInfo from "../../Components/PublicChat/RoomInfo.jsx/RoomInfo";
 import { useSelector, useDispatch } from "react-redux";
 import {
