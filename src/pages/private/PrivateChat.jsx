@@ -12,7 +12,7 @@ import { userSelector } from "../../features/userSlice";
 import firebaseApp from "../../firebase";
 import {
   privateChatActions,
-  privateChatSelector
+  privateChatSelector,
 } from "../../features/privateChatSlice";
 import "./PrivateChat.css";
 
@@ -51,8 +51,8 @@ function PrivateChat() {
   useEffect(() => {
     // private rooms 다운 / 해당 정보들은 editPrivateRooms()에서 정리
     if (currentUserID) {
-      const ubsubscribe = firebaseApp.listenToPrivateRooms(async snap => {
-        const privateRooms = snap.docChanges().map(async change => {
+      const ubsubscribe = firebaseApp.listenToPrivateRooms(async (snap) => {
+        const privateRooms = snap.docChanges().map(async (change) => {
           if (change.type === "added") {
             console.log("private room added", change.doc.data());
             return { id: change.doc.id, ...change.doc.data() };
@@ -104,7 +104,7 @@ function PrivateChat() {
 
   async function editPrivateRooms(privateRooms, currentUserID) {
     // privateRooms의 내용물을 필요한 정보로 대체
-    const PrivateRoomsPromise = privateRooms.map(async room => {
+    const PrivateRoomsPromise = privateRooms.map(async (room) => {
       const privateRoom = await arrangePrivateRoom(room, currentUserID);
       return privateRoom;
     });
@@ -115,7 +115,7 @@ function PrivateChat() {
 
   async function arrangePrivateRoom(room, currentUserID) {
     const friendID = room.participants.find(
-      participantID => participantID !== currentUserID
+      (participantID) => participantID !== currentUserID
     );
 
     const privateRoom = {
@@ -126,7 +126,7 @@ function PrivateChat() {
       ),
       lastMessage: room.lastMessage,
       messageCounts: room.messageCounts,
-      userMsgCount: room.userMsgCount
+      userMsgCount: room.userMsgCount,
     };
 
     const friendSnap = await room.userRefs[friendID].get();

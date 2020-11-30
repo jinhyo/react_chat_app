@@ -4,6 +4,7 @@ import "firebase/firestore";
 import "firebase/storage";
 import "firebase/database";
 import md5 from "md5";
+
 import firebaseConfig from "./config";
 
 class Firebase {
@@ -26,31 +27,28 @@ class Firebase {
     createdAt
   ) {
     const photoURL = await fetch(
-      `http://gravatar.com/avatar/${md5(email)}?d=identicon`
-    ).then(response => response.url);
+      `https://www.gravatar.com/avatar/${md5(email)}?d=identicon`
+    ).then((response) => response.url);
 
     const newUser = await this.auth.createUserWithEmailAndPassword(
       email,
       password
     );
 
-    await this.db
-      .collection("users")
-      .doc(newUser.user.uid)
-      .set({
-        nickname,
-        email,
-        privateEmail,
-        location,
-        selfIntro,
-        avatarURL: photoURL,
-        roomsICreated: [],
-        roomsIJoined: [],
-        createdAt
-      });
+    await this.db.collection("users").doc(newUser.user.uid).set({
+      nickname,
+      email,
+      privateEmail,
+      location,
+      selfIntro,
+      avatarURL: photoURL,
+      roomsICreated: [],
+      roomsIJoined: [],
+      createdAt,
+    });
 
     await newUser.user.updateProfile({
-      displayName: nickname
+      displayName: nickname,
     });
   }
 
@@ -72,7 +70,7 @@ class Firebase {
     const userRef = this.db.collection("users").doc(userId);
 
     const friendsSnap = await userRef.collection("friends").get();
-    const friendsRefs = friendsSnap.docs.map(doc => doc.data());
+    const friendsRefs = friendsSnap.docs.map((doc) => doc.data());
 
     const friendsPromise = friendsRefs.map(async ({ userRef }) => {
       const friendSnap = await userRef.get();
@@ -92,6 +90,7 @@ class Firebase {
       .get();
 
     const isAvailable = snapshot.empty;
+
     return isAvailable;
   }
 
@@ -110,10 +109,11 @@ class Firebase {
     provider.addScope("profile");
 
     const { user } = await this.auth.signInWithPopup(provider);
-    await this.db
-      .collection("users")
-      .doc(user.uid)
-      .set({
+
+    const userSnap = await this.db.collection("users").doc(user.uid).get();
+
+    if (!userSnap.exists) {
+      await this.db.collection("users").doc(user.uid).set({
         nickname: user.displayName,
         email: user.email,
         privateEmail: true,
@@ -122,8 +122,9 @@ class Firebase {
         avatarURL: user.photoURL,
         roomsIJoined: [],
         roomsICreated: [],
-        createdAt: new Date()
+        createdAt: new Date(),
       });
+    }
   }
 
   async updateProfile(userId, privateEmail, location, selfIntro) {
@@ -136,26 +137,20 @@ class Firebase {
   async updateAvatar(userId, imageFile) {
     const avatarURL = await this.uploadAvatarImageFile(userId, imageFile);
     this.auth.currentUser.updateProfile({
-      photoURL: avatarURL
+      photoURL: avatarURL,
     });
-    await this.db
-      .collection("users")
-      .doc(userId)
-      .update({ avatarURL });
+    await this.db.collection("users").doc(userId).update({ avatarURL });
 
-    const userSnap = await this.db
-      .collection("users")
-      .doc(userId)
-      .get();
+    const userSnap = await this.db.collection("users").doc(userId).get();
     const roomsIJoined = userSnap.data().roomsIJoined;
-    roomsIJoined.forEach(room => {
+    roomsIJoined.forEach((room) => {
       this.db
         .collection("rooms")
         .doc(room.id)
         .collection("participants")
         .doc(userId)
         .update({
-          avatarURL
+          avatarURL,
         });
     });
 
@@ -167,12 +162,12 @@ class Firebase {
       this.storage
         .ref(`avatars/${userId}`)
         .put(imageFile)
-        .then(snap => {
-          snap.ref.getDownloadURL().then(url => {
+        .then((snap) => {
+          snap.ref.getDownloadURL().then((url) => {
             resolve(url);
           });
         })
-        .catch(err => {
+        .catch((err) => {
           reject(err);
         });
     });
@@ -184,12 +179,12 @@ class Firebase {
         .ref(`publicChats/${roomID}`)
         .child(imageFile.name + "_" + imageFile.lastModified)
         .put(imageFile, metaData)
-        .then(snap => {
-          snap.ref.getDownloadURL().then(url => {
+        .then((snap) => {
+          snap.ref.getDownloadURL().then((url) => {
             resolve(url);
           });
         })
-        .catch(err => {
+        .catch((err) => {
           reject(err);
         });
     });
@@ -205,17 +200,14 @@ class Firebase {
       createdAt: new Date(),
       createdBy: userRef,
       messageCounts: 0,
-      userMsgCount: { [this.auth.currentUser.uid]: 0 }
+      userMsgCount: { [this.auth.currentUser.uid]: 0 },
     });
 
-    await newRoomRef
-      .collection("participants")
-      .doc(userID)
-      .set({
-        id: userID,
-        nickname,
-        avatarURL
-      });
+    await newRoomRef.collection("participants").doc(userID).set({
+      id: userID,
+      nickname,
+      avatarURL,
+    });
 
     await this.db
       .collection("users")
@@ -223,12 +215,12 @@ class Firebase {
       .update({
         roomsICreated: this.fieldValue.arrayUnion({
           name: roomName,
-          id: newRoomRef.id
+          id: newRoomRef.id,
         }),
         roomsIJoined: this.fieldValue.arrayUnion({
           name: roomName,
-          id: newRoomRef.id
-        })
+          id: newRoomRef.id,
+        }),
       });
 
     return newRoomRef.id;
@@ -241,7 +233,7 @@ class Firebase {
       .collection("participants")
       .get();
 
-    return snap.docs.map(doc => doc.data());
+    return snap.docs.map((doc) => doc.data());
   }
 
   subscribeToAllRooms(cb) {
@@ -258,7 +250,7 @@ class Firebase {
       .collection("users")
       .doc(userID)
       .update({
-        roomsIJoined: this.fieldValue.arrayRemove(targetRoom)
+        roomsIJoined: this.fieldValue.arrayRemove(targetRoom),
       });
 
     const participantsRef = this.db
@@ -269,10 +261,7 @@ class Firebase {
 
     if (participantsSnap.size === 1) {
       // 참가자 목록에 내가 마지막이면 방 삭제
-      return this.db
-        .collection("rooms")
-        .doc(roomID)
-        .delete();
+      return this.db.collection("rooms").doc(roomID).delete();
     }
 
     await participantsRef.doc(userID).delete(); // 참가자 목록에서 나 삭제
@@ -285,7 +274,7 @@ class Firebase {
 
     // userMsgCount에서 내 목록 삭제
     await roomRef.update({
-      userMsgCount: currentUserMsgCount
+      userMsgCount: currentUserMsgCount,
     });
   }
 
@@ -296,8 +285,8 @@ class Firebase {
       .update({
         roomsIJoined: this.fieldValue.arrayUnion({
           id: roomID,
-          name: roomName
-        })
+          name: roomName,
+        }),
       });
 
     const roomRef = this.db.collection("rooms").doc(roomID);
@@ -307,17 +296,14 @@ class Firebase {
     const { messageCounts } = roomData;
 
     await roomRef.update({
-      userMsgCount: { ...currentUserMsgCount, [userID]: messageCounts }
+      userMsgCount: { ...currentUserMsgCount, [userID]: messageCounts },
     });
 
-    await roomRef
-      .collection("participants")
-      .doc(userID)
-      .set({
-        id: userID,
-        avatarURL,
-        nickname: userNickname
-      });
+    await roomRef.collection("participants").doc(userID).set({
+      id: userID,
+      avatarURL,
+      nickname: userNickname,
+    });
   }
 
   async setPublicMsgCountEqual(roomID) {
@@ -330,8 +316,8 @@ class Firebase {
     await roomRef.update({
       userMsgCount: {
         ...currentUserMsgCount,
-        [this.auth.currentUser.uid]: messageCounts
-      }
+        [this.auth.currentUser.uid]: messageCounts,
+      },
     });
   }
 
@@ -343,7 +329,7 @@ class Firebase {
       content,
       type: "message",
       createdAt: new Date(),
-      createdBy: userRef
+      createdBy: userRef,
     });
 
     const roomSnap = await roomRef.get();
@@ -353,7 +339,7 @@ class Firebase {
     await roomRef.update({
       userMsgCount,
       messageCounts: this.fieldValue.increment(1),
-      lastMessageCreatedBy: this.auth.currentUser.uid
+      lastMessageCreatedBy: this.auth.currentUser.uid,
     });
   }
 
@@ -365,7 +351,7 @@ class Firebase {
     userMsgCount[this.auth.currentUser.uid] = messageCounts;
 
     await publicRoomRef.update({
-      userMsgCount
+      userMsgCount,
     });
   }
 
@@ -377,7 +363,7 @@ class Firebase {
       content: imageURLs,
       type: "image",
       createdAt: new Date(),
-      createdBy: userRef
+      createdBy: userRef,
     });
 
     const roomSnap = await roomRef.get();
@@ -386,7 +372,7 @@ class Firebase {
 
     await roomRef.update({
       userMsgCount,
-      messageCounts: this.fieldValue.increment(1)
+      messageCounts: this.fieldValue.increment(1),
     });
   }
 
@@ -418,13 +404,13 @@ class Firebase {
     typingRef.on("child_added", addedCb);
     typingRef.on("child_removed", removedCb);
 
-    connectedRef.on("value", snap => {
+    connectedRef.on("value", (snap) => {
       if (snap.val() === true) {
         typingRef
           .child(this.auth.currentUser.uid)
           .onDisconnect()
           .remove()
-          .then(err => {
+          .then((err) => {
             console.error(err);
           });
       }
@@ -442,10 +428,7 @@ class Firebase {
   }
 
   listenToUsers(cb) {
-    this.db
-      .collection("users")
-      .orderBy("createdAt", "desc")
-      .onSnapshot(cb);
+    this.db.collection("users").orderBy("createdAt", "desc").onSnapshot(cb);
   }
 
   async addFriend(friendID) {
@@ -530,8 +513,8 @@ class Firebase {
     await privateRoomRef.update({
       userMsgCount: {
         [this.auth.currentUser.uid]: messageCounts,
-        [friendID]: userMsgCount[friendID]
-      }
+        [friendID]: userMsgCount[friendID],
+      },
     });
   }
 
@@ -546,14 +529,14 @@ class Firebase {
     if (privateRoomSnap.exists) {
       const privateRoomData = privateRoomSnap.data();
       const friendID = privateRoomData.participants.find(
-        participantID => participantID !== this.auth.currentUser.uid
+        (participantID) => participantID !== this.auth.currentUser.uid
       );
 
       await privateRoomRef.update({
         userMsgCount: {
           [this.auth.currentUser.uid]: privateRoomData.messageCounts,
-          [friendID]: privateRoomData.userMsgCount[friendID]
-        }
+          [friendID]: privateRoomData.userMsgCount[friendID],
+        },
       });
 
       return privateRoomData.messageCounts;
@@ -583,13 +566,13 @@ class Firebase {
         lastMessageCreatedBy: myID,
         userMsgCount: {
           [myID]: 1,
-          [friendID]: 0
+          [friendID]: 0,
         },
         participants: [myID, friendID],
         userRefs: {
           [myID]: this.db.collection("users").doc(myID),
-          [friendID]: this.db.collection("users").doc(friendID)
-        }
+          [friendID]: this.db.collection("users").doc(friendID),
+        },
       });
     } else {
       // 이미 privateRoom document가 있는 경우에는 방 정보를 업데이트
@@ -601,7 +584,7 @@ class Firebase {
         lastMessageCreatedBy: myID,
         lastMessage: content,
         messageCounts: this.fieldValue.increment(1),
-        userMsgCount
+        userMsgCount,
       });
     }
 
@@ -612,8 +595,8 @@ class Firebase {
       createdAt,
       createdBy: {
         id: this.auth.currentUser.uid,
-        nickname: this.auth.currentUser.displayName
-      }
+        nickname: this.auth.currentUser.displayName,
+      },
     });
   }
 
@@ -623,12 +606,12 @@ class Firebase {
         .ref(`privateChats/${privateRoomID}`)
         .child(imageFile.name + "_" + imageFile.lastModified)
         .put(imageFile, metaData)
-        .then(snap => {
-          snap.ref.getDownloadURL().then(url => {
+        .then((snap) => {
+          snap.ref.getDownloadURL().then((url) => {
             resolve(url);
           });
         })
-        .catch(err => {
+        .catch((err) => {
           reject(err);
         });
     });
@@ -654,8 +637,8 @@ class Firebase {
         participants: [myID, friendID],
         userRefs: {
           [myID]: this.db.collection("users").doc(myID),
-          [friendID]: this.db.collection("users").doc(friendID)
-        }
+          [friendID]: this.db.collection("users").doc(friendID),
+        },
       });
     } else {
       // 이미 privateRoom document가 있는 경우에는 방 정보를 업데이트
@@ -666,7 +649,7 @@ class Firebase {
         lastMessageTimestamp: createdAt,
         messageCounts: this.fieldValue.increment(1),
         lastMessage: "- 이미지 파일 -",
-        userMsgCount
+        userMsgCount,
       });
     }
 
@@ -679,7 +662,7 @@ class Firebase {
         content: imageURLs,
         type: "image",
         createdAt: new Date(),
-        createdBy
+        createdBy,
       });
   }
 
@@ -689,14 +672,14 @@ class Firebase {
       .ref("presence")
       .child(this.auth.currentUser.uid);
 
-    connectedRef.on("value", snap => {
+    connectedRef.on("value", (snap) => {
       if (snap.val() === true) {
         myPresenceRef.set(true);
 
         myPresenceRef
           .onDisconnect()
           .remove()
-          .then(err => {
+          .then((err) => {
             console.error(err);
           });
       }

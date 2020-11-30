@@ -13,7 +13,7 @@ const InitialUser = {
   ],
   roomsICreated: [
     /* { id: "", name: "" } */
-  ]
+  ],
 };
 
 const userSlice = createSlice({
@@ -25,7 +25,7 @@ const userSlice = createSlice({
     friends: [],
     currentFriend: null,
     isFriendsLoadDone: false,
-    isUserLoading: true
+    isUserLoading: true,
   },
   reducers: {
     setCurrentUser: (state, { payload: currentUser }) => {
@@ -36,7 +36,7 @@ const userSlice = createSlice({
     updateProfile: (state, { payload: updatedInfo }) => {
       state.currentUser = { ...state.currentUser, ...updatedInfo };
     },
-    clearUser: state => {
+    clearUser: (state) => {
       state.currentUser = InitialUser;
       state.isLogin = false;
       state.isUserLoading = false;
@@ -52,12 +52,12 @@ const userSlice = createSlice({
     },
     deleteRoomsIJoined: (state, { payload: targetRoomID }) => {
       state.currentUser.roomsIJoined = state.currentUser.roomsIJoined.filter(
-        room => room.id !== targetRoomID
+        (room) => room.id !== targetRoomID
       );
     },
     setCountRoomIJoined: (state, { payload: { roomID, roomInfo } }) => {
       let targetRoom = state.currentUser.roomsIJoined.find(
-        room => room.id === roomID
+        (room) => room.id === roomID
       );
       targetRoom.count = roomInfo.count;
     },
@@ -71,79 +71,79 @@ const userSlice = createSlice({
       state.isFriendsLoadDone = true;
     },
     removeFriends: (state, { payload: friendID }) => {
-      state.friends = state.friends.filter(friend => friend.id !== friendID);
+      state.friends = state.friends.filter((friend) => friend.id !== friendID);
     },
     setCurrentFriend: (state, { payload: friendID }) => {
       state.currentFriend = state.friends.find(
-        friend => friend.id === friendID
+        (friend) => friend.id === friendID
       );
     },
-    clearCurrentFriend: state => {
+    clearCurrentFriend: (state) => {
       state.currentFriend = null;
     },
     setLoginStatus: (state, { payload: { index, userID, isLogin } }) => {
       if (index !== null) {
         state.friends[index].isLogin = isLogin;
       } else {
-        const friend = state.friends.find(friend => friend.id === userID);
+        const friend = state.friends.find((friend) => friend.id === userID);
         friend.isLogin = isLogin;
       }
-    }
-  }
+    },
+  },
 });
 
 const selectCurrentUser = createSelector(
-  state => state.currentUser,
+  (state) => state.currentUser,
 
-  currentUser => currentUser
+  (currentUser) => currentUser
 );
 
 const selectCurrentUserID = createSelector(
-  state => state.currentUser?.id,
+  (state) => state.currentUser?.id,
 
-  currentUserID => currentUserID
+  (currentUserID) => currentUserID
 );
 
 const selectIsLogin = createSelector(
-  state => state.isLogin,
+  (state) => state.isLogin,
 
-  isLogin => isLogin
+  (isLogin) => isLogin
 );
 
 const selectRoomsIJoined = createSelector(
-  state => state.currentUser.roomsIJoined,
+  (state) => state.currentUser.roomsIJoined,
 
-  roomsIJoined => roomsIJoined
+  (roomsIJoined) => roomsIJoined
 );
 
 const selectTotalUsers = createSelector(
-  state => state.totalUsers,
+  (state) => state.totalUsers,
 
-  totalUsers => totalUsers
+  (totalUsers) => totalUsers
 );
 
 const selectFriends = createSelector(
-  state => state.friends,
+  (state) => state.friends,
 
-  friends => friends
+  (friends) => friends
 );
 
 const selectCurrentFriend = createSelector(
-  state => state.currentFriend,
+  (state) => state.currentFriend,
 
-  currentFriend => currentFriend
+  (currentFriend) => currentFriend
 );
 
 const selectIsFriendsLoadDone = createSelector(
-  state => state.isFriendsLoadDone,
+  (state) => state.isFriendsLoadDone,
 
-  isFriendsLoadDone => isFriendsLoadDone
+  (isFriendsLoadDone) => isFriendsLoadDone
 );
 
 const selectIsUserLoading = createSelector(
-  state => state.isUserLoading,
+  (state) => state.isUserLoading,
 
-  isUserLoading => isUserLoading
+  (isUserLoading) => isUserLoading
 );
 
 export const USER = userSlice.name;
@@ -151,13 +151,13 @@ export const userActions = userSlice.actions;
 export const userReducers = userSlice.reducer;
 
 export const userSelector = {
-  currentUser: state => selectCurrentUser(state[USER]),
-  isLogin: state => selectIsLogin(state[USER]),
-  roomsIJoined: state => selectRoomsIJoined(state[USER]),
-  totalUsers: state => selectTotalUsers(state[USER]),
-  friends: state => selectFriends(state[USER]),
-  currentFriend: state => selectCurrentFriend(state[USER]),
-  isFriendsLoadDone: state => selectIsFriendsLoadDone(state[USER]),
-  currentUserID: state => selectCurrentUserID(state[USER]),
-  isUserLoading: state => selectIsUserLoading(state[USER])
+  currentUser: (state) => selectCurrentUser(state[USER]),
+  isLogin: (state) => selectIsLogin(state[USER]),
+  roomsIJoined: (state) => selectRoomsIJoined(state[USER]),
+  totalUsers: (state) => selectTotalUsers(state[USER]),
+  friends: (state) => selectFriends(state[USER]),
+  currentFriend: (state) => selectCurrentFriend(state[USER]),
+  isFriendsLoadDone: (state) => selectIsFriendsLoadDone(state[USER]),
+  currentUserID: (state) => selectCurrentUserID(state[USER]),
+  isUserLoading: (state) => selectIsUserLoading(state[USER]),
 };

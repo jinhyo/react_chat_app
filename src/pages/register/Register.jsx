@@ -8,7 +8,7 @@ import {
   Message,
   Input,
   TextArea,
-  Checkbox
+  Checkbox,
 } from "semantic-ui-react";
 import { toast } from "react-toastify";
 
@@ -18,6 +18,7 @@ import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { userSelector } from "../../features/userSlice";
 import useFormInput from "../../hooks/useFormInput";
+import firebaseApp from "../../firebase";
 
 const INITIAL_VALUES = {
   nickname: "",
@@ -25,7 +26,7 @@ const INITIAL_VALUES = {
   password: "",
   passwordConfirm: "",
   location: "",
-  selfIntro: ""
+  selfIntro: "",
 };
 
 function Register() {
@@ -41,7 +42,7 @@ function Register() {
     errors,
     handleSubmit,
     setIsSubmitting,
-    setErrors
+    setErrors,
   } = useFormInput(INITIAL_VALUES, validateRegisterForm, createUser);
 
   useEffect(() => {
@@ -52,21 +53,36 @@ function Register() {
 
   async function createUser() {
     const { email, password, nickname, location, selfIntro } = values;
-    setIsSubmitting(true);
-    const createdAt = new Date();
-    await firebase.createNewUser(
-      email,
-      password,
-      nickname,
-      privateEmail,
-      location,
-      selfIntro,
-      createdAt
-    );
+
+    try {
+      const isAvailable = await firebaseApp.checkUniqueNickname(nickname);
+      if (!isAvailable) {
+        setErrors({ ...errors, nickname: "같은 닉네임이 존재합니다." });
+        return;
+      }
+      setIsSubmitting(true);
+      const createdAt = new Date();
+      await firebase.createNewUser(
+        email,
+        password,
+        nickname,
+        privateEmail,
+        location,
+        selfIntro,
+        createdAt
+      );
+      // 수정
+    } catch (error) {
+      console.error(error);
+      if (error.code.includes("email-already-in-use")) {
+        setErrors({ email: "이미 사용중인 이메일 입니다." });
+      }
+      setIsSubmitting(false);
+    }
   }
 
   const handleEmailCheck = useCallback(() => {
-    setPrivateEmail(prev => !prev);
+    setPrivateEmail((prev) => !prev);
   }, []);
 
   const checkUniqueNickname = useCallback(async () => {
@@ -77,7 +93,7 @@ function Register() {
       toast.success("사용 가능한 닉네임 입니다.");
       setCheckLoading(false);
     } else {
-      setErrors({ ...errors, nickname: "사용할 수 없는 닉네임 입니다." });
+      setErrors({ ...errors, nickname: "같은 닉네임이 존재합니다." });
       setCheckLoading(false);
     }
   }, [values.nickname]);

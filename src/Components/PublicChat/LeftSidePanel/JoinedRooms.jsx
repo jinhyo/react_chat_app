@@ -14,15 +14,13 @@ function JoinedRooms() {
   const displayRooms = useCallback(() => {
     if (roomsIJoined.length > 0 && totalRooms.length > 0) {
       const roomDatas = roomsIJoined.reduce((ac, room) => {
-        const joinedRoom = totalRooms.find(troom => troom.id === room.id);
+        const joinedRoom = totalRooms.find((troom) => troom.id === room.id);
         if (joinedRoom) {
           ac.push(joinedRoom);
         }
 
         return ac;
       }, []);
-
-      console.log("roomDatas", roomDatas);
 
       return (
         <ShowRooms
